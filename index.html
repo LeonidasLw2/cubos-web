@@ -42,10 +42,21 @@
 
       <aside class="session fadeable" aria-label="Sesión">
         <div class="stats" id="stats">
-          <div class="stat stat-best"><span>Mejor</span><strong id="stat-best">-</strong></div>
-          <div class="stat stat-ao5"><span>ao5</span><strong id="stat-ao5">-</strong></div>
-          <div class="stat stat-ao12"><span>ao12</span><strong id="stat-ao12">-</strong></div>
-          <div class="stat stat-count"><span>Tiempos</span><strong id="stat-count">0</strong></div>
+          <div class="stat stat-best"><span>Mejor (PB)</span><strong id="stat-best">-</strong></div>
+          <div class="stat stat-worst"><span>Peor</span><strong id="stat-worst">-</strong></div>
+          <div class="stat stat-ao5">
+            <span>ao5</span><strong id="stat-ao5">-</strong>
+            <small>mejor <b id="stat-best-ao5">-</b></small>
+          </div>
+          <div class="stat stat-ao12">
+            <span>ao12</span><strong id="stat-ao12">-</strong>
+            <small>mejor <b id="stat-best-ao12">-</b></small>
+          </div>
+          <div class="stat stat-mean"><span>Media</span><strong id="stat-mean">-</strong></div>
+          <div class="stat stat-count">
+            <span>Tiempos</span><strong id="stat-count">0</strong>
+            <small><b id="stat-dnf">0</b> DNF</small>
+          </div>
         </div>
         <div class="session-head">
           <h2>Tiempos</h2>

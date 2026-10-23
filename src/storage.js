@@ -18,10 +18,24 @@ function write(key, value) {
   }
 }
 
+// Asegura el formato { id, time, penalty, scramble, date } en datos guardados
+// por versiones anteriores o incompletos. Descarta solo lo que no tiene tiempo.
+function normalizeSolve(raw, index) {
+  if (!raw || typeof raw.time !== 'number' || !Number.isFinite(raw.time)) return null;
+  return {
+    id: typeof raw.id === 'string' ? raw.id : `old-${index}-${raw.time}`,
+    time: raw.time,
+    penalty: raw.penalty === '+2' || raw.penalty === 'DNF' ? raw.penalty : null,
+    scramble: typeof raw.scramble === 'string' ? raw.scramble : null,
+    date: typeof raw.date === 'number' ? raw.date : null, // sin fecha: se muestra "—"
+  };
+}
+
 // Tiempos en orden cronológico (el más viejo primero).
 export function loadSolves(eventId) {
   const solves = read(`${PREFIX}:solves:${eventId}`, []);
-  return Array.isArray(solves) ? solves : [];
+  if (!Array.isArray(solves)) return [];
+  return solves.map(normalizeSolve).filter(Boolean);
 }
 
 export function saveSolves(eventId, solves) {

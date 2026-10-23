@@ -341,9 +341,25 @@ body.running .timer-zone {
   font-variant-numeric: tabular-nums;
 }
 
+.stat small {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.stat small b {
+  color: var(--text);
+  font-family: var(--mono);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
 .stat-best { --accent: var(--c-yellow); }
+.stat-worst { --accent: var(--c-red); }
 .stat-ao5 { --accent: var(--c-green); }
 .stat-ao12 { --accent: var(--c-blue); }
+.stat-mean { --accent: var(--c-white); }
 .stat-count { --accent: var(--c-orange); }
 
 .session-head {
@@ -465,8 +481,24 @@ body.running .timer-zone {
   color: var(--c-red);
 }
 
-.solve-scramble {
+.solve-meta {
   grid-column: 1 / -1;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.solve-date {
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.solve-scramble {
+  flex: 1;
+  min-width: 0;
   margin: 0;
   color: var(--muted);
   font-family: var(--mono);
@@ -575,8 +607,12 @@ body.running .timer-zone {
   }
 
   .stats {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 6px;
+  }
+
+  .stat small {
+    font-size: 0.68rem;
   }
 
   .stat {

@@ -11,32 +11,77 @@ export function effectiveTime(solve) {
   return solve.time;
 }
 
-// Mejor tiempo individual; null si no hay ninguno válido.
-export function bestTime(solves) {
-  let best = DNF;
-  for (const s of solves) best = Math.min(best, effectiveTime(s));
-  return best === DNF ? null : best;
+// Tiempos válidos (sin DNF) con la penalización ya aplicada.
+function validTimes(solves) {
+  return solves.map(effectiveTime).filter((t) => t !== DNF);
 }
 
-// Promedio WCA de los últimos n tiempos (solves en orden cronológico).
-// Se descartan el mejor y el peor; un DNF cuenta como el peor.
-// Devuelve null si no hay suficientes tiempos y DNF (Infinity) si hay 2+ DNF.
+// Redondeo a centésimas, como la WCA en los promedios.
+function roundCs(ms) {
+  return Math.round(ms / 10) * 10;
+}
+
+export function dnfCount(solves) {
+  return solves.filter((s) => s.penalty === 'DNF').length;
+}
+
+// Mejor tiempo individual sin contar DNF; null si no hay ninguno válido.
+export function bestTime(solves) {
+  const times = validTimes(solves);
+  return times.length ? times.reduce((a, b) => Math.min(a, b)) : null;
+}
+
+// Peor tiempo individual sin contar DNF; null si no hay ninguno válido.
+export function worstTime(solves) {
+  const times = validTimes(solves);
+  return times.length ? times.reduce((a, b) => Math.max(a, b)) : null;
+}
+
+// Media simple de todos los tiempos válidos (los +2 suman sus 2 s, los DNF no cuentan).
+export function meanTime(solves) {
+  const times = validTimes(solves);
+  if (!times.length) return null;
+  return roundCs(times.reduce((sum, t) => sum + t, 0) / times.length);
+}
+
+// Promedio WCA de un grupo de tiempos: se descartan el mejor y el peor;
+// un DNF cuenta como el peor, así que con 2+ DNF el promedio es DNF.
+function trimmedAverage(times) {
+  const counted = [...times].sort((a, b) => a - b).slice(1, -1);
+  if (counted.includes(DNF)) return DNF;
+  return roundCs(counted.reduce((sum, t) => sum + t, 0) / counted.length);
+}
+
+// Promedio de los últimos n tiempos (solves en orden cronológico); null si faltan tiempos.
 export function averageOf(solves, n) {
   if (solves.length < n) return null;
-  const times = solves.slice(-n).map(effectiveTime).sort((a, b) => a - b);
-  const counted = times.slice(1, -1);
-  if (counted.includes(DNF)) return DNF;
-  const mean = counted.reduce((sum, t) => sum + t, 0) / counted.length;
-  return Math.round(mean / 10) * 10; // redondeo a centésimas, como la WCA
+  return trimmedAverage(solves.slice(-n).map(effectiveTime));
+}
+
+// Mejor promedio de n de toda la sesión: recorre cada ventana de n tiempos seguidos.
+// Devuelve null si faltan tiempos y DNF si todas las ventanas son DNF.
+export function bestAverageOf(solves, n) {
+  if (solves.length < n) return null;
+  const times = solves.map(effectiveTime);
+  let best = DNF;
+  for (let i = 0; i + n <= times.length; i++) {
+    best = Math.min(best, trimmedAverage(times.slice(i, i + n)));
+  }
+  return best;
 }
 
 // Resumen para la interfaz.
 export function summarize(solves) {
   return {
     count: solves.length,
+    dnfCount: dnfCount(solves),
     best: bestTime(solves),
+    worst: worstTime(solves),
+    mean: meanTime(solves),
     ao5: averageOf(solves, 5),
     ao12: averageOf(solves, 12),
+    bestAo5: bestAverageOf(solves, 5),
+    bestAo12: bestAverageOf(solves, 12),
   };
 }
 

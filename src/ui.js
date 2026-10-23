@@ -17,10 +17,17 @@ const els = {
   timer: $('timer'),
   hint: $('hint'),
   pbBadge: $('pb-badge'),
-  best: $('stat-best'),
-  ao5: $('stat-ao5'),
-  ao12: $('stat-ao12'),
+  stats: {
+    best: $('stat-best'),
+    worst: $('stat-worst'),
+    mean: $('stat-mean'),
+    ao5: $('stat-ao5'),
+    ao12: $('stat-ao12'),
+    bestAo5: $('stat-best-ao5'),
+    bestAo12: $('stat-best-ao12'),
+  },
   count: $('stat-count'),
+  dnf: $('stat-dnf'),
   solves: $('solves'),
   empty: $('empty'),
   clearSession: $('clear-session'),
@@ -121,11 +128,14 @@ function selectEvent(eventId) {
 
 function renderStats() {
   const s = summarize(state.solves);
-  els.best.textContent = formatTime(s.best);
-  els.ao5.textContent = formatTime(s.ao5);
-  els.ao12.textContent = formatTime(s.ao12);
+  for (const [key, el] of Object.entries(els.stats)) el.textContent = formatTime(s[key]);
   els.count.textContent = String(s.count);
+  els.dnf.textContent = String(s.dnfCount);
 }
+
+// Fecha y hora corta del solve: "23/10/26, 15:40".
+const dateFormat = new Intl.DateTimeFormat('es', { dateStyle: 'short', timeStyle: 'short' });
+const fullDateFormat = new Intl.DateTimeFormat('es', { dateStyle: 'full', timeStyle: 'medium' });
 
 function renderSolves() {
   const best = bestTime(state.solves);
@@ -148,9 +158,22 @@ function renderSolves() {
         <button type="button" data-action="dnf" aria-pressed="${solve.penalty === 'DNF'}">DNF</button>
         <button type="button" data-action="delete" class="danger" aria-label="Borrar tiempo">✕</button>
       </div>
-      <p class="solve-scramble"></p>`;
+      <div class="solve-meta">
+        <time class="solve-date"></time>
+        <p class="solve-scramble"></p>
+      </div>`;
     li.querySelector('.solve-time').textContent = formatSolve(solve);
     li.querySelector('.solve-scramble').textContent = solve.scramble || '(sin scramble)';
+    const time = li.querySelector('.solve-date');
+    if (solve.date !== null) {
+      const date = new Date(solve.date);
+      time.dateTime = date.toISOString();
+      time.textContent = dateFormat.format(date);
+      time.title = fullDateFormat.format(date);
+    } else {
+      time.textContent = '—';
+      time.title = 'Sin fecha';
+    }
     items.push(li);
   }
   els.solves.replaceChildren(...items);
