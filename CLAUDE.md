@@ -12,8 +12,10 @@ Página web de speedcubing: timer, scrambles y guías de métodos para cubos de 
 2x2 `222` · 3x3 `333` · 4x4 `444` · 5x5 `555` · 7x7 `777` · Megaminx `minx` · Pyraminx `pyram`
 
 ## Etapas
-1. Timer: categorías, scrambles, barra espaciadora / toque, historial, mejor, ao5, ao12 (regla WCA), +2/DNF, localStorage.
-2. Visualización del scramble e inspección de 15 s.
+1. ✅ Timer: categorías, scrambles, barra espaciadora / toque, historial, mejor, ao5, ao12 (regla WCA), +2/DNF, localStorage.
+   - La visualización 2D del scramble (`<twisty-player>`) también quedó hecha en esta etapa (las 7 categorías tienen vista 2D).
+   - Estadísticas ampliadas: peor, media, cantidad de DNF, mejor ao5/ao12 de la sesión, fecha de cada tiempo.
+2. ✅ Inspección de 15 s (reglas WCA: +2 entre 15 y 17 s, DNF después; avisos a los 8 y 12 s) y panel de ajustes.
 3. Métodos: principiante, CFOP (cruz, F2L, OLL, PLL) y Roux, con casos animados.
 4. Entrenador de casos (OLL/PLL/F2L al azar).
 5. Deploy en GitHub Pages.
@@ -21,7 +23,9 @@ Página web de speedcubing: timer, scrambles y guías de métodos para cubos de 
 Trabajar una etapa a la vez; no adelantar etapas sin que se pida.
 
 ## Convenciones
-- Código limpio y modular: un módulo JS por responsabilidad (timer, scrambles, estadísticas, almacenamiento, UI).
+- Código limpio y modular: un módulo JS por responsabilidad (timer, inspección, ajustes, scrambles, estadísticas, almacenamiento, UI).
+- `timer.js` es una máquina de estados con tabla de transiciones; `stats.js` e `inspection.js` (reglas) son puros.
+- Pruebas con `npm test` (node --test, en `tests/`). Los datos guardados se normalizan al cargar: no romper datos viejos.
 - Comentarios breves en español.
 - Diseño oscuro, moderno, con acentos en los 6 colores del cubo. Debe funcionar bien en celular.
 - Explicar los cambios en español; el usuario está aprendiendo.

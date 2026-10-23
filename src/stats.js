@@ -1,6 +1,6 @@
 // Estadísticas puras: no tocan el DOM ni localStorage, solo reciben datos.
-// Un tiempo ("solve") es { id, time, penalty, scramble, date }, con time en ms
-// y penalty null | '+2' | 'DNF'.
+// Un tiempo ("solve") es { id, time, penalty, autoPenalty, scramble, date }, con
+// time en ms y penalty null | '+2' | 'DNF' (autoPenalty: la que puso la inspección).
 
 export const DNF = Infinity;
 
@@ -97,9 +97,10 @@ export function formatTime(ms) {
   return `${seconds}.${hundredths}`;
 }
 
-// Texto de un solve en la lista: "12.34", "14.34+" o "DNF(12.34)".
+// Texto de un solve en la lista: "12.34", "14.34+", "DNF(12.34)" o "DNF"
+// (DNF por inspección: nunca arrancó, así que no hay tiempo).
 export function formatSolve(solve) {
-  if (solve.penalty === 'DNF') return `DNF(${formatTime(solve.time)})`;
+  if (solve.penalty === 'DNF') return solve.time > 0 ? `DNF(${formatTime(solve.time)})` : 'DNF';
   if (solve.penalty === '+2') return `${formatTime(solve.time + 2000)}+`;
   return formatTime(solve.time);
 }

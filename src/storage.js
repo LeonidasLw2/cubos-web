@@ -18,14 +18,18 @@ function write(key, value) {
   }
 }
 
-// Asegura el formato { id, time, penalty, scramble, date } en datos guardados
-// por versiones anteriores o incompletos. Descarta solo lo que no tiene tiempo.
+const isPenalty = (p) => p === '+2' || p === 'DNF';
+
+// Asegura el formato { id, time, penalty, autoPenalty, scramble, date } en datos
+// guardados por versiones anteriores o incompletos. Descarta solo lo que no tiene tiempo.
 function normalizeSolve(raw, index) {
   if (!raw || typeof raw.time !== 'number' || !Number.isFinite(raw.time)) return null;
   return {
     id: typeof raw.id === 'string' ? raw.id : `old-${index}-${raw.time}`,
     time: raw.time,
-    penalty: raw.penalty === '+2' || raw.penalty === 'DNF' ? raw.penalty : null,
+    penalty: isPenalty(raw.penalty) ? raw.penalty : null,
+    // Penalización puesta automáticamente por la inspección (etapa 2); antes no existía.
+    autoPenalty: isPenalty(raw.autoPenalty) ? raw.autoPenalty : null,
     scramble: typeof raw.scramble === 'string' ? raw.scramble : null,
     date: typeof raw.date === 'number' ? raw.date : null, // sin fecha: se muestra "—"
   };
@@ -48,4 +52,13 @@ export function loadSelectedEvent(fallback) {
 
 export function saveSelectedEvent(eventId) {
   write(`${PREFIX}:event`, eventId);
+}
+
+// Ajustes tal como están guardados; settings.js se encarga de validarlos.
+export function loadStoredSettings() {
+  return read(`${PREFIX}:settings`, {});
+}
+
+export function saveStoredSettings(settings) {
+  write(`${PREFIX}:settings`, settings);
 }

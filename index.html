@@ -17,6 +17,12 @@
         <h1>Cubos</h1>
       </div>
       <nav class="events" id="events" aria-label="Categoría"></nav>
+      <button class="icon-btn settings-btn" id="open-settings" type="button" title="Ajustes" aria-label="Ajustes">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3" />
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+        </svg>
+      </button>
     </header>
 
     <main class="layout">
@@ -37,6 +43,7 @@
           <div class="pb-badge" id="pb-badge" aria-hidden="true">¡Nuevo PB!</div>
           <div class="timer" id="timer" role="timer" aria-live="off">0.00</div>
           <p class="hint fadeable" id="hint"></p>
+          <button class="text-btn cancel-inspection" id="cancel-inspection" type="button">Cancelar inspección</button>
         </div>
       </section>
 
@@ -66,6 +73,56 @@
         <p class="empty" id="empty">Todavía no hay tiempos en esta categoría.</p>
       </aside>
     </main>
+
+    <dialog class="settings" id="settings" aria-labelledby="settings-title">
+      <form id="settings-form" method="dialog">
+        <div class="settings-head">
+          <h2 id="settings-title">Ajustes</h2>
+          <button class="icon-btn" type="submit" aria-label="Cerrar">✕</button>
+        </div>
+
+        <label class="setting">
+          <span>
+            Inspección de 15 s
+            <small>Reglas WCA: +2 si arrancás entre 15 y 17 s, DNF después</small>
+          </span>
+          <input type="checkbox" name="inspection" role="switch" />
+        </label>
+
+        <label class="setting">
+          <span>
+            Avisos de voz
+            <small>"Ocho segundos" y "doce segundos" (pitido si no hay voz en español)</small>
+          </span>
+          <input type="checkbox" name="voice" role="switch" />
+        </label>
+
+        <fieldset class="setting-group">
+          <legend>Mantener apretado para arrancar</legend>
+          <div class="segmented">
+            <label><input type="radio" name="holdMs" value="300" /><span>0,3 s</span></label>
+            <label><input type="radio" name="holdMs" value="500" /><span>0,5 s</span></label>
+            <label><input type="radio" name="holdMs" value="800" /><span>0,8 s</span></label>
+          </div>
+        </fieldset>
+
+        <label class="setting">
+          <span>
+            Vista 2D del cubo
+            <small>Muestra cómo queda el cubo mezclado</small>
+          </span>
+          <input type="checkbox" name="showCube" role="switch" />
+        </label>
+
+        <fieldset class="setting-group">
+          <legend>Mientras corre el timer</legend>
+          <div class="segmented">
+            <label><input type="radio" name="timerDisplay" value="time" /><span>Mostrar el tiempo</span></label>
+            <label><input type="radio" name="timerDisplay" value="solving" /><span>Solo "Resolviendo..."</span></label>
+          </div>
+        </fieldset>
+      </form>
+    </dialog>
 
     <script type="module" src="/src/main.js"></script>
   </body>

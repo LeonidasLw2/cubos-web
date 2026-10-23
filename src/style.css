@@ -183,8 +183,13 @@ button:focus-visible {
   font-size: clamp(0.8rem, 1.4vw, 1.05rem);
 }
 
-.scramble-card.long {
+.scramble-card.long,
+.scramble-card.no-cube {
   grid-template-columns: 1fr;
+}
+
+.scramble-card.no-cube .scramble-view {
+  display: none;
 }
 
 .scramble.loading {
@@ -248,14 +253,55 @@ button:focus-visible {
   transition: color 0.12s, transform 0.2s var(--ease);
 }
 
+/* Sin inspección: rojo mientras espera. Con inspección conserva el color del conteo. */
 .timer[data-state='holding'] {
-  color: var(--c-red);
   transform: scale(0.97);
 }
+
+.timer[data-state='holding']:not([data-inspecting]) {
+  color: var(--c-red);
+}
+
+/* La cuenta regresiva tiene 1 a 3 caracteres: puede ser más grande que el tiempo */
+.timer[data-inspecting] {
+  font-size: clamp(6rem, 30vw, 12rem);
+}
+
+/* Colores de la inspección: blanco → amarillo (8 s) → rojo (12 s) */
+.timer[data-level='normal'] { color: var(--c-white); }
+.timer[data-level='warn'] { color: var(--c-yellow); }
+.timer[data-level='danger'] { color: var(--c-red); }
 
 .timer[data-state='ready'] {
   color: var(--c-green);
   transform: scale(1.02);
+}
+
+/* Aviso visual a los 8 y 12 s */
+.timer.alert {
+  animation: alert 0.45s var(--ease);
+}
+
+/* Modo "Resolviendo...": texto más chico y tenue para no distraer */
+.timer.solving {
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  font-weight: 600;
+  color: var(--muted);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+.cancel-inspection {
+  margin-top: 14px;
+  color: var(--muted);
+  border-color: var(--border);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s var(--ease);
+}
+
+body[data-phase='inspection'] .cancel-inspection {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .hint {
@@ -265,17 +311,19 @@ button:focus-visible {
   text-align: center;
 }
 
-/* ---------- Modo foco (timer corriendo) ---------- */
+/* ---------- Modo foco (inspección y timer corriendo) ---------- */
 .fadeable {
   transition: opacity 0.25s var(--ease);
 }
 
-body.running .fadeable {
+/* En la inspección queda visible la ayuda; mientras corre, solo el tiempo. */
+body[data-phase='inspection'] .fadeable:not(.hint),
+body[data-phase='running'] .fadeable {
   opacity: 0;
   pointer-events: none;
 }
 
-body.running .timer-zone {
+body[data-phase='running'] .timer-zone {
   cursor: none;
 }
 
@@ -425,8 +473,24 @@ body.running .timer-zone {
   font-variant-numeric: tabular-nums;
 }
 
+.solve-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.solve-tag {
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: rgba(255, 138, 0, 0.15);
+  color: var(--c-orange);
+  font-size: 0.68rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .solve-time {
-  justify-self: start;
   padding: 0;
   border: 0;
   background: none;
@@ -465,8 +529,13 @@ body.running .timer-zone {
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
-.solve-actions button:hover {
+.solve-actions button:hover:not(:disabled) {
   color: var(--text);
+}
+
+.solve-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .solve-actions button[aria-pressed='true'] {
@@ -528,6 +597,166 @@ body.running .timer-zone {
   text-align: center;
 }
 
+/* ---------- Panel de ajustes ---------- */
+.settings-btn {
+  flex-shrink: 0;
+}
+
+.settings {
+  width: min(440px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.settings[open] {
+  animation: fade-in 0.2s var(--ease);
+}
+
+.settings::backdrop {
+  background: rgba(5, 6, 9, 0.7);
+  backdrop-filter: blur(3px);
+}
+
+.settings form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 20px 22px;
+}
+
+.settings-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.settings-head h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.setting small,
+.setting-group legend {
+  color: var(--muted);
+}
+
+.setting small {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.78rem;
+}
+
+.setting:has(input:disabled) {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* Interruptor (checkbox con estilo) */
+.setting input[type='checkbox'] {
+  appearance: none;
+  flex-shrink: 0;
+  position: relative;
+  width: 42px;
+  height: 24px;
+  margin: 0;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  cursor: inherit;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.setting input[type='checkbox']::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: transform 0.2s var(--ease), background 0.15s;
+}
+
+.setting input[type='checkbox']:checked {
+  background: var(--c-green);
+  border-color: var(--c-green);
+}
+
+.setting input[type='checkbox']:checked::after {
+  transform: translateX(18px);
+  background: #fff;
+}
+
+.setting input:focus-visible,
+.segmented input:focus-visible + span {
+  outline: 2px solid var(--c-blue);
+  outline-offset: 2px;
+}
+
+.setting-group {
+  margin: 0;
+  padding: 10px 0;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.setting-group legend {
+  padding: 0 0 8px;
+  color: var(--text);
+}
+
+/* Botones segmentados (radio con estilo) */
+.segmented {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--surface-2);
+}
+
+.segmented label {
+  flex: 1;
+}
+
+.segmented input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.segmented span {
+  display: block;
+  padding: 7px 8px;
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.segmented input:checked + span {
+  background: var(--c-blue);
+  color: #fff;
+  font-weight: 600;
+}
+
 /* ---------- Animaciones ---------- */
 .fade-in {
   animation: fade-in 0.3s var(--ease);
@@ -545,6 +774,11 @@ body.running .timer-zone {
 
 @keyframes pulse {
   50% { opacity: 0.45; }
+}
+
+@keyframes alert {
+  30% { transform: scale(1.12); }
+  100% { transform: scale(1); }
 }
 
 @keyframes pb-glow {
@@ -583,10 +817,17 @@ body.running .timer-zone {
 
 @media (max-width: 640px) {
   .topbar {
+    position: relative;
     flex-direction: column;
     align-items: stretch;
     gap: 10px;
     padding: 12px 14px;
+  }
+
+  .settings-btn {
+    position: absolute;
+    top: 10px;
+    right: 14px;
   }
 
   .events {

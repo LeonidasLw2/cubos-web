@@ -1,6 +1,8 @@
 // Interfaz: conecta el DOM con el timer, los scrambles, las estadísticas y el almacenamiento.
 import 'cubing/twisty';
 import { createTimer } from './timer.js';
+import { inspectionDisplay, announce, primeAudio } from './inspection.js';
+import { loadSettings, saveSettings } from './settings.js';
 import { EVENTS, DEFAULT_EVENT, getEvent, nextScramble } from './scramble.js';
 import { summarize, bestTime, effectiveTime, formatTime, formatSolve } from './stats.js';
 import { loadSolves, saveSolves, loadSelectedEvent, saveSelectedEvent } from './storage.js';
@@ -16,7 +18,11 @@ const els = {
   timerZone: $('timer-zone'),
   timer: $('timer'),
   hint: $('hint'),
+  cancelInspection: $('cancel-inspection'),
   pbBadge: $('pb-badge'),
+  openSettings: $('open-settings'),
+  settings: $('settings'),
+  settingsForm: $('settings-form'),
   stats: {
     best: $('stat-best'),
     worst: $('stat-worst'),
@@ -39,7 +45,10 @@ const state = {
   scramble: null, // scramble actual (null mientras se genera)
   requestId: 0, // para descartar scrambles que llegan tarde
   newSolveId: null, // para animar la entrada del último tiempo
+  lastResult: '0.00', // lo que vuelve a mostrar el timer al terminar o cancelar
 };
+
+let settings = loadSettings();
 
 const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
@@ -119,7 +128,8 @@ function selectEvent(eventId) {
   for (const btn of els.events.children) {
     btn.setAttribute('aria-pressed', String(btn.dataset.event === eventId));
   }
-  els.timer.textContent = '0.00';
+  state.lastResult = '0.00';
+  els.timer.textContent = state.lastResult;
   renderSession();
   loadScramble();
 }
@@ -149,13 +159,20 @@ function renderSolves() {
     if (solve.id === state.newSolveId) li.classList.add('enter');
     if (best !== null && effectiveTime(solve) === best) li.classList.add('is-best');
     if (solve.penalty === 'DNF') li.classList.add('is-dnf');
+    // Penalización puesta por la inspección (si el usuario no la cambió después).
+    const auto = solve.autoPenalty !== null && solve.autoPenalty === solve.penalty;
+    // DNF por pasarse de 17 s: no hubo resolución, así que no se puede quitar.
+    const noSolve = solve.autoPenalty === 'DNF' && solve.time === 0;
 
     li.innerHTML = `
       <span class="solve-index">${i + 1}</span>
-      <button class="solve-time" type="button" data-action="toggle" title="Ver scramble"></button>
+      <div class="solve-main">
+        <button class="solve-time" type="button" data-action="toggle" title="Ver scramble"></button>
+        ${auto ? `<span class="solve-tag" title="Penalización automática por inspección">${solve.autoPenalty} insp.</span>` : ''}
+      </div>
       <div class="solve-actions">
-        <button type="button" data-action="plus2" aria-pressed="${solve.penalty === '+2'}">+2</button>
-        <button type="button" data-action="dnf" aria-pressed="${solve.penalty === 'DNF'}">DNF</button>
+        <button type="button" data-action="plus2" aria-pressed="${solve.penalty === '+2'}" ${noSolve ? 'disabled' : ''}>+2</button>
+        <button type="button" data-action="dnf" aria-pressed="${solve.penalty === 'DNF'}" ${noSolve ? 'disabled' : ''}>DNF</button>
         <button type="button" data-action="delete" class="danger" aria-label="Borrar tiempo">✕</button>
       </div>
       <div class="solve-meta">
@@ -191,19 +208,22 @@ function commit() {
   renderSession();
 }
 
-function addSolve(ms) {
+// Guarda el resultado que entrega el timer ({ time, penalty, autoPenalty }).
+function addSolve(result) {
   const previousBest = bestTime(state.solves);
   const solve = {
     id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-    time: Math.floor(ms),
-    penalty: null,
+    time: Math.floor(result.time),
+    penalty: result.penalty,
+    autoPenalty: result.autoPenalty,
     scramble: state.scramble,
     date: Date.now(),
   };
   state.solves.push(solve);
   state.newSolveId = solve.id;
+  state.lastResult = formatSolve(solve);
   commit();
-  if (previousBest !== null && solve.time < previousBest) celebratePB();
+  if (previousBest !== null && effectiveTime(solve) < previousBest) celebratePB();
   loadScramble();
 }
 
@@ -246,71 +266,178 @@ function clearSession() {
   commit();
 }
 
+
 // ---------- Timer ----------
 
+// Fase visual: idle (todo visible) · inspection (solo timer y ayuda) · running (solo timer).
+function phaseOf(timerState, inspecting) {
+  if (timerState === 'running') return 'running';
+  return inspecting ? 'inspection' : 'idle';
+}
+
+function updateHint(phase = document.body.dataset.phase ?? 'idle') {
+  let text;
+  if (phase === 'inspection') {
+    text = isTouch
+      ? 'Mantené el dedo y soltá para arrancar'
+      : 'Mantené la barra espaciadora y soltá para arrancar · Esc cancela';
+  } else if (settings.inspection) {
+    text = isTouch
+      ? 'Tocá el tiempo para empezar la inspección'
+      : 'Apretá la barra espaciadora para empezar la inspección';
+  } else {
+    text = isTouch
+      ? 'Mantené el dedo sobre el tiempo y soltá para empezar'
+      : 'Mantené apretada la barra espaciadora y soltá para empezar';
+  }
+  els.hint.textContent = text;
+}
+
 const timer = createTimer({
-  holdMs: 500,
-  onState(s) {
+  getHoldMs: () => settings.holdMs,
+  getInspection: () => settings.inspection,
+
+  onState(s, { inspecting }) {
+    const prev = els.timer.dataset.state;
     els.timer.dataset.state = s;
-    document.body.classList.toggle('running', s === 'running');
-    if (s === 'holding') els.timer.textContent = '0.00';
+    els.timer.toggleAttribute('data-inspecting', inspecting);
+    if (!inspecting) delete els.timer.dataset.level;
+    els.timer.classList.toggle('solving', s === 'running' && settings.timerDisplay === 'solving');
+
+    const phase = phaseOf(s, inspecting);
+    document.body.dataset.phase = phase;
+    updateHint(phase);
+
+    if (s === 'inspection' && prev === 'primed') {
+      // Empieza la inspección (viene de una tecla o toque: se puede activar el audio).
+      if (settings.voice) primeAudio();
+      els.timer.textContent = '15';
+      els.timer.dataset.level = 'normal';
+    } else if (s === 'holding' && !inspecting) {
+      els.timer.textContent = '0.00';
+    } else if (s === 'running') {
+      els.timer.textContent = settings.timerDisplay === 'solving' ? 'Resolviendo...' : '0.00';
+    } else if (s === 'idle' || s === 'stopped') {
+      els.timer.textContent = state.lastResult; // tiempo recién hecho, o el anterior si se canceló
+    }
   },
+
+  onInspectionTick(elapsed) {
+    const { text, level } = inspectionDisplay(elapsed);
+    if (els.timer.textContent !== text) els.timer.textContent = text;
+    els.timer.dataset.level = level;
+  },
+
+  onInspectionAlert(ms) {
+    replay(els.timer, 'alert');
+    if (settings.voice) announce(ms / 1000);
+  },
+
   onTick(ms) {
-    els.timer.textContent = formatTime(ms);
+    if (settings.timerDisplay === 'time') els.timer.textContent = formatTime(ms);
   },
-  onStop(ms) {
-    els.timer.textContent = formatTime(ms);
-    addSolve(ms);
-  },
+
+  onSolve: addSolve,
 });
 
+// ---------- Teclado y toque ----------
+
+let activeKey = null; // tecla que está "apretando" el timer (una sola a la vez)
+let touching = false; // hay un toque nuestro en curso
+
 function onKeyDown(e) {
-  // Mientras corre, cualquier tecla lo para.
+  if (els.settings.open) return; // con el panel abierto, el teclado es del panel
+  if (e.repeat) {
+    if (e.code === 'Space') e.preventDefault();
+    return;
+  }
+  // Mientras corre, cualquier tecla lo para (también Escape).
   if (timer.state === 'running') {
     e.preventDefault();
-    timer.stop();
+    if (activeKey === null) {
+      activeKey = e.code;
+      timer.press();
+    }
     return;
   }
   if (e.code === 'Escape') return timer.cancel();
   if (e.code !== 'Space') return;
   e.preventDefault(); // evita scroll y "clic" en el botón enfocado
-  if (e.repeat) return;
+  if (activeKey !== null) return;
   document.activeElement?.blur();
+  activeKey = 'Space';
   timer.press();
 }
 
 function onKeyUp(e) {
-  if (e.code !== 'Space') return;
+  if (e.code !== activeKey) return;
   e.preventDefault();
+  activeKey = null;
   timer.release();
 }
 
 function onTouchStart(e) {
-  if (timer.state === 'running') {
-    e.preventDefault();
-    timer.stop();
-    return;
-  }
-  // Solo arranca tocando la zona del timer (no botones ni la lista).
-  if (!els.timerZone.contains(e.target) || e.target.closest('button')) return;
+  if (els.settings.open || e.target.closest('button, dialog')) return; // los botones funcionan normal
+  // Inactivo: solo la zona del timer. Inspeccionando o corriendo: toda la pantalla.
+  if (timer.state === 'idle' && !els.timerZone.contains(e.target)) return;
   e.preventDefault();
+  touching = true;
   timer.press();
 }
 
 function onTouchEnd(e) {
-  if (timer.state === 'holding' || timer.state === 'ready') {
-    e.preventDefault();
-    timer.release();
-  }
+  if (!touching) return;
+  e.preventDefault();
+  touching = false;
+  timer.release();
+}
+
+function forgetInput() {
+  activeKey = null;
+  touching = false;
+  timer.blur();
+}
+
+// ---------- Ajustes ----------
+
+function applySettings() {
+  els.card.classList.toggle('no-cube', !settings.showCube);
+  updateHint();
+}
+
+function fillSettingsForm() {
+  const f = els.settingsForm.elements;
+  f.inspection.checked = settings.inspection;
+  f.voice.checked = settings.voice;
+  f.voice.disabled = !settings.inspection; // los avisos son de la inspección
+  f.holdMs.value = String(settings.holdMs);
+  f.showCube.checked = settings.showCube;
+  f.timerDisplay.value = settings.timerDisplay;
+}
+
+function onSettingsChange() {
+  const f = els.settingsForm.elements;
+  settings = {
+    inspection: f.inspection.checked,
+    voice: f.voice.checked,
+    holdMs: Number(f.holdMs.value),
+    showCube: f.showCube.checked,
+    timerDisplay: f.timerDisplay.value,
+  };
+  saveSettings(settings);
+  f.voice.disabled = !settings.inspection;
+  applySettings();
+}
+
+function openSettings() {
+  if (timer.state !== 'idle') return;
+  fillSettingsForm();
+  els.settings.showModal();
 }
 
 // ---------- Inicio ----------
 
 export function initUI() {
-  els.hint.textContent = isTouch
-    ? 'Mantené el dedo sobre el tiempo y soltá para empezar'
-    : 'Mantené apretada la barra espaciadora y soltá para empezar';
-
   renderEvents();
   els.events.addEventListener('click', (e) => {
     const btn = e.target.closest('.event-btn');
@@ -319,14 +446,29 @@ export function initUI() {
   els.newScramble.addEventListener('click', loadScramble);
   els.solves.addEventListener('click', onSolveAction);
   els.clearSession.addEventListener('click', clearSession);
+  els.cancelInspection.addEventListener('click', () => timer.cancel());
+  // Al terminar una animación del timer se quita su clase, para que no tape a la siguiente.
+  els.timer.addEventListener('animationend', (e) => {
+    if (e.animationName === 'alert') els.timer.classList.remove('alert');
+    if (e.animationName === 'pb-glow') els.timer.classList.remove('pb');
+  });
+
+  els.openSettings.addEventListener('click', openSettings);
+  els.settingsForm.addEventListener('change', onSettingsChange);
+  // Clic fuera del panel (en el fondo oscuro) lo cierra.
+  els.settings.addEventListener('click', (e) => {
+    if (e.target === els.settings) els.settings.close();
+  });
 
   document.addEventListener('keydown', onKeyDown);
   document.addEventListener('keyup', onKeyUp);
   document.addEventListener('touchstart', onTouchStart, { passive: false });
   document.addEventListener('touchend', onTouchEnd, { passive: false });
-  document.addEventListener('touchcancel', () => timer.cancel());
-  window.addEventListener('blur', () => timer.cancel());
+  document.addEventListener('touchcancel', forgetInput);
+  window.addEventListener('blur', forgetInput);
 
+  document.body.dataset.phase = 'idle';
+  applySettings();
   state.solves = loadSolves(state.event);
   renderSession();
   updatePlayer();
