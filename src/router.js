@@ -8,9 +8,9 @@ const METHOD_PAGES = {
   '': { page: 'index' },
   principiante: { page: 'beginner' },
   cfop: { page: 'cfop' },
-  'cfop/cruz': { page: 'soon', title: 'Cruz (CFOP)' },
-  'cfop/f2l': { page: 'soon', title: 'F2L' },
-  'cfop/oll': { page: 'soon', title: 'OLL' },
+  'cfop/cruz': { page: 'cross' },
+  'cfop/f2l': { page: 'f2l' },
+  'cfop/oll': { page: 'oll' },
   'cfop/pll': { page: 'pll' },
   roux: { page: 'soon', title: 'Roux' },
 };

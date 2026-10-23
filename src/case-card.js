@@ -14,12 +14,19 @@ const ICONS = {
 const icon = (name) =>
   `<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">${ICONS[name]}</svg>`;
 
-// Separa el giro previo "(U2)" del resto para mostrarlo más tenue.
-function algHTML(alg) {
+const escape = (s) => s.replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
+
+// Separa el giro previo "(U2)" del resto para mostrarlo más tenue. Si hay "pair"
+// (F2L), marca la parte que arma el par y la que lo inserta.
+function algHTML(alg, pair = '') {
   const match = alg.match(/^\((U2?'?)\)\s*(.*)$/);
-  const escape = (s) => s.replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
-  if (!match) return escape(alg);
-  return `<span class="pre-auf" title="Giro previo para ver el caso como en la imagen">(${match[1]})</span> ${escape(match[2])}`;
+  const pre = match
+    ? `<span class="pre-auf" title="Giro previo para ver el caso como en la imagen">(${match[1]})</span> `
+    : '';
+  const body = match ? match[2] : alg;
+  if (!pair || !body.startsWith(pair)) return pre + escape(body);
+  const rest = body.slice(pair.length).trim();
+  return `${pre}<span class="alg-pair" title="Arma el par">${escape(pair)}</span> <span class="alg-insert" title="Inserta el par">${escape(rest)}</span>`;
 }
 
 // Crea los players solo cuando la tarjeta está cerca de verse (ahorra memoria).
@@ -37,15 +44,16 @@ const observer =
       )
     : null;
 
-// data: { name, description?, alg, alts? } · stickering: clave de STICKERING
+// data: { name, nickname?, description?, idea?, alg, pair?, alts? } · stickering: clave de STICKERING
 export function createCaseCard(data, { stickering, index = 0 }) {
   const card = document.createElement('article');
   card.className = 'case-card';
   card.style.setProperty('--i', String(index)); // escalona la animación de entrada
   card.innerHTML = `
     <header class="case-head">
-      <h4 class="case-name"></h4>
+      <h4 class="case-name">${escape(data.name)}${data.nickname ? ` <small>${escape(data.nickname)}</small>` : ''}</h4>
       ${data.description ? '<p class="case-desc"></p>' : ''}
+      ${data.idea ? '<p class="case-idea"><strong>Idea:</strong> <span></span></p>' : ''}
     </header>
     <div class="case-cube" aria-label="Animación del caso"></div>
     <div class="case-controls" role="group" aria-label="Controles de la animación">
@@ -54,7 +62,12 @@ export function createCaseCard(data, { stickering, index = 0 }) {
       <button type="button" data-cmd="play" class="play" title="Reproducir" aria-label="Reproducir">${icon('play')}</button>
       <button type="button" data-cmd="step" title="Paso adelante" aria-label="Paso adelante">${icon('step')}</button>
     </div>
-    <button type="button" class="case-alg is-active" data-alg-index="0">${algHTML(data.alg)}</button>
+    <button type="button" class="case-alg is-active" data-alg-index="0">${algHTML(data.alg, data.pair)}</button>
+    ${
+      data.pair
+        ? '<p class="alg-legend"><span class="alg-pair">arma el par</span> <span class="alg-insert">lo inserta</span></p>'
+        : ''
+    }
     ${
       data.alts?.length
         ? `<details class="case-alts">
@@ -63,8 +76,8 @@ export function createCaseCard(data, { stickering, index = 0 }) {
           </details>`
         : ''
     }`;
-  card.querySelector('.case-name').textContent = data.name;
   if (data.description) card.querySelector('.case-desc').textContent = data.description;
+  if (data.idea) card.querySelector('.case-idea span').textContent = data.idea;
 
   const algs = [data.alg, ...(data.alts ?? [])];
   const cube = card.querySelector('.case-cube');

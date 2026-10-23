@@ -24,4 +24,10 @@ export const STICKERING = {
   'll-corners': mask('DDDDooooDDDD', 'DDDDPPPP'),
   'll-edges': mask('DDDDPPPPDDDD', 'DDDDPPPP'),
   pll: mask('DDDDPPPPDDDD', 'DDDDPPPP'),
+  oll: mask('DDDDOOOODDDD', 'DDDDOOOO'),
+  eoll: mask('DDDDOOOODDDD', 'DDDDIIII'),
+  // F2L: con z2, el slot de adelante a la derecha lo ocupan la arista FL (9) y la
+  // esquina ULF (3) del cubo sin rotar. Ese par en color; la cruz y los otros
+  // slots atenuados; la última capa en gris.
+  f2l: mask('DDDDIIIID-DD', 'DDD-IIII'),
 };

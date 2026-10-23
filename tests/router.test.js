@@ -16,12 +16,13 @@ test('páginas de métodos', () => {
   assert.equal(parseRoute('#/metodos/cfop').page, 'cfop');
   assert.equal(parseRoute('#/metodos/cfop/pll').page, 'pll');
   assert.equal(parseRoute('#/Metodos/CFOP/PLL').page, 'pll');
+  assert.equal(parseRoute('#/metodos/cfop/oll').page, 'oll');
+  assert.equal(parseRoute('#/metodos/cfop/f2l').page, 'f2l');
+  assert.equal(parseRoute('#/metodos/cfop/cruz').page, 'cross');
 });
 
 test('partes sin hacer: "Próximamente"', () => {
   assert.deepEqual(parseRoute('#/metodos/roux'), { view: 'methods', path: 'metodos/roux', page: 'soon', title: 'Roux' });
-  assert.equal(parseRoute('#/metodos/cfop/oll').page, 'soon');
-  assert.equal(parseRoute('#/metodos/cfop/f2l').page, 'soon');
 });
 
 test('rutas desconocidas vuelven al timer', () => {

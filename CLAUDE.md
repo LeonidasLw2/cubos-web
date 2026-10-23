@@ -18,7 +18,8 @@ Página web de speedcubing: timer, scrambles y guías de métodos para cubos de 
 2. ✅ Inspección de 15 s (reglas WCA: +2 entre 15 y 17 s, DNF después; avisos a los 8 y 12 s) y panel de ajustes.
 3. Métodos: principiante, CFOP (cruz, F2L, OLL, PLL) y Roux, con casos animados. Se hace en partes:
    - ✅ 3A: navegación (router con hash `#/timer`, `#/metodos/...`), tarjeta de caso reutilizable, método principiante y PLL (21 casos).
-   - Pendiente: CFOP cruz, F2L y OLL; Roux (hoy aparecen como "Próximamente").
+   - ✅ 3B: CFOP cruz (consejos + ejemplos óptimos), F2L (41 casos con la idea de cada uno), OLL (57 casos por forma + OLL en 2 pasos).
+   - Pendiente: Roux (hoy aparece como "Próximamente").
 4. Entrenador de casos (OLL/PLL/F2L al azar).
 5. Deploy en GitHub Pages.
 
@@ -31,7 +32,11 @@ Trabajar una etapa a la vez; no adelantar etapas sin que se pida.
 - Métodos: los datos van en `src/data/` (sin DOM); `case-card.js` es la tarjeta reutilizable y `methods.js` arma las páginas.
   - Los algoritmos usan notación estándar con la última capa en U; un `(U)` al inicio es el giro previo para ver el caso en la orientación estándar.
   - El cubo se muestra con el amarillo arriba (`z2` como estado final) y máscaras propias de stickering en `src/data/stickering.js`.
-  - Todo algoritmo nuevo tiene que pasar `npm run verify-algs` (KPuzzle de cubing.js). Los casos de PLL se comparan con `scripts/pll-reference.js`.
+  - Todo algoritmo nuevo tiene que pasar `npm run verify-algs` (KPuzzle de cubing.js). Cómo se verifica cada parte:
+    - PLL y OLL: contra referencias independientes de la wiki de SpeedSolving (`scripts/pll-reference.js`, `scripts/oll-reference.js`), y todos los casos tienen que ser distintos.
+    - F2L: cada caso guarda `corner`/`edge` (dónde está cada pieza) y `pair` (la parte que arma el par); el script comprueba las dos cosas y que los 41 casos sean distintos (= están todos). El slot es siempre el de adelante a la derecha y los algoritmos no usan rotaciones.
+    - Cruz: `scripts/lib/cross-solver.js` recorre las 190.080 posiciones de la cruz; los ejemplos tienen que ser óptimos. Las mezclas se hacen con blanco arriba y verde al frente, y se resuelve después de `z2`.
+  - Para verificar que el verificador sirve: romper algo a propósito y comprobar que falla.
 - Comentarios breves en español.
 - Diseño oscuro, moderno, con acentos en los 6 colores del cubo. Debe funcionar bien en celular.
 - Explicar los cambios en español; el usuario está aprendiendo.

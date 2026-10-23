@@ -1,6 +1,9 @@
 // Sección Métodos: arma cada página a partir de los datos (src/data) y de las tarjetas de caso.
 import { BEGINNER } from './data/beginner.js';
 import { PLL } from './data/pll.js';
+import { OLL, OLL_2LOOK } from './data/oll.js';
+import { F2L, describeF2L } from './data/f2l.js';
+import { CROSS } from './data/cross.js';
 import { createCaseCard } from './case-card.js';
 
 // Métodos y sus partes. href null = "Próximamente".
@@ -21,10 +24,10 @@ const METHODS = [
 ];
 
 const CFOP_PARTS = [
-  { title: 'Cruz', text: 'Armar la cruz en pocos movimientos, planeada en la inspección.', href: null, accent: 'white' },
-  { title: 'F2L', text: 'Las dos primeras capas de a pares esquina-arista.', href: null, accent: 'green' },
-  { title: 'OLL', text: 'Orientar la última capa: 57 casos.', href: null, accent: 'yellow' },
-  { title: 'PLL', text: 'Permutar la última capa: 21 casos.', href: '#/metodos/cfop/pll', accent: 'red' },
+  { title: '1. Cruz', text: 'Armar la cruz en pocos movimientos, planeada en la inspección.', href: '#/metodos/cfop/cruz', accent: 'white' },
+  { title: '2. F2L', text: 'Las dos primeras capas de a pares esquina-arista: 41 casos.', href: '#/metodos/cfop/f2l', accent: 'green' },
+  { title: '3. OLL', text: 'Orientar la última capa: 57 casos (o 10 en dos pasos).', href: '#/metodos/cfop/oll', accent: 'yellow' },
+  { title: '4. PLL', text: 'Permutar la última capa: 21 casos.', href: '#/metodos/cfop/pll', accent: 'red' },
 ];
 
 const escape = (s) => s.replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
@@ -59,6 +62,31 @@ function caseGrid(cases, stickering) {
   const grid = el('<div class="case-grid"></div>');
   cases.forEach((c, i) => grid.append(createCaseCard(c, { stickering, index: i })));
   return grid;
+}
+
+// Índice de secciones: chips que hacen scroll hasta cada una sin cambiar la ruta.
+// items: [{ id, title }] → ids de las secciones con prefijo "sec-".
+function sectionIndex(items) {
+  const nav = el(`<ol class="step-index">
+    ${items.map((s) => `<li><a href="#" data-section="${s.id}">${escape(s.title)}</a></li>`).join('')}
+  </ol>`);
+  nav.addEventListener('click', (e) => {
+    const link = e.target.closest('[data-section]');
+    if (!link) return;
+    e.preventDefault();
+    document.getElementById(`sec-${link.dataset.section}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  return nav;
+}
+
+// Una sección con título, texto y grilla de casos.
+function caseSection({ id, title, count, text, cases, stickering }) {
+  const section = el(`<section class="method-step" id="sec-${id}">
+    <h3>${escape(title)}${count ? ` <small>${count} casos</small>` : ''}</h3>
+    ${text ? `<p>${escape(text)}</p>` : ''}
+  </section>`);
+  section.append(caseGrid(cases, stickering));
+  return section;
 }
 
 // ---------- Páginas ----------
@@ -117,22 +145,113 @@ function beginnerPage() {
   return page;
 }
 
-function pllPage() {
-  const page = el(`<div class="methods-page">
-    ${breadcrumb([['Métodos', '#/metodos'], ['CFOP', '#/metodos/cfop'], ['PLL']])}
+// Encabezado común de las partes de CFOP.
+function cfopHead(data, crumb) {
+  return el(`<div class="methods-page">
+    ${breadcrumb([['Métodos', '#/metodos'], ['CFOP', '#/metodos/cfop'], [crumb]])}
     <header class="page-head">
-      <h2>${escape(PLL.title)} <small>${escape(PLL.subtitle)}</small></h2>
-      ${paragraphs(PLL.intro)}
+      <h2>${escape(data.title)} <small>${escape(data.subtitle)}</small></h2>
+      ${paragraphs(data.intro)}
     </header>
   </div>`);
-  for (const group of PLL.groups) {
-    const section = el(`<section class="method-step">
-      <h3>${escape(group.title)} <small>${group.cases.length} casos</small></h3>
-      <p>${escape(group.text)}</p>
-    </section>`);
-    section.append(caseGrid(group.cases, PLL.stickering));
-    page.append(section);
+}
+
+// Página con grupos de casos (PLL, OLL, F2L) e índice para saltar entre grupos.
+function groupedPage(data, crumb, mapCase = (c) => c) {
+  const page = cfopHead(data, crumb);
+  page.append(sectionIndex(data.groups));
+  for (const group of data.groups) {
+    page.append(
+      caseSection({
+        id: group.id,
+        title: group.title,
+        count: group.cases.length,
+        text: group.text,
+        cases: group.cases.map(mapCase),
+        stickering: data.stickering,
+      }),
+    );
   }
+  return page;
+}
+
+function pllPage() {
+  return groupedPage(PLL, 'PLL');
+}
+
+function f2lPage() {
+  let n = 0;
+  return groupedPage(F2L, 'F2L', (c) => ({
+    ...c,
+    name: `Caso ${++n}`,
+    description: describeF2L(c), // generada desde la posición verificada
+  }));
+}
+
+function ollPage() {
+  const page = cfopHead(OLL, 'OLL');
+  page.append(
+    sectionIndex([{ id: '2-pasos', title: 'OLL en 2 pasos' }, ...OLL.groups]),
+  );
+
+  // OLL en 2 pasos: aristas (3 casos) y esquinas (los 7 del grupo "cruz").
+  const allCases = OLL.groups.flatMap((g) => g.cases);
+  const twoLook = el(`<section class="method-step two-look" id="sec-2-pasos">
+    <h3>OLL en 2 pasos <small>10 algoritmos</small></h3>
+    <p>${escape(OLL_2LOOK.intro)}</p>
+  </section>`);
+  twoLook.append(
+    caseSection({
+      id: '2-pasos-aristas',
+      title: OLL_2LOOK.edges.title,
+      text: OLL_2LOOK.edges.text,
+      cases: OLL_2LOOK.edges.cases,
+      stickering: OLL_2LOOK.edges.stickering,
+    }),
+    caseSection({
+      id: '2-pasos-esquinas',
+      title: OLL_2LOOK.corners.title,
+      text: OLL_2LOOK.corners.text,
+      cases: OLL_2LOOK.corners.caseIds.map((id) => allCases.find((c) => c.id === id)),
+      stickering: OLL.stickering,
+    }),
+  );
+  page.append(twoLook);
+
+  const full = el(`<section class="method-step"><h3>OLL completa <small>57 casos</small></h3>
+    <p>Agrupadas por la forma que hace el amarillo arriba. El número es el estándar que usa toda la comunidad.</p></section>`);
+  page.append(full);
+  for (const group of OLL.groups) {
+    page.append(
+      caseSection({
+        id: group.id,
+        title: group.title,
+        count: group.cases.length,
+        text: group.text,
+        cases: group.cases,
+        stickering: OLL.stickering,
+      }),
+    );
+  }
+  return page;
+}
+
+function crossPage() {
+  const page = cfopHead(CROSS, 'Cruz');
+  page.append(
+    el(`<div class="tip-grid">
+      ${CROSS.tips.map((t, i) => `<article class="tip-card"><span class="tip-number">${i + 1}</span><h3>${escape(t.title)}</h3><p>${escape(t.text)}</p></article>`).join('')}
+    </div>`),
+  );
+  page.append(
+    caseSection({
+      id: 'ejemplos',
+      title: 'Ejemplos con mezclas reales',
+      text: CROSS.examplesText,
+      cases: CROSS.examples.map((ex) => ({ ...ex, description: `Mezcla: ${ex.scramble}` })),
+      stickering: CROSS.stickering,
+    }),
+  );
   return page;
 }
 
@@ -148,7 +267,15 @@ function soonPage(title) {
   </div>`);
 }
 
-const PAGES = { index: indexPage, cfop: cfopPage, beginner: beginnerPage, pll: pllPage };
+const PAGES = {
+  index: indexPage,
+  cfop: cfopPage,
+  beginner: beginnerPage,
+  cross: crossPage,
+  f2l: f2lPage,
+  oll: ollPage,
+  pll: pllPage,
+};
 
 // Muestra la página de la ruta dentro del contenedor.
 export function renderMethods(container, route) {

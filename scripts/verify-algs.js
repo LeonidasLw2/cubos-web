@@ -4,6 +4,12 @@
 // Para cada caso: se parte del caso, se aplica el algoritmo y se comprueba que
 // el objetivo del paso queda resuelto, admitiendo un giro final de U (AUF).
 //   · PLL: el caso sale de una referencia independiente (pll-reference.js).
+//   · OLL: la cara de arriba queda toda amarilla y el caso coincide exactamente
+//     con los de otros algoritmos de la wiki (oll-reference.js); los 57 son distintos.
+//   · F2L: el par queda en su lugar sin tocar la cruz ni los otros slots; el caso
+//     coincide con la descripción (corner/edge), la parte "pair" arma de verdad el
+//     par, y los 41 casos son distintos (y por lo tanto están todos).
+//   · Cruz: desde la mezcla oficial, la solución arma la cruz y es óptima.
 //   · Principiante: el caso es el que muestra la tarjeta (el inverso del
 //     algoritmo), y se comprueba de forma independiente que coincide con la
 //     descripción (dónde está la pieza y hacia dónde mira el blanco) y que el
@@ -12,7 +18,12 @@ import { Alg } from 'cubing/alg';
 import { cube3x3x3 } from 'cubing/puzzles';
 import { BEGINNER } from '../src/data/beginner.js';
 import { PLL } from '../src/data/pll.js';
+import { OLL, OLL_2LOOK } from '../src/data/oll.js';
+import { F2L } from '../src/data/f2l.js';
+import { CROSS as CROSS_PAGE } from '../src/data/cross.js';
 import { PLL_REFERENCE } from './pll-reference.js';
+import { OLL_REFERENCE } from './oll-reference.js';
+import { createCrossSolver } from './lib/cross-solver.js';
 
 const kpuzzle = await cube3x3x3.kpuzzle();
 const SOLVED = kpuzzle.defaultPattern();
@@ -61,7 +72,15 @@ const withAUF = (p, cond) => AUFS.some((auf) => cond(auf ? p.applyAlg(auf) : p))
 
 // ---------- Condiciones de cada paso ----------
 
-const f2l = (p) => CROSS.every((i) => edgeOk(p, i)) && FIRST_CORNERS.every((i) => cornerOk(p, i)) && MIDDLE.every((i) => edgeOk(p, i));
+const crossOk = (p) => CROSS.every((i) => edgeOk(p, i));
+const f2l = (p) => crossOk(p) && FIRST_CORNERS.every((i) => cornerOk(p, i)) && MIDDLE.every((i) => edgeOk(p, i));
+// Slot de los casos de F2L: esquina DRF (4) + arista FR (8). Los otros tres no se pueden tocar.
+const SLOT = [4, 8];
+const OTHER_SLOTS = [
+  [5, 9], // DFL + FL
+  [6, 11], // DLB + BL
+  [7, 10], // DBR + BR
+];
 const llEdgesOriented = (p) => LL.every((i) => orbit(p, 'EDGES').orientation[i] === 0);
 const llOriented = (p) => llEdgesOriented(p) && LL.every((i) => orbit(p, 'CORNERS').orientation[i] === 0);
 const llCornersPlaced = (p) => withAUF(p, (q) => LL.every((i) => cornerOk(q, i)));
@@ -108,6 +127,18 @@ const STEPS = {
     before: [['F2L', f2l], ['última capa orientada (OLL)', llOriented]],
     goal: [['cubo resuelto', solvedAUF]],
   },
+  oll: {
+    before: [['F2L', f2l]],
+    goal: [['F2L', f2l], ['cara de arriba toda del mismo color', llOriented]],
+  },
+  eoll: {
+    before: [['F2L', f2l]],
+    goal: [['F2L', f2l], ['aristas de arriba orientadas', llEdgesOriented]],
+  },
+  f2l: {
+    before: [['cruz y los otros tres slots', (p) => crossOk(p) && OTHER_SLOTS.every(([c, e]) => cornerOk(p, c) && edgeOk(p, e))]],
+    goal: [['par en su lugar, sin tocar la cruz ni los otros slots', f2l]],
+  },
 };
 
 // ---------- Descripciones de los casos del principiante ----------
@@ -152,7 +183,39 @@ const EXPECT = {
     ['barra atrás (esquinas y arista de atrás en su lugar)', (p) => LL.every((i) => cornerOk(p, i)) && edgeOk(p, 2)],
     ['la arista del frente va a la derecha', (p) => orbit(p, 'EDGES').pieces[0] === 1],
   ],
+  'eo-line': [llOrientedEdges(['UR', 'UL'])],
+  'eo-l': [llOrientedEdges(['UF', 'UR'])],
+  'eo-dot': [llOrientedEdges([])],
 };
+
+// ---------- OLL y F2L: identidad de los casos ----------
+
+// Orientación de la última capa por posición (lo que se ve en la imagen del caso).
+const llOrientation = (p) =>
+  LL.map((i) => orbit(p, 'EDGES').orientation[i]).join('') + '/' + LL.map((i) => orbit(p, 'CORNERS').orientation[i]).join('');
+const shownCase = (alg) => SOLVED.applyAlg(new Alg(alg).invert());
+const turnU = (p, k) => (k ? p.applyAlg(AUFS[k]) : p);
+
+// Clave de un caso que no depende de un giro de U (para ver que no se repitan).
+const ollKey = (alg) => AUFS.map((_, k) => llOrientation(turnU(shownCase(alg), k))).sort()[0];
+
+// Posición del par del slot: [esquina, blanco hacia], [arista, color del frente hacia].
+function pairOf(p) {
+  const c = locate(p, CORNERS[SLOT[0]]);
+  const e = locate(p, EDGES[SLOT[1]]);
+  return { corner: [c.at, c.facing], edge: [e.at, e.facing] };
+}
+const pairText = ({ corner, edge }) => `esquina ${corner.join('/')} · arista ${edge.join('/')}`;
+const f2lKey = (alg) => {
+  // Las piezas que están arriba giran con U; el slot no.
+  const p = shownCase(alg);
+  return AUFS.map((_, k) => pairText(pairOf(turnU(p, k)))).sort()[0];
+};
+
+// ¿El par está armado y listo para entrar? = un AUF y una inserción de 3 movimientos lo resuelven.
+const INSERTS = ["R U' R'", "F' U F", "R U R'", "F' U' F", "R U2 R'", "F' U2 F"];
+const pairReady = (p) =>
+  AUFS.some((auf) => INSERTS.some((ins) => STEPS.f2l.goal.every(([, cond]) => cond(p.applyAlg(`${auf} ${ins}`)))));
 
 // ---------- Verificación ----------
 
@@ -219,44 +282,136 @@ function pllKey(algText) {
 
 const results = [];
 
-function runCase(section, stepId, c, reference) {
+// extra: comprobaciones propias del caso, como [descripción del problema, ¿está bien?].
+function runCase(section, stepId, c, { reference, extra = [] } = {}) {
   const algs = [c.alg, ...(c.alts ?? [])];
   const okAlgs = algs.map((alg, i) => verifyAlg(`${section} › ${c.name}${i ? ` (alternativa ${i})` : ''}`, stepId, alg, reference));
   let ok = okAlgs.every(Boolean);
   for (const [name, cond] of EXPECT[c.id] ?? []) {
-    const shown = SOLVED.applyAlg(new Alg(c.alg).invert());
-    ok = check(`${section} › ${c.name}`, cond(shown), `no coincide con la descripción: ${name}`) && ok;
+    ok = check(`${section} › ${c.name}`, cond(shownCase(c.alg)), `no coincide con la descripción: ${name}`) && ok;
   }
+  for (const [problem, good] of extra) ok = check(`${section} › ${c.name}`, good, problem) && ok;
   results.push({ section, name: c.name, algs: algs.length, ok });
+}
+
+// Que todos los casos de una lista sean distintos entre sí.
+function checkDistinct(section, cases, keyOf) {
+  const seen = new Map();
+  for (const c of cases) {
+    const key = keyOf(c.alg);
+    check(`${section} › ${c.name}`, !seen.has(key), `es el mismo caso que ${seen.get(key)}`);
+    seen.set(key, c.name);
+  }
 }
 
 for (const step of BEGINNER.steps) {
   for (const c of step.cases) runCase(`Principiante · ${step.title}`, step.id, c);
 }
 
+// ---------- CFOP: cruz ----------
+
+// La mezcla se hace con el blanco arriba y después se gira el cubo con z2.
+// Un movimiento hecho después de z2 equivale, en la orientación original, a su
+// "espejo": U↔D y R↔L (F y B no cambian). Con eso se ve la mezcla con el blanco
+// abajo (cara D, donde el solver arma la cruz).
+const afterZ2 = (alg) => alg.replace(/[UDRL]/g, (f) => ({ U: 'D', D: 'U', R: 'L', L: 'R' })[f]);
+
+const crossSolver = await createCrossSolver(kpuzzle);
+check('Cruz', crossSolver.maxDepth === 8, `la cruz más difícil necesita ${crossSolver.maxDepth} movimientos, no 8`);
+for (const ex of CROSS_PAGE.examples) {
+  const label = `Cruz › ${ex.name}`;
+  const scrambled = SOLVED.applyAlg(afterZ2(ex.scramble));
+  const alg = parse(ex.alg);
+  const length = alg ? [...alg.childAlgNodes()].length : 0;
+  const optimal = crossSolver.optimal(scrambled);
+  // Comprobación directa en la orientación original: la cruz BLANCA (arriba antes de z2) queda armada.
+  const original = alg && SOLVED.applyAlg(ex.scramble).applyAlg(afterZ2(ex.alg));
+  const whiteCross = alg && range(0, 4).every((i) => edgeOk(original, i));
+  let ok = check(label, alg !== null, `no se puede leer "${ex.alg}"`);
+  ok = ok && check(label, crossSolver.isSolved(scrambled.applyAlg(alg)), 'desde la mezcla no arma la cruz');
+  ok = ok && check(label, whiteCross, 'la cruz que arma no es la blanca');
+  ok = ok && check(label, length === optimal, `usa ${length} movimientos y la óptima es de ${optimal}`);
+  ok = ok && check(label, length <= 8, `usa ${length} movimientos (más de 8)`);
+  ok = ok && check(label, ex.name.includes(`${length} movimientos`), `el título no dice "${length} movimientos"`);
+  results.push({ section: 'CFOP · Cruz', name: ex.name, algs: 1, ok });
+}
+
+// ---------- CFOP: F2L ----------
+
+const f2lCases = F2L.groups.flatMap((g) => g.cases);
+f2lCases.forEach((c, i) => {
+  c.name = `Caso ${i + 1}`;
+  const actual = pairOf(shownCase(c.alg));
+  const expected = { corner: c.corner, edge: c.edge };
+  const pairOk = c.alg.startsWith(c.pair) && (c.pair === '' || /\s/.test(c.alg[c.pair.length]));
+  runCase('CFOP · F2L', 'f2l', c, {
+    extra: [
+      [`no coincide con la descripción: dice ${pairText(expected)} y es ${pairText(actual)}`, pairText(expected) === pairText(actual)],
+      [`"pair" no es el comienzo del algoritmo: ${c.pair}`, pairOk],
+      [
+        `después de "${c.pair}" el par todavía no está armado`,
+        pairOk && pairReady(shownCase(c.alg).applyAlg(c.pair)) && STEPS.f2l.before[0][1](shownCase(c.alg).applyAlg(c.pair)),
+      ],
+    ],
+  });
+});
+check('F2L', f2lCases.length === 41, `hay ${f2lCases.length} casos en vez de 41`);
+checkDistinct('F2L', f2lCases, f2lKey);
+
+// ---------- CFOP: OLL ----------
+
+const ollCases = OLL.groups.flatMap((g) => g.cases);
+for (const c of ollCases) {
+  c.name = `OLL ${c.number}`;
+  const refs = (OLL_REFERENCE[c.number] ?? []).filter((r) => r !== c.alg);
+  const mine = llOrientation(shownCase(c.alg));
+  const extra = [[`no tiene referencia`, OLL_REFERENCE[c.number] !== undefined]];
+  for (const alg of [c.alg, ...(c.alts ?? [])]) {
+    extra.push([`"${alg}" no es el mismo caso que el algoritmo principal`, llOrientation(shownCase(alg)) === mine]);
+  }
+  for (const ref of refs) {
+    const theirs = llOrientation(shownCase(ref));
+    const k = [1, 2, 3].find((n) => llOrientation(turnU(shownCase(ref), n)) === mine);
+    extra.push([
+      k ? `con la referencia "${ref}" difiere en un giro previo (${AUFS[k]})` : `no es el mismo caso que la referencia "${ref}"`,
+      theirs === mine,
+    ]);
+  }
+  runCase('CFOP · OLL', 'oll', c, { extra });
+}
+check('OLL', ollCases.length === 57, `hay ${ollCases.length} casos en vez de 57`);
+checkDistinct('OLL', ollCases, ollKey);
+
+for (const c of OLL_2LOOK.edges.cases) runCase('CFOP · OLL en 2 pasos', 'eoll', c);
+for (const id of OLL_2LOOK.corners.caseIds) {
+  check('OLL en 2 pasos', ollCases.some((c) => c.id === id), `no existe el caso ${id}`);
+}
+
+// ---------- CFOP: PLL ----------
+
 const pllCases = PLL.groups.flatMap((g) => g.cases);
 for (const c of pllCases) {
   check(`PLL › ${c.name}`, PLL_REFERENCE[c.id] !== undefined, 'no tiene referencia');
-  runCase('PLL', 'pll', c, PLL_REFERENCE[c.id]);
+  runCase('CFOP · PLL', 'pll', c, { reference: PLL_REFERENCE[c.id] });
 }
 check('PLL', pllCases.length === 21, `hay ${pllCases.length} casos en vez de 21`);
-const keys = new Map();
-for (const c of pllCases) {
-  const key = pllKey(c.alg);
-  check(`PLL › ${c.name}`, !keys.has(key), `es el mismo caso que ${keys.get(key)}`);
-  keys.set(key, c.name);
-}
+checkDistinct('PLL', pllCases, pllKey);
 
 // ---------- Resultado ----------
 
-let lastSection = '';
+// Una línea por sección, con todos sus casos (✔ o ✖).
+const sections = new Map();
 for (const r of results) {
-  if (r.section !== lastSection) {
-    console.log(`\n${r.section}`);
-    lastSection = r.section;
-  }
-  console.log(`  ${r.ok ? '✔' : '✖'} ${r.name}${r.algs > 1 ? ` (${r.algs} algoritmos)` : ''}`);
+  if (!sections.has(r.section)) sections.set(r.section, []);
+  sections.get(r.section).push(r);
 }
+for (const [section, list] of sections) {
+  const okCount = list.filter((r) => r.ok).length;
+  console.log(`\n${list.every((r) => r.ok) ? '✔' : '✖'} ${section} — ${okCount}/${list.length} casos`);
+  const items = list.map((r) => `${r.ok ? '✔' : '✖'} ${r.name}${r.algs > 1 ? ` (${r.algs})` : ''}`);
+  for (let i = 0; i < items.length; i += 6) console.log(`    ${items.slice(i, i + 6).join('   ')}`);
+}
+console.log(`\nCruz: ${crossSolver.states} posiciones recorridas; la más difícil se arma en ${crossSolver.maxDepth} movimientos.`);
 
 const totalAlgs = results.reduce((n, r) => n + r.algs, 0);
 console.log(`\n${results.length} casos · ${totalAlgs} algoritmos · ${checks} comprobaciones`);
