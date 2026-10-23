@@ -1,5 +1,4 @@
 // Interfaz: conecta el DOM con el timer, los scrambles, las estadísticas y el almacenamiento.
-import 'cubing/twisty';
 import { createTimer } from './timer.js';
 import { inspectionDisplay, announce, primeAudio } from './inspection.js';
 import { loadSettings, saveSettings } from './settings.js';
@@ -54,20 +53,34 @@ const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches
 
 // ---------- Vista del scramble ----------
 
-const player = document.createElement('twisty-player');
-player.controlPanel = 'none';
-player.background = 'none';
-player.hintFacelets = 'none';
-player.experimentalDragInput = 'none';
-els.view.append(player);
+// cubing/twisty se carga aparte (import dinámico) para que su código no quede en el
+// archivo principal: el worker de scrambles comparte código con él y, si estuviera
+// ahí, cargaría también la interfaz. El player se crea recién cuando está definido
+// (si se le ponen propiedades antes, no se aplican).
+let playerPromise = null;
 
-function updatePlayer() {
+function getPlayer() {
+  playerPromise ??= import('cubing/twisty').then(() => {
+    const player = document.createElement('twisty-player');
+    player.controlPanel = 'none';
+    player.background = 'none';
+    player.hintFacelets = 'none';
+    player.experimentalDragInput = 'none';
+    els.view.append(player);
+    return player;
+  });
+  return playerPromise;
+}
+
+async function updatePlayer() {
   const ev = getEvent(state.event);
+  const scramble = state.scramble ?? '';
+  els.view.dataset.view = ev.view;
+  const player = await getPlayer();
   player.puzzle = ev.puzzle;
   player.visualization = ev.view;
-  player.experimentalSetupAlg = state.scramble ?? '';
+  player.experimentalSetupAlg = scramble;
   player.alg = '';
-  els.view.dataset.view = ev.view;
 }
 
 // Reinicia una animación CSS (quitar la clase, forzar reflow y volver a ponerla).

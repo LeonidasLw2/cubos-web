@@ -1,5 +1,19 @@
 // Categorías y generación de scrambles con cubing.js.
-import { randomScrambleForEvent } from 'cubing/scramble';
+
+// cubing/scramble se carga aparte (import dinámico): genera los scrambles en un
+// worker, y si su código quedara en el mismo archivo que la interfaz, el worker
+// cargaría también la interfaz (que usa document) y fallaría en el build.
+let scrambleLib = null;
+function loadScrambleLib() {
+  scrambleLib ??= Promise.all([import('cubing/scramble'), import('cubing/search')]).then(([scramble, search]) => {
+    // cubing.js prueba varias formas de arrancar el worker. Con Vite la que anda es
+    // la "esbuild workaround": se la pone primera para no pedir antes un archivo
+    // que no existe en el build (sería un error 404 en cada carga).
+    search.setSearchDebug({ prioritizeEsbuildWorkaroundForWorkerInstantiation: true });
+    return scramble;
+  });
+  return scrambleLib;
+}
 
 // id: ID WCA de cubing.js · puzzle y view: configuración de <twisty-player>
 export const EVENTS = [
@@ -21,8 +35,9 @@ export function getEvent(eventId) {
 // Scramble pre-generado por categoría, para que el siguiente salga al instante.
 const prefetched = new Map();
 
-function generate(eventId) {
-  return randomScrambleForEvent(eventId).then((alg) => alg.toString());
+async function generate(eventId) {
+  const { randomScrambleForEvent } = await loadScrambleLib();
+  return (await randomScrambleForEvent(eventId)).toString();
 }
 
 // Devuelve un scramble (el pre-generado si existe) y deja el siguiente en camino.

@@ -1,0 +1,66 @@
+# Publica la página en GitHub Pages en cada push a main.
+# Primero comprueba todo (tests + algoritmos) y arma la página; solo si eso sale
+# bien se publica. Si algo falla, la versión publicada no cambia.
+name: Publicar en GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # permite lanzarlo a mano desde la pestaña Actions
+
+# Permisos mínimos: leer el código y publicar en Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Si se hacen varios push seguidos, se publica solo el último.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Comprobar y armar
+    runs-on: ubuntu-latest
+    steps:
+      - name: Bajar el código
+        uses: actions/checkout@v7
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Tests
+        run: npm test
+
+      - name: Verificar algoritmos
+        run: npm run verify-algs
+
+      - name: Armar la página (build)
+        run: npm run build
+
+      - name: Preparar GitHub Pages
+        uses: actions/configure-pages@v6
+
+      - name: Subir la página armada
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    name: Publicar
+    needs: build # solo corre si "build" terminó bien
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publicar en GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

@@ -19,10 +19,12 @@ Página web de speedcubing: timer, scrambles y guías de métodos para cubos de 
 3. Métodos: principiante, CFOP (cruz, F2L, OLL, PLL) y Roux, con casos animados. Se hace en partes:
    - ✅ 3A: navegación (router con hash `#/timer`, `#/metodos/...`), tarjeta de caso reutilizable, método principiante y PLL (21 casos).
    - ✅ 3B: CFOP cruz (consejos + ejemplos óptimos), F2L (41 casos con la idea de cada uno), OLL (57 casos por forma + OLL en 2 pasos).
-   - Pendiente: Roux (hoy aparece como "Próximamente").
+   - 3C (pendiente): Roux (hoy aparece como "Próximamente").
 4. Entrenador de casos (OLL/PLL/F2L al azar).
-5. Deploy en GitHub Pages.
+5. Publicar en GitHub Pages (repo público `cubos-web`, deploy automático con GitHub Actions).
+6. PWA: que se pueda instalar como app y funcione sin conexión.
 
+Orden de trabajo (cambió después de la 3B): 5 (publicar) → 6 (PWA) → 3C (Roux) → 4 (entrenador).
 Trabajar una etapa a la vez; no adelantar etapas sin que se pida.
 
 ## Convenciones
