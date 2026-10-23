@@ -344,9 +344,20 @@ const timer = createTimer({
 
 let activeKey = null; // tecla que está "apretando" el timer (una sola a la vez)
 let touching = false; // hay un toque nuestro en curso
+let timerActive = true; // false cuando se está viendo otra sección (Métodos)
+
+// La navegación avisa si el timer está a la vista. Al salir se cancela la
+// inspección y se olvidan las teclas apretadas, sin guardar nada.
+export function setTimerActive(active) {
+  timerActive = active;
+  if (!active) {
+    forgetInput();
+    timer.cancel();
+  }
+}
 
 function onKeyDown(e) {
-  if (els.settings.open) return; // con el panel abierto, el teclado es del panel
+  if (!timerActive || els.settings.open) return; // con el panel abierto, el teclado es del panel
   if (e.repeat) {
     if (e.code === 'Space') e.preventDefault();
     return;
@@ -377,7 +388,7 @@ function onKeyUp(e) {
 }
 
 function onTouchStart(e) {
-  if (els.settings.open || e.target.closest('button, dialog')) return; // los botones funcionan normal
+  if (!timerActive || els.settings.open || e.target.closest('button, dialog, a')) return; // botones y links funcionan normal
   // Inactivo: solo la zona del timer. Inspeccionando o corriendo: toda la pantalla.
   if (timer.state === 'idle' && !els.timerZone.contains(e.target)) return;
   e.preventDefault();
@@ -452,6 +463,8 @@ export function initUI() {
     if (e.animationName === 'alert') els.timer.classList.remove('alert');
     if (e.animationName === 'pb-glow') els.timer.classList.remove('pb');
   });
+  // Igual con el aviso de PB: si quedara la clase, se repetiría al volver a mostrar el timer.
+  els.pbBadge.addEventListener('animationend', () => els.pbBadge.classList.remove('show'));
 
   els.openSettings.addEventListener('click', openSettings);
   els.settingsForm.addEventListener('change', onSettingsChange);

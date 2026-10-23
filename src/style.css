@@ -27,6 +27,11 @@
   box-sizing: border-box;
 }
 
+/* Que "hidden" gane aunque el elemento tenga un display propio (grid, flex…) */
+[hidden] {
+  display: none !important;
+}
+
 html,
 body {
   margin: 0;
@@ -595,6 +600,384 @@ body[data-phase='running'] .timer-zone {
   color: var(--muted);
   font-size: 0.9rem;
   text-align: center;
+}
+
+/* ---------- Navegación entre secciones ---------- */
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.tabs a {
+  padding: 6px 14px;
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.tabs a:hover {
+  color: var(--text);
+}
+
+.tabs a[aria-current='page'] {
+  background: var(--surface-2);
+  color: var(--text);
+  box-shadow: inset 0 -2px 0 var(--c-yellow);
+}
+
+.tabs a:focus-visible,
+.methods a:focus-visible {
+  outline: 2px solid var(--c-blue);
+  outline-offset: 2px;
+}
+
+/* Lo que solo tiene sentido en el timer (categorías y ajustes) */
+body[data-view='methods'] .timer-only {
+  display: none;
+}
+
+/* ---------- Métodos ---------- */
+.methods {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 20px 20px 60px;
+}
+
+.methods-page {
+  animation: fade-in 0.3s var(--ease);
+}
+
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.breadcrumb a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  color: var(--text);
+}
+
+.breadcrumb [aria-current] {
+  color: var(--text);
+}
+
+.page-head {
+  max-width: 760px;
+  margin-bottom: 24px;
+}
+
+.page-head h2 {
+  margin: 0 0 8px;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+
+.page-head h2 small,
+.method-step h3 small {
+  color: var(--muted);
+  font-size: 0.55em;
+  font-weight: 500;
+}
+
+.page-head p,
+.method-step > p {
+  margin: 0 0 10px;
+  color: #c5cad6;
+  line-height: 1.6;
+}
+
+.link-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.link-card {
+  position: relative;
+  display: block;
+  padding: 18px 18px 20px;
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+  transition: transform 0.2s var(--ease), border-color 0.2s, background 0.2s;
+}
+
+a.link-card:hover {
+  transform: translateY(-2px);
+  background: var(--surface-2);
+}
+
+.link-card h3 {
+  margin: 0 0 6px;
+  font-size: 1.15rem;
+}
+
+.link-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.link-card.is-soon {
+  opacity: 0.55;
+}
+
+.link-card .soon-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+}
+
+.accent-white { --accent: var(--c-white); }
+.accent-yellow { --accent: var(--c-yellow); }
+.accent-red { --accent: var(--c-red); }
+.accent-orange { --accent: var(--c-orange); }
+.accent-blue { --accent: var(--c-blue); }
+.accent-green { --accent: var(--c-green); }
+
+.soon-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.soon-page {
+  max-width: 520px;
+  margin: 40px auto;
+  text-align: center;
+}
+
+.soon-page h2 {
+  margin: 12px 0 8px;
+}
+
+.soon-page p {
+  color: var(--muted);
+}
+
+.text-link {
+  color: var(--c-blue);
+}
+
+.step-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 28px;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.step-index li {
+  counter-increment: step;
+}
+
+.step-index a {
+  display: block;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.step-index a::before {
+  content: counter(step) '. ';
+  color: var(--c-yellow);
+  font-weight: 700;
+}
+
+.step-index a:hover {
+  color: var(--text);
+  border-color: var(--muted);
+}
+
+.method-step {
+  margin-bottom: 40px;
+  scroll-margin-top: 16px;
+}
+
+.method-step h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 10px;
+  font-size: 1.3rem;
+}
+
+.step-number {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--c-yellow);
+  color: #111;
+  font-size: 0.95rem;
+}
+
+.step-goal {
+  padding: 10px 14px;
+  border-left: 3px solid var(--c-green);
+  border-radius: 0 8px 8px 0;
+  background: rgba(46, 194, 126, 0.08);
+}
+
+/* ---------- Tarjeta de caso ---------- */
+.case-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.case-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  animation: card-in 0.35s var(--ease) backwards;
+  animation-delay: calc(min(var(--i, 0), 12) * 35ms);
+  transition: border-color 0.2s;
+}
+
+.case-card.is-playing {
+  border-color: var(--c-blue);
+}
+
+/* El encabezado ocupa el espacio libre: así los cubos y controles quedan alineados en la fila */
+.case-head {
+  flex: 1 0 auto;
+}
+
+.case-name {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.case-desc {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.case-cube {
+  height: 180px;
+  border-radius: 10px;
+  background: radial-gradient(circle at 50% 45%, var(--surface-2), transparent 70%);
+}
+
+.case-cube twisty-player {
+  width: 100%;
+  height: 100%;
+}
+
+.case-controls {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.case-controls button {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--muted);
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.case-controls button:hover {
+  color: var(--text);
+}
+
+.case-controls .play {
+  width: 46px;
+  background: var(--c-blue);
+  border-color: var(--c-blue);
+  color: #fff;
+}
+
+.case-alg {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: var(--surface-2);
+  font-family: var(--mono);
+  font-size: 0.88rem;
+  line-height: 1.45;
+  text-align: left;
+  word-spacing: 0.1em;
+  transition: border-color 0.15s;
+}
+
+.case-alg.is-active {
+  border-color: var(--c-yellow);
+}
+
+.case-alg:hover:not(.is-active) {
+  border-color: var(--border);
+}
+
+.pre-auf {
+  color: var(--muted);
+}
+
+.case-alts summary {
+  padding: 2px 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.case-alts[open] summary {
+  margin-bottom: 6px;
+}
+
+.case-alts .case-alg + .case-alg {
+  margin-top: 6px;
+}
+
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
 }
 
 /* ---------- Panel de ajustes ---------- */
