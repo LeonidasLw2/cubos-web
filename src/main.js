@@ -8,14 +8,16 @@ import { initPWA } from './pwa.js';
 const views = {
   timer: document.getElementById('view-timer'),
   methods: document.getElementById('view-methods'),
+  trainer: document.getElementById('view-trainer'),
 };
+let trainer = null; // módulo del entrenador, se carga la primera vez que se abre
 const tabs = document.querySelectorAll('.tabs a');
 const backBtn = document.getElementById('nav-back');
 const forwardBtn = document.getElementById('nav-forward');
 const exitToast = document.getElementById('exit-toast');
 let shownPath = null; // página de métodos que está dibujada
 
-const TITLES = { timer: 'Cubos · Timer', methods: 'Cubos · Métodos' };
+const TITLES = { timer: 'Cubos · Timer', methods: 'Cubos · Métodos', trainer: 'Cubos · Entrenar' };
 
 // ---------- Historial: botones Atrás / Adelante y scroll de cada página ----------
 
@@ -60,6 +62,16 @@ async function showRoute(route) {
   }
   document.title = TITLES[route.view];
   setTimerActive(route.view === 'timer');
+  trainer?.setTrainerActive(route.view === 'trainer');
+
+  if (route.view === 'trainer' && !trainer) {
+    const mod = await import('./trainer.js');
+    if (!trainer) {
+      trainer = mod;
+      trainer.renderTrainer(views.trainer);
+    }
+    trainer.setTrainerActive(document.body.dataset.view === 'trainer');
+  }
 
   if (route.view === 'methods' && route.path !== shownPath) {
     shownPath = route.path;
@@ -76,4 +88,4 @@ initUI();
 startRouter(showRoute);
 nav.armGuard();
 // Service worker (sin conexión + aviso de versión nueva). Solo actualiza con el timer quieto.
-initPWA({ canUpdate: isTimerIdle });
+initPWA({ canUpdate: () => isTimerIdle() && (trainer?.isTrainerIdle() ?? true) });

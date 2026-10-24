@@ -4,8 +4,17 @@ import { inspectionDisplay, announce, primeAudio } from './inspection.js';
 import { loadSettings, saveSettings } from './settings.js';
 import { EVENTS, DEFAULT_EVENT, getEvent, nextScramble } from './scramble.js';
 import { summarize, bestTime, effectiveTime, formatTime, formatSolve } from './stats.js';
-import { loadSolves, saveSolves, loadSelectedEvent, saveSelectedEvent, isStoragePersistent } from './storage.js';
+import {
+  loadSolves,
+  saveSolves,
+  loadSelectedEvent,
+  saveSelectedEvent,
+  isStoragePersistent,
+  loadTrainerData,
+  saveTrainerData,
+} from './storage.js';
 import { buildExport, exportFileName, parseImport, mergeSolves } from './transfer.js';
+import { normalizeTrainer, mergeTrainer, countTimes } from './trainer-store.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -485,8 +494,9 @@ async function showStorageStatus() {
 }
 
 function exportSolves() {
-  const data = buildExport(Object.fromEntries(EVENTS.map((ev) => [ev.id, loadSolves(ev.id)])));
-  const total = Object.values(data.events).reduce((n, list) => n + list.length, 0);
+  const trainer = normalizeTrainer(loadTrainerData());
+  const data = buildExport(Object.fromEntries(EVENTS.map((ev) => [ev.id, loadSolves(ev.id)])), new Date(), trainer);
+  const total = Object.values(data.events).reduce((n, list) => n + list.length, 0) + countTimes(trainer);
   if (!total) return showDataStatus('Todavía no hay tiempos para exportar.', 'error');
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -515,6 +525,14 @@ async function importSolves(file) {
     added += result.added;
     duplicates += result.duplicates;
     if (result.added && !saveSolves(eventId, result.merged)) failed = true;
+  }
+  // Tiempos del entrenador de casos (si el archivo los trae).
+  if (parsed.trainer) {
+    const result = mergeTrainer(normalizeTrainer(loadTrainerData()), parsed.trainer);
+    added += result.added;
+    duplicates += result.duplicates;
+    if (result.added && !saveTrainerData(result.merged)) failed = true;
+    if (result.added) window.dispatchEvent(new Event('trainer-data-changed'));
   }
   // La categoría que se está viendo puede haber cambiado.
   state.solves = loadSolves(state.event);

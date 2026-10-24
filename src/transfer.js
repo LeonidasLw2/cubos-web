@@ -1,17 +1,22 @@
 // Exportar e importar tiempos (archivo JSON) para pasarlos entre dispositivos.
 // Lógica pura: no toca el DOM ni localStorage (eso lo hace ui.js).
 import { normalizeSolve } from './storage.js';
+import { normalizeTrainer, countTimes } from './trainer-store.js';
 
 export const EXPORT_FORMAT = 'cubos-web/tiempos';
 export const EXPORT_VERSION = 1;
 
 // solvesByEvent: { '333': [...], '222': [...] } → objeto listo para JSON.stringify.
-export function buildExport(solvesByEvent, now = new Date()) {
+// trainer: datos del entrenador (opcional); se exportan solo sus tiempos. Las
+// versiones anteriores de la app ignoran ese campo, así que el formato sigue siendo el 1.
+export function buildExport(solvesByEvent, now = new Date(), trainer = null) {
   const events = {};
   for (const [eventId, solves] of Object.entries(solvesByEvent)) {
     if (solves.length) events[eventId] = solves;
   }
-  return { format: EXPORT_FORMAT, version: EXPORT_VERSION, exportedAt: now.toISOString(), events };
+  const data = { format: EXPORT_FORMAT, version: EXPORT_VERSION, exportedAt: now.toISOString(), events };
+  if (trainer && countTimes(trainer)) data.trainer = { times: trainer.times };
+  return data;
 }
 
 // Nombre del archivo: cubos-web-tiempos-2026-10-24.json
@@ -20,8 +25,9 @@ export function exportFileName(now = new Date()) {
   return `cubos-web-tiempos-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}.json`;
 }
 
-// Lee y valida un archivo exportado. Devuelve { events, invalid, unknownEvents }
-// o lanza un Error con un mensaje para mostrar al usuario.
+// Lee y valida un archivo exportado. Devuelve { events, invalid, unknownEvents, trainer }
+// (trainer: tiempos del entrenador ya validados, o null) o lanza un Error con un
+// mensaje para mostrar al usuario.
 export function parseImport(text, validEventIds) {
   let data;
   try {
@@ -58,7 +64,8 @@ export function parseImport(text, validEventIds) {
     });
     events[eventId] = solves;
   }
-  return { events, invalid, unknownEvents };
+  const trainer = data.trainer ? normalizeTrainer({ times: data.trainer.times }) : null;
+  return { events, invalid, unknownEvents, trainer: trainer && countTimes(trainer) ? trainer : null };
 }
 
 // Un tiempo importado es repetido si ya existe uno con el mismo id, o con el

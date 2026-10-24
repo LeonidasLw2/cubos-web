@@ -89,3 +89,12 @@ export function loadStoredSettings() {
 export function saveStoredSettings(settings) {
   write(`${PREFIX}:settings`, settings);
 }
+
+// Entrenador de casos (formato en trainer-store.js). Devuelve false si no se pudo guardar.
+export function loadTrainerData() {
+  return read(`${PREFIX}:trainer`, null);
+}
+
+export function saveTrainerData(data) {
+  return write(`${PREFIX}:trainer`, data);
+}

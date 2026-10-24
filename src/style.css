@@ -658,7 +658,8 @@ body[data-phase='running'] .timer-zone {
 }
 
 /* Lo que solo tiene sentido en el timer (categorías y ajustes) */
-body[data-view='methods'] .timer-only {
+body[data-view='methods'] .timer-only,
+body[data-view='trainer'] .timer-only {
   display: none;
 }
 
@@ -1665,4 +1666,146 @@ a.link-card:hover {
 .notation-list dd {
   margin: 0;
   color: var(--muted);
+}
+
+/* ---------- Entrenador de casos ---------- */
+.trainer-sets {
+  margin: 0 0 16px;
+  flex-wrap: wrap;
+}
+
+.trainer-practice {
+  display: grid;
+  grid-template-columns: minmax(200px, 300px) 1fr;
+  gap: 20px;
+  align-items: center;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.trainer-cube twisty-player {
+  width: 100%;
+  height: 260px;
+}
+
+.trainer-scramble-label {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.trainer-scramble {
+  margin: 4px 0 12px;
+}
+
+.trainer-pad {
+  padding: 12px 8px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.trainer-pad .timer {
+  font-size: clamp(3rem, 10vw, 5.5rem);
+}
+
+.trainer-pad[data-state='holding'] .timer {
+  color: var(--c-red);
+  transform: scale(0.97);
+}
+
+.trainer-pad[data-state='ready'] .timer {
+  color: var(--c-green);
+  transform: scale(1.02);
+}
+
+.trainer-pad .hint {
+  margin: 6px 0 0;
+}
+
+.trainer-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.trainer-solution,
+.trainer-last {
+  margin: 10px 0 0;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.trainer-solution code,
+.trainer-last code {
+  font-family: var(--mono);
+  color: var(--text, #e8eaf0);
+}
+
+.trainer-empty {
+  padding: 16px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  color: var(--muted);
+}
+
+.trainer-bulk {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.trainer-row {
+  display: grid;
+  grid-template-columns: 28px 1fr 52px 64px 64px;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  font-variant-numeric: tabular-nums;
+}
+
+.trainer-row > span:nth-child(n + 3) {
+  text-align: right;
+  font-family: var(--mono);
+}
+
+.trainer-row-head {
+  color: var(--muted);
+  font-size: 0.8rem;
+  border-bottom-width: 2px;
+}
+
+.trainer-row input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--c-green);
+}
+
+.trainer-row-name small {
+  color: var(--muted);
+}
+
+@media (max-width: 640px) {
+  .trainer-practice {
+    grid-template-columns: 1fr;
+    padding: 12px;
+  }
+
+  .trainer-cube twisty-player {
+    height: 200px;
+  }
+
+  .trainer-row {
+    grid-template-columns: 28px 1fr 40px 56px 56px;
+    gap: 6px;
+    padding: 8px 4px;
+    font-size: 0.9rem;
+  }
 }

@@ -767,6 +767,30 @@ for (const c of pllCases) {
 check('PLL', pllCases.length === 21, `hay ${pllCases.length} casos en vez de 21`);
 checkDistinct('PLL', pllCases, pllKey);
 
+// ---------- Entrenador: las mezclas de cada caso ----------
+// La mezcla tiene que dejar el caso: después de un giro de U y del algoritmo, el
+// cubo queda armado (2x2: admitiendo girarlo entero y la capa de abajo, como en PBL).
+let trainerLine = '';
+{
+  const { TRAINER_SETS } = await import('../src/data/trainer-sets.js');
+  const { caseScramble, AUFS: TRAINER_AUFS } = await import('../src/case-scramble.js');
+  for (const s of TRAINER_SETS) {
+    let ok = true;
+    for (const c of s.cases) {
+      const body = c.alg.replace(/^\([^)]*\)\s*/, '');
+      for (const auf of TRAINER_AUFS) {
+        const scramble = caseScramble(c.alg, auf);
+        const solves =
+          s.puzzle === '2x2x2'
+            ? AUFS.some((u) => solved2UD(SOLVED2.applyAlg(scramble).applyAlg(u || 'U4').applyAlg(body)))
+            : AUFS.some((u) => withAUF(SOLVED.applyAlg(scramble).applyAlg(u || 'U4').applyAlg(body), (q) => q.isIdentical(SOLVED)));
+        ok = check(`Entrenador › ${s.title} › ${c.name}`, solves, `la mezcla "${scramble}" no arma el caso`) && ok;
+      }
+    }
+    trainerLine += ` ${ok ? '✔' : '✖'} ${s.title} (${s.cases.length})`;
+  }
+}
+
 // ---------- Resultado ----------
 
 // Una línea por sección, con todos sus casos (✔ o ✖).
@@ -781,6 +805,7 @@ for (const [section, list] of sections) {
   const items = list.map((r) => `${r.ok ? '✔' : '✖'} ${r.name}${r.algs > 1 ? ` (${r.algs})` : ''}`);
   for (let i = 0; i < items.length; i += 6) console.log(`    ${items.slice(i, i + 6).join('   ')}`);
 }
+console.log(`\nMezclas del entrenador (con los 4 giros de U):${trainerLine}`);
 console.log(`\nCruz: ${crossSolver.states} posiciones recorridas; la más difícil se arma en ${crossSolver.maxDepth} movimientos.`);
 
 const totalAlgs = results.reduce((n, r) => n + r.algs, 0);
