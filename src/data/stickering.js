@@ -41,4 +41,13 @@ export const STICKERING = {
   'lse-eo': mask('ODODOOOODDDD', 'DDDDDDDD', '-D-D--'),
   'lse-ulur': mask('IDIDI-I-DDDD', 'DDDDDDDD', '-D-D--'),
   'lse-l4e': mask('-D-D-D-DDDDD', 'DDDDDDDD', '-D-D--'),
+
+  // 2x2: solo hay esquinas (misma numeración: 0-3 blancas abajo con z2, 4-7 amarillas arriba).
+  '2x2-first-layer': 'CORNERS:----IIII',
+  '2x2-ll-orient': 'CORNERS:DDDDOOOO',
+  '2x2-ll-perm': 'CORNERS:DDDDPPPP',
+  '2x2-first-face': 'CORNERS:OOOOIIII',
+  '2x2-oll': 'CORNERS:OOOOOOOO',
+  '2x2-pbl': 'CORNERS:--------',
+  '2x2-cll': 'CORNERS:DDDD----',
 };

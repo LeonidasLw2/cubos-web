@@ -5,6 +5,7 @@ import { OLL, OLL_2LOOK } from './data/oll.js';
 import { F2L, describeF2L } from './data/f2l.js';
 import { CROSS } from './data/cross.js';
 import { ROUX } from './data/roux.js';
+import { CUBE2X2, BEGINNER_2X2, ORTEGA, CLL } from './data/cube2x2.js';
 import { createCaseCard } from './case-card.js';
 import { METHOD_PAGES, methodHref } from './data/method-pages.js';
 
@@ -29,8 +30,12 @@ const PUZZLE_METHODS = {
     ],
   },
   '2x2': {
-    intro: 'El 2x2 es como un 3x3 sin aristas ni centros. Se puede armar con lo que ya sabés del 3x3 o con métodos propios más rápidos.',
-    methods: [],
+    intro: CUBE2X2.intro.join(' '),
+    methods: [
+      { title: 'Principiante', text: 'Capa por capa, con 3 algoritmos que ya conocés del 3x3.', href: linkTo('2x2/principiante'), accent: 'green' },
+      { title: 'Ortega', text: 'Primera cara, OLL (7 casos) y PBL (5 casos). El paso siguiente para ir rápido.', href: linkTo('2x2/ortega'), accent: 'blue' },
+      { title: 'CLL', text: 'La última capa en un solo algoritmo: 42 casos. Para los que quieren ir todavía más rápido.', href: linkTo('2x2/cll'), accent: 'red' },
+    ],
   },
   '4x4': {
     intro: 'El 4x4 se arma casi siempre "reduciéndolo" a un 3x3: primero los centros y las aristas, y después como un 3x3, con un par de casos nuevos (las paridades).',
@@ -73,9 +78,9 @@ function linkCards(items) {
     .join('')}</div>`;
 }
 
-function caseGrid(cases, stickering) {
+function caseGrid(cases, stickering, puzzle = '3x3x3') {
   const grid = el('<div class="case-grid"></div>');
-  cases.forEach((c, i) => grid.append(createCaseCard(c, { stickering, index: i })));
+  cases.forEach((c, i) => grid.append(createCaseCard(c, { stickering, index: i, puzzle })));
   return grid;
 }
 
@@ -95,12 +100,12 @@ function sectionIndex(items) {
 }
 
 // Una sección con título, texto y grilla de casos.
-function caseSection({ id, title, count, text, cases, stickering }) {
+function caseSection({ id, title, count, text, cases, stickering, puzzle }) {
   const section = el(`<section class="method-step" id="sec-${id}">
     <h3>${escape(title)}${count ? ` <small>${count} casos</small>` : ''}</h3>
     ${text ? `<p>${escape(text)}</p>` : ''}
   </section>`);
-  section.append(caseGrid(cases, stickering));
+  section.append(caseGrid(cases, stickering, puzzle));
   return section;
 }
 
@@ -144,24 +149,33 @@ function cfopPage(route) {
 }
 
 function beginnerPage(route) {
+  return stepsPage(BEGINNER, route, '3x3x3');
+}
+
+function beginner2Page(route) {
+  return stepsPage(BEGINNER_2X2, route, '2x2x2');
+}
+
+// Página de un método por pasos: índice, y por cada paso objetivo, texto y casos.
+function stepsPage(data, route, puzzle) {
   const page = el(`<div class="methods-page">
     ${breadcrumb(route.crumbs)}
     <header class="page-head">
-      <h2>${escape(BEGINNER.title)}</h2>
-      ${paragraphs(BEGINNER.intro)}
+      <h2>${escape(data.title)}</h2>
+      ${paragraphs(data.intro)}
     </header>
     <ol class="step-index">
-      ${BEGINNER.steps.map((s) => `<li><a href="#" data-step="${s.id}">${escape(s.title)}</a></li>`).join('')}
+      ${data.steps.map((s) => `<li><a href="#" data-step="${s.id}">${escape(s.title)}</a></li>`).join('')}
     </ol>
   </div>`);
 
-  BEGINNER.steps.forEach((step, n) => {
+  data.steps.forEach((step, n) => {
     const section = el(`<section class="method-step" id="paso-${step.id}">
       <h3><span class="step-number">${n + 1}</span>${escape(step.title)}</h3>
       <p class="step-goal"><strong>Objetivo:</strong> ${escape(step.goal)}</p>
       ${paragraphs(step.text)}
     </section>`);
-    section.append(caseGrid(step.cases, step.stickering));
+    section.append(caseGrid(step.cases, step.stickering, puzzle));
     page.append(section);
   });
 
@@ -353,6 +367,25 @@ function rouxPage(route) {
   return page;
 }
 
+function ortegaPage(route) {
+  const page = pageHead(ORTEGA, route);
+  page.append(sectionIndex([{ id: 'cara', title: 'Primera cara' }, { id: 'oll2', title: 'OLL' }, { id: 'pbl', title: 'PBL' }]));
+  page.append(caseSection({ id: 'cara', title: ORTEGA.face.title, text: ORTEGA.face.text.join(' '), cases: ORTEGA.face.cases, stickering: ORTEGA.face.stickering, puzzle: '2x2x2' }));
+  page.append(caseSection({ id: 'oll2', title: ORTEGA.oll.title, text: ORTEGA.oll.text.join(' '), cases: ORTEGA.oll.cases, stickering: ORTEGA.oll.stickering, puzzle: '2x2x2' }));
+  page.append(caseSection({ id: 'pbl', title: ORTEGA.pbl.title, text: ORTEGA.pbl.text.join(' '), cases: ORTEGA.pbl.cases, stickering: ORTEGA.pbl.stickering, puzzle: '2x2x2' }));
+  page.append(el(`<section class="method-step"><h3>¿Y después?</h3><p>${escape(ORTEGA.eg)}</p></section>`));
+  return page;
+}
+
+function cllPage(route) {
+  const page = pageHead(CLL, route);
+  page.append(sectionIndex(CLL.groups.map((g) => ({ id: `cll-${g.id}`, title: g.title }))));
+  for (const group of CLL.groups) {
+    page.append(caseSection({ id: `cll-${group.id}`, title: `CLL ${group.title}`, count: group.cases.length, text: group.text, cases: group.cases, stickering: CLL.stickering, puzzle: '2x2x2' }));
+  }
+  return page;
+}
+
 function soonPage(route) {
   const title = route.title;
   return el(`<div class="methods-page">
@@ -377,6 +410,9 @@ const PAGES = {
   oll: ollPage,
   pll: pllPage,
   roux: rouxPage,
+  beginner2: beginner2Page,
+  ortega: ortegaPage,
+  cll: cllPage,
 };
 
 // Muestra la página de la ruta dentro del contenedor.

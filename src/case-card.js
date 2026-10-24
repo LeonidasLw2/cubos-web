@@ -45,7 +45,8 @@ const observer =
     : null;
 
 // data: { name, nickname?, description?, idea?, alg, pair?, alts? } · stickering: clave de STICKERING
-export function createCaseCard(data, { stickering, index = 0 }) {
+// puzzle: '2x2x2', '3x3x3' o '4x4x4' (el de cubing.js)
+export function createCaseCard(data, { stickering, index = 0, puzzle = '3x3x3' }) {
   const card = document.createElement('article');
   card.className = 'case-card';
   card.style.setProperty('--i', String(index)); // escalona la animación de entrada
@@ -94,7 +95,7 @@ export function createCaseCard(data, { stickering, index = 0 }) {
   card.mountPlayer = () => {
     if (player) return;
     player = document.createElement('twisty-player');
-    player.puzzle = '3x3x3';
+    player.puzzle = puzzle;
     player.controlPanel = 'none';
     player.background = 'none';
     player.experimentalSetupAlg = DISPLAY_SETUP;

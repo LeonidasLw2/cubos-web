@@ -15,13 +15,14 @@
 //     descripción (dónde está la pieza y hacia dónde mira el blanco) y que el
 //     algoritmo no rompe lo armado en los pasos anteriores.
 import { Alg } from 'cubing/alg';
-import { cube3x3x3 } from 'cubing/puzzles';
+import { cube2x2x2, cube3x3x3 } from 'cubing/puzzles';
 import { BEGINNER } from '../src/data/beginner.js';
 import { PLL } from '../src/data/pll.js';
 import { OLL, OLL_2LOOK } from '../src/data/oll.js';
 import { F2L } from '../src/data/f2l.js';
 import { CROSS as CROSS_PAGE } from '../src/data/cross.js';
 import { ROUX } from '../src/data/roux.js';
+import { BEGINNER_2X2, ORTEGA, CLL } from '../src/data/cube2x2.js';
 import { PLL_REFERENCE } from './pll-reference.js';
 import { OLL_REFERENCE } from './oll-reference.js';
 import { createCrossSolver } from './lib/cross-solver.js';
@@ -510,6 +511,129 @@ for (const step of ROUX.lse.steps) {
     results.push({ section: 'Roux · LSE', name: c.name, algs: 1, ok });
   }
 }
+
+// ---------- 2x2 (KPuzzle de 2x2: solo esquinas, sin centros) ----------
+const kp2 = await cube2x2x2.kpuzzle();
+const SOLVED2 = kp2.defaultPattern();
+const c2 = (p) => p.patternData.CORNERS;
+const ok2 = (p, i) => c2(p).pieces[i] === i && c2(p).orientation[i] === 0;
+const TOP2 = [0, 1, 2, 3];
+const BOTTOM2 = [4, 5, 6, 7];
+const shown2 = (alg) => SOLVED2.applyAlg(new Alg(alg).invert());
+// Las 24 rotaciones del cubo entero: sin centros, cualquiera cuenta como "resuelto".
+const ROTATIONS = ['', 'x', 'x2', "x'", 'z', "z'"].flatMap((a) => ['', 'y', 'y2', "y'"].map((b) => `${a} ${b}`.trim()));
+const solved2 = (p) => ROTATIONS.some((r) => (r ? p.applyAlg(r) : p).isIdentical(SOLVED2));
+const DMOVES = ['', 'D', 'D2', "D'"];
+const solved2UD = (p) => AUFS.some((u) => DMOVES.some((d) => solved2(p.applyAlg(`${u} ${d}`))));
+const bottomSolved2 = (p) => BOTTOM2.every((i) => ok2(p, i));
+const orientedAt = (p, list) => list.filter((i) => c2(p).orientation[i] === 0).length;
+const layerTurn = (layer) => (layer === TOP2 ? AUFS : DMOVES);
+// Una capa está bien "entre sí" si girándola queda en su lugar; un lado tiene faros si
+// girando la capa quedan bien las dos esquinas de ese lado.
+const layerSolved = (p, layer) => layerTurn(layer).some((t) => layer.every((i) => ok2(t ? p.applyAlg(t) : p, i)));
+const sides = (layer) => layer.map((a, i) => [a, layer[(i + 1) % 4]]);
+// Se siguen las piezas que ESTÁN en a y b (al girar la capa se mueven a otras posiciones).
+const homeAfter = (q, piece) => c2(q).pieces[piece] === piece && c2(q).orientation[piece] === 0;
+const headlightSides = (p, layer) =>
+  sides(layer).filter(([a, b]) => {
+    const [pa, pb] = [c2(p).pieces[a], c2(p).pieces[b]];
+    return layerTurn(layer).some((t) => { const q = t ? p.applyAlg(t) : p; return homeAfter(q, pa) && homeAfter(q, pb); });
+  });
+const permType = (p, layer) => (layerSolved(p, layer) ? 'none' : headlightSides(p, layer).length ? 'adj' : 'diag');
+const centersFree2 = (alg) => { try { SOLVED2.applyAlg(alg); return true; } catch { return false; } };
+// Orientación de las esquinas de arriba (sin AUF), comparable con la del 3x3 (misma numeración).
+const oriKey2 = (alg) => AUFS.map((u) => { const p = shown2(alg).applyAlg(u); return TOP2.map((i) => c2(p).orientation[i]).join(''); }).sort()[0];
+check('2x2', oriKey2("R U R' U R U2 R'") === cornerOri("R U R' U R U2 R'"), 'la numeración de esquinas de 2x2 y 3x3 no coincide');
+
+function run2(section, c, checks) {
+  const label = `${section} › ${c.name}`;
+  let ok = check(label, centersFree2(c.alg), `no se puede usar en 2x2: "${c.alg}"`);
+  if (ok) {
+    const shown = shown2(c.alg);
+    const end = shown.applyAlg(c.alg);
+    for (const [problem, good] of checks(shown, end)) ok = check(label, good, problem) && ok;
+  }
+  results.push({ section, name: c.name, algs: 1, ok });
+}
+
+for (const step of BEGINNER_2X2.steps) {
+  for (const c of step.cases) {
+    run2(`2x2 · Principiante · ${step.title}`, c, (shown, end) => {
+      if (step.id === 'first-layer') {
+        return [
+          ['el caso no tiene 3 esquinas abajo armadas', BOTTOM2.filter((i) => ok2(shown, i)).length === 3],
+          ['no completa la primera capa', bottomSolved2(end)],
+        ];
+      }
+      if (step.id === 'll-orient') {
+        return [
+          ['el caso no tiene la primera capa armada', bottomSolved2(shown)],
+          ['el caso ya está orientado', orientedAt(shown, TOP2) < 4],
+          ['no orienta la cara de arriba', bottomSolved2(end) && orientedAt(end, TOP2) === 4],
+        ];
+      }
+      const lights = headlightSides(shown, TOP2).map(([a, b]) => `${a}${b}`);
+      return [
+        ['el caso no tiene la primera capa y la cara de arriba', bottomSolved2(shown) && orientedAt(shown, TOP2) === 4],
+        ['no arma el cubo', solved2UD(end)],
+        [`los faros no coinciden con la descripción (${lights.join(', ') || 'ninguno'})`, c.headlights === 'back' ? lights.includes('12') : lights.length === 0],
+      ];
+    });
+  }
+}
+
+for (const c of ORTEGA.face.cases) {
+  run2('2x2 · Ortega · Primera cara', c, (shown, end) => [
+    [`el caso no tiene ${c.orientedBefore} esquinas con el blanco abajo`, orientedAt(shown, BOTTOM2) === c.orientedBefore],
+    ['no completa la cara de abajo', orientedAt(end, BOTTOM2) === 4 && BOTTOM2.every((i) => c2(end).pieces[i] >= 4)],
+  ]);
+}
+const ortegaGroups = new Set();
+for (const c of ORTEGA.oll.cases) {
+  run2('2x2 · Ortega · OLL', c, (shown, end) => [
+    ['el caso no tiene la cara de abajo hecha', orientedAt(shown, BOTTOM2) === 4 && BOTTOM2.every((i) => c2(shown).pieces[i] >= 4)],
+    ['no orienta la cara de arriba (o rompe la de abajo)', orientedAt(end, TOP2) === 4 && orientedAt(end, BOTTOM2) === 4],
+    [`está en el grupo ${c.group} pero las esquinas son de ${CMLL_GROUP_BY_ORI.get(oriKey2(c.alg))}`, CMLL_GROUP_BY_ORI.get(oriKey2(c.alg)) === c.group],
+  ]);
+  ortegaGroups.add(c.group);
+}
+check('OLL de 2x2', ORTEGA.oll.cases.length === 7 && ortegaGroups.size === 7 && !ortegaGroups.has('O'), 'tienen que ser los 7 casos distintos');
+const pblKinds = new Set();
+for (const c of ORTEGA.pbl.cases) {
+  run2('2x2 · Ortega · PBL', c, (shown, end) => {
+    const top = permType(shown, TOP2);
+    const bottom = permType(shown, BOTTOM2);
+    pblKinds.add(`${top}/${bottom}`);
+    return [
+      ['el caso no tiene las dos caras orientadas', orientedAt(shown, TOP2) === 4 && orientedAt(shown, BOTTOM2) === 4],
+      ['no arma el cubo (admitiendo giros de U y D)', solved2UD(end)],
+      [`dice ${c.top}/${c.bottom} y es ${top}/${bottom}`, top === c.top && bottom === c.bottom],
+    ];
+  });
+}
+check('PBL', pblKinds.size === 5, `hay ${pblKinds.size} casos distintos de PBL en vez de 5`);
+
+const cllCases = CLL.groups.flatMap((g) => g.cases);
+for (const c of cllCases) {
+  run2('2x2 · CLL', c, (shown, end) => [
+    ['toca la primera capa', bottomSolved2(shown) && bottomSolved2(end)],
+    ['el caso ya está resuelto', !AUFS.some((u) => TOP2.every((i) => ok2(shown.applyAlg(u || 'U4'), i)))],
+    ['no deja las esquinas de arriba resueltas', AUFS.some((u) => TOP2.every((i) => ok2(u ? end.applyAlg(u) : end, i)))],
+    [`está en el grupo ${c.group} pero las esquinas son de ${CMLL_GROUP_BY_ORI.get(oriKey2(c.alg))}`, CMLL_GROUP_BY_ORI.get(oriKey2(c.alg)) === c.group],
+  ]);
+}
+check('CLL', cllCases.length === 42, `hay ${cllCases.length} casos en vez de 42`);
+const cllKey = (alg) => {
+  const t = kp2.algToTransformation(new Alg(alg).invert());
+  const keys = [];
+  for (const pre of AUFS) for (const post of AUFS) {
+    const p = (pre ? SOLVED2.applyAlg(pre) : SOLVED2).applyTransformation(t);
+    const q = post ? p.applyAlg(post) : p;
+    keys.push(TOP2.map((i) => `${c2(q).pieces[i]}${c2(q).orientation[i]}`).join(' '));
+  }
+  return keys.sort()[0];
+};
+checkDistinct('CLL', cllCases, cllKey);
 
 // ---------- CFOP: PLL ----------
 

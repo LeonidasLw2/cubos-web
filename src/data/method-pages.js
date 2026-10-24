@@ -16,6 +16,9 @@ export const METHOD_PAGES = {
   '3x3/roux': { title: 'Roux', page: 'roux' },
 
   '2x2': { title: '2x2', page: 'puzzle', puzzle: '2x2' },
+  '2x2/principiante': { title: 'Principiante', page: 'beginner2' },
+  '2x2/ortega': { title: 'Ortega', page: 'ortega' },
+  '2x2/cll': { title: 'CLL', page: 'cll' },
   '4x4': { title: '4x4', page: 'puzzle', puzzle: '4x4' },
 };
 
