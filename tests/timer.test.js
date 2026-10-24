@@ -10,6 +10,8 @@ function setup({ inspection = true, holdMs = 500 } = {}) {
   let pending = null;
   const solves = [];
   const alerts = [];
+  const alertTimes = []; // en qué momento del reloj llegó cada aviso
+  const ticks = []; // [tiempo transcurrido] de cada lectura de la inspección
   const timer = createTimer({
     getHoldMs: () => holdMs,
     getInspection: () => inspection,
@@ -22,7 +24,11 @@ function setup({ inspection = true, holdMs = 500 } = {}) {
       pending = null;
     },
     onSolve: (s) => solves.push(s),
-    onInspectionAlert: (ms) => alerts.push(ms),
+    onInspectionAlert: (ms) => {
+      alerts.push(ms);
+      alertTimes.push(t);
+    },
+    onInspectionTick: (elapsed) => ticks.push(elapsed),
   });
   function advance(ms) {
     const end = t + ms;
@@ -33,7 +39,7 @@ function setup({ inspection = true, holdMs = 500 } = {}) {
       cb?.();
     }
   }
-  return { timer, solves, alerts, advance };
+  return { timer, solves, alerts, alertTimes, ticks, advance, now: () => t };
 }
 
 // Inspecciona y suelta para arrancar exactamente a los `ms` de inspección.
@@ -239,4 +245,20 @@ test('respeta el tiempo de mantener configurado (0,3 y 0,8 s)', () => {
     ctx.advance(10);
     assert.equal(ctx.timer.state, 'ready');
   }
+});
+
+test('los avisos llegan a los 8,0 y 12,0 s exactos de inspección (reloj real, no lo que se muestra)', () => {
+  const ctx = setup();
+  ctx.advance(1234); // el reloj no arranca en 0
+  ctx.timer.press();
+  ctx.timer.release(); // empieza la inspección
+  const start = ctx.now();
+  ctx.advance(7990);
+  assert.deepEqual(ctx.alerts, []); // a los 7,99 s todavía no
+  ctx.advance(10);
+  assert.deepEqual(ctx.alertTimes.map((t) => t - start), [8000]);
+  ctx.advance(4000);
+  assert.deepEqual(ctx.alertTimes.map((t) => t - start), [8000, 12000]);
+  // las lecturas de la inspección son el tiempo real transcurrido
+  assert.ok(ctx.ticks.includes(8000) && ctx.ticks.includes(12000));
 });

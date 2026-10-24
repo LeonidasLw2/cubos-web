@@ -126,13 +126,27 @@
           <input type="checkbox" name="inspection" role="switch" />
         </label>
 
-        <label class="setting">
-          <span>
-            Avisos de voz
-            <small>"Ocho segundos" y "doce segundos" (pitido si no hay voz en español)</small>
-          </span>
-          <input type="checkbox" name="voice" role="switch" />
-        </label>
+        <!-- Opciones de la inspección (se desactivan si la inspección está apagada) -->
+        <fieldset class="inspection-options" id="inspection-options">
+          <fieldset class="setting-group">
+            <legend>Contador de la inspección</legend>
+            <div class="segmented">
+              <label><input type="radio" name="countdown" value="down" /><span>Regresivo 15 → 0</span></label>
+              <label><input type="radio" name="countdown" value="up" /><span>Progresivo 0 → 15</span></label>
+            </div>
+            <small class="setting-help">Los avisos son a los 8 y 12 segundos pasados: en regresivo, cuando el contador muestra 7 y 3; en progresivo, cuando muestra 8 y 12.</small>
+          </fieldset>
+
+          <fieldset class="setting-group">
+            <legend>Avisos de 8 y 12 s</legend>
+            <div class="segmented">
+              <label><input type="radio" name="alerts" value="voice" /><span>Voz</span></label>
+              <label><input type="radio" name="alerts" value="beep" /><span>Pitidos</span></label>
+              <label><input type="radio" name="alerts" value="none" /><span>Ninguno</span></label>
+            </div>
+            <small class="setting-help">Voz: "ocho" y "doce" (si no hay voz en español, pita). Pitidos: uno a los 8 s y dos a los 12 s, sin demora.</small>
+          </fieldset>
+        </fieldset>
 
         <fieldset class="setting-group">
           <legend>Mantener apretado para arrancar</legend>

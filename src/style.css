@@ -379,6 +379,16 @@ body[data-phase='inspection'] .timer-stage {
   animation: ring-empty 15s linear forwards;
 }
 
+/* Contador progresivo: el anillo se va llenando */
+.insp-ring.up.run .ring-progress {
+  animation-name: ring-fill;
+}
+
+@keyframes ring-fill {
+  from { stroke-dashoffset: 100; }
+  to { stroke-dashoffset: 0; }
+}
+
 .timer-zone[data-level='warn'] { --ring: var(--c-yellow); }
 .timer-zone[data-level='danger'] { --ring: var(--c-red); }
 
@@ -1624,6 +1634,26 @@ a.link-card:hover .card-art {
 .setting-group legend {
   padding: 0 0 8px;
   color: var(--text);
+}
+
+/* Opciones de la inspección: un grupo que se apaga entero */
+.inspection-options {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.inspection-options:disabled {
+  opacity: 0.45;
+}
+
+.setting-help {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
 }
 
 /* Botones segmentados (radio con estilo) */

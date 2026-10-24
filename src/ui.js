@@ -1,6 +1,17 @@
 // Interfaz: conecta el DOM con el timer, los scrambles, las estadísticas y el almacenamiento.
 import { createTimer } from './timer.js';
-import { inspectionDisplay, announce, primeAudio } from './inspection.js';
+import {
+  inspectionDisplay,
+  alertsCrossed,
+  voiceSchedule,
+  voiceLead,
+  ALERTS_MS,
+  initVoices,
+  announce,
+  beep,
+  primeAudio,
+  stopAnnouncements,
+} from './inspection.js';
 import { loadSettings, saveSettings } from './settings.js';
 import { EVENTS, DEFAULT_EVENT, getEvent, nextScramble } from './scramble.js';
 import { summarize, bestTime, effectiveTime, formatTime, formatSolve } from './stats.js';
@@ -42,6 +53,7 @@ const els = {
   openSettings: $('open-settings'),
   settings: $('settings'),
   settingsForm: $('settings-form'),
+  inspectionOptions: $('inspection-options'),
   exportSolves: $('export-solves'),
   importSolves: $('import-solves'),
   importFile: $('import-file'),
@@ -375,11 +387,12 @@ const timer = createTimer({
 
     if (s === 'inspection' && prev === 'primed') {
       // Empieza la inspección (viene de una tecla o toque: se puede activar el audio).
-      if (settings.voice) primeAudio();
-      els.timer.textContent = '15';
+      startAlerts();
+      els.timer.textContent = settings.countdown === 'up' ? '0' : '15';
       els.timer.dataset.level = 'normal';
       els.timerZone.dataset.level = 'normal';
-      replay(els.inspRing, 'run'); // el anillo arranca lleno y se vacía en 15 s
+      els.inspRing.classList.toggle('up', settings.countdown === 'up');
+      replay(els.inspRing, 'run'); // regresivo: el anillo se vacía en 15 s; progresivo: se llena
     } else if (s === 'holding' && !inspecting) {
       els.timer.textContent = '0.00';
     } else if (s === 'running') {
@@ -388,19 +401,23 @@ const timer = createTimer({
       els.timer.textContent = state.lastResult; // tiempo recién hecho, o el anterior si se canceló
       if (s === 'stopped' && prev === 'running') replay(els.timer, 'landed'); // el tiempo final "aterriza"
     }
-    if (!inspecting) els.inspRing.classList.remove('run');
+    if (!inspecting) {
+      els.inspRing.classList.remove('run');
+      stopAnnouncements(); // al arrancar, cancelar o terminar: que no quede ninguna frase pendiente
+    }
   },
 
   onInspectionTick(elapsed) {
-    const { text, level } = inspectionDisplay(elapsed);
+    soundAlerts(elapsed);
+    const { text, level } = inspectionDisplay(elapsed, settings.countdown);
     if (els.timer.textContent !== text) els.timer.textContent = text;
     els.timer.dataset.level = level;
     if (els.timerZone.dataset.level !== level) els.timerZone.dataset.level = level;
   },
 
-  onInspectionAlert(ms) {
+  // Aviso visual: a los 8,0 y 12,0 s exactos. El sonido va aparte (soundAlerts).
+  onInspectionAlert() {
     replay(els.timer, 'alert');
-    if (settings.voice) announce(ms / 1000);
   },
 
   onTick(ms) {
@@ -409,6 +426,33 @@ const timer = createTimer({
 
   onSolve: addSolve,
 });
+
+// ---------- Avisos de sonido de la inspección ----------
+// La voz tarda en empezar a hablar (en Android, bastante): se la llama antes, lo
+// que tarda en este dispositivo, para que se escuche a los 8 y 12 s justos. Los
+// pitidos no tienen demora y suenan en el momento exacto.
+let soundCues = [];
+let lastSoundAt = 0;
+
+function startAlerts() {
+  lastSoundAt = 0;
+  if (settings.alerts === 'none') {
+    soundCues = [];
+    return;
+  }
+  primeAudio(settings.alerts); // activa el audio y calienta el motor de voz
+  soundCues = settings.alerts === 'voice' ? voiceSchedule(voiceLead()) : ALERTS_MS.map((alert) => ({ at: alert, alert }));
+}
+
+function soundAlerts(elapsed) {
+  const due = alertsCrossed(lastSoundAt, elapsed, soundCues.map((c) => c.at));
+  lastSoundAt = elapsed;
+  for (const at of due) {
+    const { alert } = soundCues.find((c) => c.at === at);
+    if (settings.alerts === 'voice') announce(alert);
+    else beep(alert >= 12000 ? 2 : 1);
+  }
+}
 
 // ---------- Teclado y toque ----------
 
@@ -489,8 +533,9 @@ function applySettings() {
 function fillSettingsForm() {
   const f = els.settingsForm.elements;
   f.inspection.checked = settings.inspection;
-  f.voice.checked = settings.voice;
-  f.voice.disabled = !settings.inspection; // los avisos son de la inspección
+  f.alerts.value = settings.alerts;
+  f.countdown.value = settings.countdown;
+  els.inspectionOptions.disabled = !settings.inspection; // los avisos y el contador son de la inspección
   f.holdMs.value = String(settings.holdMs);
   f.showCube.checked = settings.showCube;
   f.timerDisplay.value = settings.timerDisplay;
@@ -500,13 +545,14 @@ function onSettingsChange() {
   const f = els.settingsForm.elements;
   settings = {
     inspection: f.inspection.checked,
-    voice: f.voice.checked,
+    alerts: f.alerts.value,
+    countdown: f.countdown.value,
     holdMs: Number(f.holdMs.value),
     showCube: f.showCube.checked,
     timerDisplay: f.timerDisplay.value,
   };
   saveSettings(settings);
-  f.voice.disabled = !settings.inspection;
+  els.inspectionOptions.disabled = !settings.inspection;
   applySettings();
 }
 
@@ -597,6 +643,7 @@ export function isTimerIdle() {
 // ---------- Inicio ----------
 
 export function initUI() {
+  initVoices(); // elegir la voz en español ya al abrir (en algunos navegadores llega después)
   // Ilustraciones: el cubo del estado vacío y el que late con "ocultar el tiempo".
   els.emptyArt.innerHTML = cubeSvg({ n: 3 });
   els.solvingIndicator.insertAdjacentHTML('afterbegin', cubeSvg({ n: 3, className: 'solving-cube' }));

@@ -3,10 +3,13 @@ import { loadStoredSettings, saveStoredSettings } from './storage.js';
 
 export const HOLD_OPTIONS = [300, 500, 800];
 export const TIMER_DISPLAYS = ['time', 'solving']; // mostrar el tiempo u ocultarlo (cubo que late)
+export const ALERT_MODES = ['voice', 'beep', 'none']; // avisos de 8 y 12 s
+export const COUNTDOWN_MODES = ['down', 'up']; // inspección regresiva (15 → 0) o progresiva (0 → 15)
 
 export const DEFAULT_SETTINGS = Object.freeze({
   inspection: true,
-  voice: true,
+  alerts: 'voice',
+  countdown: 'down',
   holdMs: 500,
   showCube: true,
   timerDisplay: 'time',
@@ -17,12 +20,16 @@ export const DEFAULT_SETTINGS = Object.freeze({
 export function sanitizeSettings(raw) {
   const s = raw && typeof raw === 'object' ? raw : {};
   const bool = (key) => (typeof s[key] === 'boolean' ? s[key] : DEFAULT_SETTINGS[key]);
+  const pick = (key, options) => (options.includes(s[key]) ? s[key] : DEFAULT_SETTINGS[key]);
+  // Antes era "voice: true/false" (voz o nada): se traduce al ajuste nuevo.
+  const legacyAlerts = typeof s.voice === 'boolean' ? (s.voice ? 'voice' : 'none') : DEFAULT_SETTINGS.alerts;
   return {
     inspection: bool('inspection'),
-    voice: bool('voice'),
-    holdMs: HOLD_OPTIONS.includes(s.holdMs) ? s.holdMs : DEFAULT_SETTINGS.holdMs,
+    alerts: ALERT_MODES.includes(s.alerts) ? s.alerts : legacyAlerts,
+    countdown: pick('countdown', COUNTDOWN_MODES),
+    holdMs: pick('holdMs', HOLD_OPTIONS),
     showCube: bool('showCube'),
-    timerDisplay: TIMER_DISPLAYS.includes(s.timerDisplay) ? s.timerDisplay : DEFAULT_SETTINGS.timerDisplay,
+    timerDisplay: pick('timerDisplay', TIMER_DISPLAYS),
   };
 }
 

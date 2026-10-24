@@ -61,6 +61,9 @@ Todas las etapas pedidas están hechas. Trabajar una etapa a la vez; no adelanta
   - Datos: se pide `navigator.storage.persist()`; en Ajustes, "Exportar/Importar tiempos" (`src/transfer.js`, formato `cubos-web/tiempos` v1). Al importar no se duplican tiempos (mismo id, o mismo tiempo y fecha).
   - El archivo exportado puede traer `trainer` (tiempos del entrenador, `src/trainer-store.js`); las versiones viejas lo ignoran, por eso sigue siendo v1.
 - Entrenador: `trainer.js` (interfaz, se carga recién al abrir la pestaña) usa `createTimer` sin inspección; `trainer-store.js` es puro (normalizar, agregar, estadísticas, juntar). Guarda en `cubos-web:trainer`.
+- Inspección y avisos (`inspection.js`): el momento de cada aviso sale del tiempo real transcurrido (performance.now() en el bucle del timer), nunca del número en pantalla. Regresivo: a los 8 s muestra 7; progresivo: muestra 8 (ajuste "Contador"). Avisos: voz / pitidos / ninguno.
+  - La voz tarda en arrancar (en Android, mucho): se elige una voz local en español al abrir la app, se "calienta" con una frase muda al empezar la inspección, las frases son cortas ("ocho", "doce"), y se llama antes lo que tarda en este dispositivo (mediana de las últimas mediciones de onstart, guardadas en `cubos-web:voice-latency`, tope 1,5 s). El aviso visual sigue a los 8,0 y 12,0 s exactos.
+- Diseño: fuentes propias en `src/fonts.css` (Space Grotesk para títulos, JetBrains Mono para tiempos, solo "latin"; la PWA las guarda en caché). `cube-art.js` dibuja cubos isométricos en SVG (portadas, estado vacío, "Resolviendo"). `sparkline.js` (puro) arma la mini gráfica. Las animaciones son solo CSS (el anillo de la inspección también): nada que trabe el hilo principal mientras corre el timer.
 - Comentarios breves en español.
 - Diseño oscuro, moderno, con acentos en los 6 colores del cubo. Debe funcionar bien en celular.
 - Explicar los cambios en español; el usuario está aprendiendo.
