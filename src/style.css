@@ -1640,3 +1640,29 @@ a.link-card:hover {
   0%, 85% { opacity: 1; }
   100% { opacity: 0; }
 }
+
+/* Notación del 4x4: lista de giros con su explicación */
+.notation-list {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0 18px;
+}
+.notation-list > div {
+  display: grid;
+  grid-template-columns: minmax(84px, max-content) 1fr;
+  gap: 12px;
+  align-items: baseline;
+  padding: 8px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.notation-list dt {
+  font-family: var(--mono);
+  font-weight: 700;
+  white-space: pre;
+}
+.notation-list dd {
+  margin: 0;
+  color: var(--muted);
+}

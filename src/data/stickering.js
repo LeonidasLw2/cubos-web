@@ -15,6 +15,15 @@ export const DISPLAY_SETUP = 'z2'; // estado final: resuelto, con el amarillo ar
 
 const mask = (edges, corners, centers = '------') => `EDGES:${edges},CORNERS:${corners},CENTERS:${centers}`;
 
+// 4x4: 24 alas (dos por arista), 8 esquinas y 24 centros (4 por cara, en orden
+// U L F R B D). Cada ala es blanca (w, arriba en el cubo sin rotar), amarilla (y)
+// o del medio (m); scripts/lib/cube4x4.js calcula estos grupos.
+const WINGS_4X4 = 'wwwwwmymwmymwmymwmymyyyy';
+const mask4 = ({ w = 'I', m = 'I', y = 'I', cw = 'I', cy = 'I', white = 'I', side = 'I', yellow = 'I' }) =>
+  `EDGES:${[...WINGS_4X4].map((g) => ({ w, m, y })[g]).join('')},` +
+  `CORNERS:${cw.repeat(4)}${cy.repeat(4)},` +
+  `CENTERS:${white.repeat(4)}${side.repeat(16)}${yellow.repeat(4)}`;
+
 export const STICKERING = {
   cross: mask('----IIIIIIII', 'IIIIIIII'),
   'first-layer': mask('DDDDIIIIIIII', '----IIII'),
@@ -50,4 +59,15 @@ export const STICKERING = {
   '2x2-oll': 'CORNERS:OOOOOOOO',
   '2x2-pbl': 'CORNERS:--------',
   '2x2-cll': 'CORNERS:DDDD----',
+
+  // 4x4 (con z2: blanco abajo, amarillo arriba).
+  '4x4-full': mask4({ w: '-', m: '-', y: '-', cw: '-', cy: '-', white: '-', side: '-', yellow: '-' }),
+  '4x4-centers': mask4({ white: '-', side: '-', yellow: '-' }),
+  '4x4-edges': mask4({ w: '-', m: '-', y: '-', white: 'D', side: 'D', yellow: 'D' }),
+  '4x4-oll-parity': mask4({ w: 'D', m: 'D', y: 'O', cw: 'D', cy: 'O', white: 'D', side: 'D', yellow: '-' }),
+  '4x4-pll-parity': mask4({ w: 'D', m: 'D', y: '-', cw: 'D', cy: '-', white: 'D', side: 'D', yellow: '-' }),
+  'yau-centers2': mask4({ white: '-', yellow: '-' }),
+  'yau-cross': mask4({ w: '-', white: 'D', yellow: 'D' }),
+  'yau-centers4': mask4({ w: 'D', white: 'D', side: '-', yellow: 'D' }),
+  'yau-edges': mask4({ w: 'D', m: '-', y: '-', white: 'D', side: 'D', yellow: 'D' }),
 };

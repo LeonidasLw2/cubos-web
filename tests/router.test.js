@@ -26,6 +26,9 @@ test('páginas de métodos ordenadas por puzzle', () => {
   assert.equal(parseRoute('#/metodos/3x3/cfop/cruz').page, 'cross');
   assert.equal(parseRoute('#/metodos/3x3/roux').page, 'roux');
   assert.equal(parseRoute('#/metodos/roux').redirect, '#/metodos/3x3/roux');
+  assert.equal(parseRoute('#/metodos/2x2/ortega').page, 'ortega');
+  assert.equal(parseRoute('#/metodos/4x4/reduccion').page, 'reduction4');
+  assert.equal(parseRoute('#/metodos/4x4/yau').page, 'yau');
 });
 
 test('migas de pan', () => {

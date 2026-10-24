@@ -6,6 +6,7 @@ import { F2L, describeF2L } from './data/f2l.js';
 import { CROSS } from './data/cross.js';
 import { ROUX } from './data/roux.js';
 import { CUBE2X2, BEGINNER_2X2, ORTEGA, CLL } from './data/cube2x2.js';
+import { CUBE4X4, REDUCTION, YAU } from './data/cube4x4.js';
 import { createCaseCard } from './case-card.js';
 import { METHOD_PAGES, methodHref } from './data/method-pages.js';
 
@@ -38,8 +39,12 @@ const PUZZLE_METHODS = {
     ],
   },
   '4x4': {
-    intro: 'El 4x4 se arma casi siempre "reduciéndolo" a un 3x3: primero los centros y las aristas, y después como un 3x3, con un par de casos nuevos (las paridades).',
-    methods: [],
+    intro: CUBE4X4.intro,
+    notation: CUBE4X4.notation,
+    methods: [
+      { title: 'Reducción', text: 'Centros, aristas y después como un 3x3. Incluye las dos paridades.', href: linkTo('4x4/reduccion'), accent: 'green' },
+      { title: 'Yau', text: 'El método de los más rápidos: parte de la cruz antes de terminar los centros.', href: linkTo('4x4/yau'), accent: 'blue' },
+    ],
   },
 };
 
@@ -127,14 +132,30 @@ function puzzlePage(route) {
   const body = data.methods.length
     ? linkCards(data.methods)
     : '<div class="soon-page"><span class="soon-badge">Próximamente</span><p>Los métodos de este puzzle todavía no están listos.</p></div>';
-  return el(`<div class="methods-page">
+  const page = el(`<div class="methods-page">
     ${breadcrumb(route.crumbs)}
     <header class="page-head">
       <h2>${escape(route.title)}</h2>
       <p>${escape(data.intro)}</p>
     </header>
-    ${body}
   </div>`);
+  // Tarjeta de notación (4x4): va primero, antes de los métodos.
+  if (data.notation) page.append(notationSection(data.notation));
+  page.append(el(`<div>${body}</div>`));
+  return page;
+}
+
+// Tabla de notación con ejemplos animados de cada giro.
+function notationSection(notation) {
+  const section = el(`<section class="method-step notation" id="sec-notacion">
+    <h3>${escape(notation.title)}</h3>
+    ${paragraphs(notation.text)}
+    <dl class="notation-list">
+      ${notation.rows.map(([move, text]) => `<div><dt>${escape(move)}</dt><dd>${escape(text)}</dd></div>`).join('')}
+    </dl>
+  </section>`);
+  section.append(caseGrid(notation.cases, notation.stickering, notation.puzzle));
+  return section;
 }
 
 function cfopPage(route) {
@@ -154,6 +175,14 @@ function beginnerPage(route) {
 
 function beginner2Page(route) {
   return stepsPage(BEGINNER_2X2, route, '2x2x2');
+}
+
+function reduction4Page(route) {
+  return stepsPage(REDUCTION, route, '4x4x4');
+}
+
+function yauPage(route) {
+  return stepsPage(YAU, route, '4x4x4');
 }
 
 // Página de un método por pasos: índice, y por cada paso objetivo, texto y casos.
@@ -413,6 +442,8 @@ const PAGES = {
   beginner2: beginner2Page,
   ortega: ortegaPage,
   cll: cllPage,
+  reduction4: reduction4Page,
+  yau: yauPage,
 };
 
 // Muestra la página de la ruta dentro del contenedor.

@@ -23,6 +23,7 @@ import { F2L } from '../src/data/f2l.js';
 import { CROSS as CROSS_PAGE } from '../src/data/cross.js';
 import { ROUX } from '../src/data/roux.js';
 import { BEGINNER_2X2, ORTEGA, CLL } from '../src/data/cube2x2.js';
+import { CUBE4X4, REDUCTION, YAU } from '../src/data/cube4x4.js';
 import { PLL_REFERENCE } from './pll-reference.js';
 import { OLL_REFERENCE } from './oll-reference.js';
 import { createCrossSolver } from './lib/cross-solver.js';
@@ -634,6 +635,127 @@ const cllKey = (alg) => {
   return keys.sort()[0];
 };
 checkDistinct('CLL', cllCases, cllKey);
+
+// ---------- 4x4 ----------
+// Los centros del mismo color son iguales, así que se compara por colores (ver
+// scripts/lib/cube4x4.js). Las paridades se comprueban con casos armados a mano.
+
+const C4 = await import('./lib/cube4x4.js');
+const { SOLVED4 } = C4;
+const sameEffect4 = (a, b) => SOLVED4.applyAlg(a).isIdentical(SOLVED4.applyAlg(b));
+const applies4 = (alg) => { try { SOLVED4.applyAlg(alg); return true; } catch { return false; } };
+const F2L_DEDGES = ['DF', 'DR', 'DB', 'DL', 'FR', 'FL', 'BR', 'BL'];
+const corner4Ok = (p, i) => ['pieces', 'orientation'].every((k) => p.patternData.CORNERS[k][i] === SOLVED4.patternData.CORNERS[k][i]);
+const f2l4 = (p) => C4.centersDone(p) && F2L_DEDGES.every((n) => C4.dedgeDone(p, n)) && [4, 5, 6, 7].every((i) => corner4Ok(p, i));
+const cross4 = (p, list = ['DF', 'DR', 'DB', 'DL']) => list.every((n) => C4.dedgeDone(p, n));
+const noParity = (p) => { const par = C4.parities(p); return par !== null && !par.oll && !par.pll; };
+// Todas las aristas con el color de arriba/abajo bien, mirado como 3x3 (corners: también las esquinas).
+const oriented4 = (p, { corners = false } = {}) => {
+  const c = C4.as3x3(p);
+  return c !== null && c.orientation.every((o) => o === 0) && (!corners || c.corners.orientation.every((o) => o === 0));
+};
+
+// Notación: que cada giro signifique lo que dice la tarjeta.
+check('4x4 › notación', sameEffect4('Rw', 'R 2R') && sameEffect4('r', 'Rw') && sameEffect4('Uw', 'U 2U') && sameEffect4('3Rw', 'R 2R 3R'), 'Rw, r, Uw o 3Rw no son lo que dice la tarjeta');
+check('4x4 › notación', SOLVED4.applyAlg('2R').patternData.CORNERS.pieces.every((x, i) => x === SOLVED4.patternData.CORNERS.pieces[i]), '2R no debería mover esquinas');
+for (const c of CUBE4X4.notation.cases) {
+  results.push({ section: '4x4 · Notación', name: c.name, algs: 1, ok: check(`4x4 › notación › ${c.name}`, applies4(c.alg) && c.alg.replace(/['2]$/, '') === c.name, 'no coincide con su nombre') });
+}
+
+// Casos armados a mano (independientes de los algoritmos), con el amarillo arriba.
+const solvedFrom = (slot, state) => SOLVED4.patternData.EDGES.pieces.indexOf(state.patternData.EDGES.pieces[slot]);
+// Las alas de `names` como quedan después de `move`, y todo lo demás resuelto.
+function partialCase(move, names) {
+  const after = SOLVED4.applyAlg(move);
+  const changes = {};
+  for (const s of names.flatMap((n) => C4.DEDGES[n])) changes[s] = [solvedFrom(s, after), after.patternData.EDGES.orientation[s]];
+  return C4.withWings(changes);
+}
+// Una sola arista (UF) dada vuelta: sus dos alas se cambian de lugar. De las 4
+// orientaciones posibles, una sola tiene que dar un estado posible.
+const [ufA, ufB] = C4.DEDGES.UF;
+const flips = [0, 1].flatMap((oa) => [0, 1].map((ob) => C4.withWings({ [ufA]: [ufB, oa], [ufB]: [ufA, ob] }))).filter((p) => C4.as3x3(p));
+check('4x4 › caso de paridad de OLL', flips.length === 1, `${flips.length} formas posibles de dar vuelta una arista (tendría que ser 1)`);
+const FLIP_CASE = flips[0];
+const SWAP_CASE = partialCase('U2', ['UF', 'UB']); // aristas de adelante y atrás cambiadas
+const ADJ_CASE = (() => {
+  const toF = SOLVED4.applyAlg('U');
+  const toR = SOLVED4.applyAlg("U'");
+  const changes = {};
+  for (const s of C4.DEDGES.UF) changes[s] = [solvedFrom(s, toF), toF.patternData.EDGES.orientation[s]];
+  for (const s of C4.DEDGES.UR) changes[s] = [solvedFrom(s, toR), toR.patternData.EDGES.orientation[s]];
+  return C4.withWings(changes);
+})();
+const hasParity = (p, oll, pll) => { const par = C4.parities(p); return par !== null && par.oll === oll && par.pll === pll; };
+check('4x4 › caso de paridad de OLL', FLIP_CASE && hasParity(FLIP_CASE, true, false), 'el caso armado a mano no tiene paridad de OLL');
+check('4x4 › caso de paridad de PLL', hasParity(SWAP_CASE, false, true) && hasParity(ADJ_CASE, false, true), 'los casos armados a mano no tienen paridad de PLL');
+
+// Qué tiene que pasar en cada caso. shown: el caso que muestra la tarjeta; alg: el algoritmo.
+const CASES_4X4 = {
+  'c-first': (shown) => [['el caso no tiene 2 blancos abajo y 2 al frente', C4.colorCount(shown, 'D', 'D') === 2 && C4.colorCount(shown, 'F', 'D') === 2]],
+  'c-second': (shown) => [['el caso no tiene el blanco hecho y 2 amarillos arriba', C4.centerDone(shown, 'D') && C4.centerCount(shown, 'U') === 2]],
+  'c-sides': (shown) => [['el caso no tiene arriba y abajo hechos (y los costados sin hacer)', C4.centersDone(shown, 'UD') && !C4.centersDone(shown)]],
+  'e-323': (shown, alg) => [
+    ['el caso no tiene los centros hechos y FL/FR sin emparejar', C4.centersDone(shown) && C4.unpaired(shown).join() === 'FL,FR'],
+    ['el algoritmo mueve los centros', C4.centersDone(SOLVED4.applyAlg(alg))],
+  ],
+  'e-last2': (shown) => [['el caso no tiene solo las dos aristas FL y FR sin emparejar', C4.centersDone(shown) && C4.unpaired(shown).join() === 'FL,FR']],
+  'oll-parity': (shown, alg, i) => {
+    const end = FLIP_CASE.applyAlg(alg);
+    // El principal es "puro": solo da vuelta la arista. Las alternativas pueden mover dos esquinas.
+    if (i === 0) return [['no resuelve la arista dada vuelta sin tocar nada más', C4.solved4(end)]];
+    return [
+      ['desde resuelto no hace una paridad de OLL', hasParity(SOLVED4.applyAlg(alg), true, false)],
+      ['no arregla la arista dada vuelta', noParity(end) && oriented4(end)],
+      ['rompe las dos primeras capas', f2l4(end)],
+      ['mueve más de dos esquinas de arriba (la descripción dice dos)', [0, 1, 2, 3].filter((i) => !corner4Ok(end, i)).length <= 2],
+    ];
+  },
+  'pll-parity': (shown, alg) => {
+    const adj = ADJ_CASE.applyAlg(alg);
+    return [
+      ['no resuelve las aristas de adelante y atrás cambiadas', C4.solved4(SWAP_CASE.applyAlg(alg))],
+      ['con dos aristas vecinas cambiadas no deja una PLL normal', noParity(adj) && f2l4(adj) && oriented4(adj, { corners: true })],
+    ];
+  },
+  'y-centers2': (shown) => [['el caso no tiene el blanco hecho y 2 amarillos arriba', C4.centerDone(shown, 'D') && C4.centerCount(shown, 'U') === 2]],
+  'y-cross': (shown) => [
+    ['el caso no tiene los centros de arriba y abajo hechos', C4.centersDone(shown, 'UD')],
+    ['el caso no tiene DL separada y DF, DR, DB armadas', C4.dedgeSplit(shown, 'DL') && cross4(shown, ['DF', 'DR', 'DB'])],
+  ],
+  'y-centers4a': (shown) => [
+    ['el caso no tiene arriba y abajo hechos y la cruz DL, DB, DR', C4.centersDone(shown, 'UD') && !C4.centersDone(shown) && cross4(shown, ['DL', 'DB', 'DR'])],
+    ['la barra no está entre el frente y la derecha', C4.centerCount(shown, 'F') === 2 && C4.centerCount(shown, 'R') === 2 && C4.centerDone(shown, 'L')],
+  ],
+  'y-centers4b': (shown) => [
+    ['el caso no tiene arriba y abajo hechos y la cruz DL, DB, DR', C4.centersDone(shown, 'UD') && !C4.centersDone(shown) && cross4(shown, ['DL', 'DB', 'DR'])],
+    ['la barra no está entre el frente y la izquierda', C4.centerCount(shown, 'F') === 2 && C4.centerCount(shown, 'L') === 2 && C4.centerDone(shown, 'R')],
+  ],
+  'y-cross4': (shown) => [['el caso no tiene los centros, DL, DB, DR y la arista DF separada', C4.centersDone(shown) && cross4(shown, ['DL', 'DB', 'DR']) && C4.dedgeSplit(shown, 'DF')]],
+  'y-edges': (shown, alg) => [
+    ['el caso no tiene los centros y la cruz hechos', C4.centersDone(shown) && cross4(shown) && C4.unpaired(shown).join() === 'FL,FR'],
+    ['el algoritmo mueve la cruz o los centros', cross4(SOLVED4.applyAlg(alg)) && C4.centersDone(SOLVED4.applyAlg(alg))],
+  ],
+};
+
+for (const [method, data] of [['Reducción', REDUCTION], ['Yau', YAU]]) {
+  for (const step of data.steps) {
+    for (const c of step.cases) {
+      const section = `4x4 · ${method} · ${step.title}`;
+      const algs = [c.alg, ...(c.alts ?? [])];
+      let ok = check(`${section} › ${c.name}`, Boolean(CASES_4X4[c.id]), 'no tiene comprobaciones');
+      for (const [i, alg] of algs.entries()) {
+        const label = `${section} › ${c.name}${i ? ` (alternativa ${i})` : ''}`;
+        if (!check(label, applies4(alg), `no se puede usar en 4x4: "${alg}"`)) { ok = false; continue; }
+        const shown = C4.shown4(alg);
+        ok = check(label, !C4.solved4(shown), 'el caso ya está resuelto') && ok;
+        ok = check(label, C4.solved4(shown.applyAlg(alg)), 'no queda resuelto') && ok;
+        for (const [problem, good] of CASES_4X4[c.id]?.(shown, alg, i) ?? []) ok = check(label, good, problem) && ok;
+      }
+      results.push({ section, name: c.name, algs: algs.length, ok });
+    }
+  }
+}
 
 // ---------- CFOP: PLL ----------
 

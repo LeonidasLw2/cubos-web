@@ -20,6 +20,8 @@ export const METHOD_PAGES = {
   '2x2/ortega': { title: 'Ortega', page: 'ortega' },
   '2x2/cll': { title: 'CLL', page: 'cll' },
   '4x4': { title: '4x4', page: 'puzzle', puzzle: '4x4' },
+  '4x4/reduccion': { title: 'Reducción', page: 'reduction4' },
+  '4x4/yau': { title: 'Yau', page: 'yau' },
 };
 
 // Rutas de antes de ordenar los métodos por puzzle: se redirigen a las nuevas,
