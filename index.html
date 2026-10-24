@@ -13,9 +13,7 @@
   <body>
     <header class="topbar fadeable">
       <div class="brand">
-        <span class="logo" aria-hidden="true">
-          <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-        </span>
+        <img class="logo" src="/icon.svg" alt="" width="34" height="34" />
         <h1>Cubos</h1>
         <!-- Atrás / Adelante: hacen falta sobre todo en la app instalada (no tiene barra del navegador). -->
         <div class="history-nav" role="group" aria-label="Historial">
@@ -57,27 +55,43 @@
 
         <div class="timer-zone" id="timer-zone">
           <div class="pb-badge" id="pb-badge" aria-hidden="true">¡Nuevo PB!</div>
-          <div class="timer" id="timer" role="timer" aria-live="off">0.00</div>
+          <!-- Festejo de PB: papelitos de los 6 colores (solo CSS) -->
+          <div class="pb-burst" id="pb-burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="timer-stage">
+            <!-- Anillo de la inspección: se vacía en 15 s (animación CSS) -->
+            <svg class="insp-ring" id="insp-ring" viewBox="0 0 120 120" aria-hidden="true">
+              <circle class="ring-track" cx="60" cy="60" r="54" />
+              <circle class="ring-progress" cx="60" cy="60" r="54" pathLength="100" />
+            </svg>
+            <div class="timer" id="timer" role="timer" aria-live="off">0.00</div>
+            <!-- Con "ocultar el tiempo": un cubo que late en vez de los números -->
+            <div class="solving-indicator" id="solving-indicator" aria-hidden="true"><span>Resolviendo</span></div>
+          </div>
           <p class="hint fadeable" id="hint"></p>
           <button class="text-btn cancel-inspection" id="cancel-inspection" type="button">Cancelar inspección</button>
         </div>
       </section>
 
       <aside class="session fadeable" aria-label="Sesión">
+        <!-- Evolución de los últimos tiempos (la dibuja ui.js) -->
+        <div class="trend" id="trend" hidden>
+          <div class="trend-head"><span>Últimos tiempos</span><small id="trend-range"></small></div>
+          <svg id="trend-chart" viewBox="0 0 300 64" preserveAspectRatio="none" aria-hidden="true"></svg>
+        </div>
         <div class="stats" id="stats">
-          <div class="stat stat-best"><span>Mejor (PB)</span><strong id="stat-best">-</strong></div>
-          <div class="stat stat-worst"><span>Peor</span><strong id="stat-worst">-</strong></div>
+          <div class="stat stat-best"><span><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v2a3 3 0 0 0 3 3M17 6h3v2a3 3 0 0 1-3 3" /></svg>Mejor (PB)</span><strong id="stat-best">-</strong></div>
+          <div class="stat stat-worst"><span><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6" /></svg>Peor</span><strong id="stat-worst">-</strong></div>
           <div class="stat stat-ao5">
-            <span>ao5</span><strong id="stat-ao5">-</strong>
+            <span><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18l5-6 4 3 7-9" /></svg>ao5</span><strong id="stat-ao5">-</strong>
             <small>mejor <b id="stat-best-ao5">-</b></small>
           </div>
           <div class="stat stat-ao12">
-            <span>ao12</span><strong id="stat-ao12">-</strong>
+            <span><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l4-4 4 2 4-5 6-4" /><path d="M3 21h18" /></svg>ao12</span><strong id="stat-ao12">-</strong>
             <small>mejor <b id="stat-best-ao12">-</b></small>
           </div>
-          <div class="stat stat-mean"><span>Media</span><strong id="stat-mean">-</strong></div>
+          <div class="stat stat-mean"><span><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M4 7h16M4 17h16" /></svg>Media</span><strong id="stat-mean">-</strong></div>
           <div class="stat stat-count">
-            <span>Tiempos</span><strong id="stat-count">0</strong>
+            <span><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v5l3 2" /><circle cx="12" cy="12" r="8" /></svg>Tiempos</span><strong id="stat-count">0</strong>
             <small><b id="stat-dnf">0</b> DNF</small>
           </div>
         </div>
@@ -86,7 +100,11 @@
           <button class="text-btn danger" id="clear-session" type="button">Borrar sesión</button>
         </div>
         <ol class="solves" id="solves"></ol>
-        <p class="empty" id="empty">Todavía no hay tiempos en esta categoría.</p>
+        <div class="empty" id="empty">
+          <div class="empty-art" id="empty-art"></div>
+          <p><strong>Todavía no hay tiempos.</strong></p>
+          <p class="empty-hint" id="empty-hint">Apretá la barra espaciadora para empezar.</p>
+        </div>
       </aside>
     </main>
 
@@ -137,7 +155,7 @@
           <legend>Mientras corre el timer</legend>
           <div class="segmented">
             <label><input type="radio" name="timerDisplay" value="time" /><span>Mostrar el tiempo</span></label>
-            <label><input type="radio" name="timerDisplay" value="solving" /><span>Solo "Resolviendo..."</span></label>
+            <label><input type="radio" name="timerDisplay" value="solving" /><span>Ocultar el tiempo</span></label>
           </div>
         </fieldset>
       </form>

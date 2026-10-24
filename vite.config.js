@@ -68,7 +68,7 @@ export default defineConfig({
       workbox: {
         // Se guarda en caché TODO el build: la interfaz, los íconos y todos los
         // archivos de cubing.js (workers de scrambles, puzzles, animación 3D, wasm).
-        globPatterns: ['**/*.{js,css,html,svg,png,webmanifest,wasm}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,webmanifest,wasm,woff2}'],
         // Algunos archivos de cubing.js pasan el límite por defecto (2 MB).
         maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
         // Sin conexión, cualquier navegación dentro de la app abre index.html (rutas con #).

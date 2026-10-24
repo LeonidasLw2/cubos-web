@@ -8,16 +8,24 @@ import { ROUX } from './data/roux.js';
 import { CUBE2X2, BEGINNER_2X2, ORTEGA, CLL } from './data/cube2x2.js';
 import { CUBE4X4, REDUCTION, YAU } from './data/cube4x4.js';
 import { createCaseCard } from './case-card.js';
+import { cubeSvg } from './cube-art.js';
 import { METHOD_PAGES, methodHref } from './data/method-pages.js';
 
 // Enlace a una página de Métodos, o null si todavía es "Próximamente".
 const linkTo = (sub) => (METHOD_PAGES[sub] && METHOD_PAGES[sub].page !== 'soon' ? methodHref(sub) : null);
 
-// Puzzles de la portada de Métodos.
+// Colores de los dibujos de cubo de las tarjetas.
+const HEX = { white: '#f2f2f2', yellow: '#ffd500', red: '#ff4d5e', orange: '#ff8a00', blue: '#3d8bff', green: '#2ec27e' };
+const G = '#3a4150'; // sticker "apagado"
+const D = '#2c323e';
+// Una cara de 3x3 con la fila de arriba apagada y el resto de un color (F2L, OLL).
+const lowerTwo = (color) => [G, G, G, color, color, color, color, color, color];
+
+// Puzzles de la portada de Métodos (el dibujo es el cubo de cada uno).
 const PUZZLES = [
-  { title: '2x2', text: 'El cubo de bolsillo: sin centros fijos. Principiante, Ortega y CLL.', href: linkTo('2x2'), accent: 'orange' },
-  { title: '3x3', text: 'El clásico. Método principiante, CFOP y Roux.', href: linkTo('3x3'), accent: 'blue' },
-  { title: '4x4', text: 'Reducción a 3x3, paridades y método Yau.', href: linkTo('4x4'), accent: 'green' },
+  { title: '2x2', text: 'El cubo de bolsillo: sin centros fijos. Principiante, Ortega y CLL.', href: linkTo('2x2'), accent: 'orange', art: { n: 2 } },
+  { title: '3x3', text: 'El clásico. Método principiante, CFOP y Roux.', href: linkTo('3x3'), accent: 'blue', art: { n: 3 } },
+  { title: '4x4', text: 'Reducción a 3x3, paridades y método Yau.', href: linkTo('4x4'), accent: 'green', art: { n: 4 } },
 ];
 
 // Métodos de cada puzzle (las páginas que todavía no existen salen como "Próximamente").
@@ -33,26 +41,50 @@ const PUZZLE_METHODS = {
   '2x2': {
     intro: CUBE2X2.intro.join(' '),
     methods: [
-      { title: 'Principiante', text: 'Capa por capa, con 3 algoritmos que ya conocés del 3x3.', href: linkTo('2x2/principiante'), accent: 'green' },
-      { title: 'Ortega', text: 'Primera cara, OLL (7 casos) y PBL (5 casos). El paso siguiente para ir rápido.', href: linkTo('2x2/ortega'), accent: 'blue' },
-      { title: 'CLL', text: 'La última capa en un solo algoritmo: 42 casos. Para los que quieren ir todavía más rápido.', href: linkTo('2x2/cll'), accent: 'red' },
+      { title: 'Principiante', text: 'Capa por capa, con 3 algoritmos que ya conocés del 3x3.', href: linkTo('2x2/principiante'), accent: 'green', n: 2 },
+      { title: 'Ortega', text: 'Primera cara, OLL (7 casos) y PBL (5 casos). El paso siguiente para ir rápido.', href: linkTo('2x2/ortega'), accent: 'blue', n: 2 },
+      { title: 'CLL', text: 'La última capa en un solo algoritmo: 42 casos. Para los que quieren ir todavía más rápido.', href: linkTo('2x2/cll'), accent: 'red', n: 2 },
     ],
   },
   '4x4': {
     intro: CUBE4X4.intro,
     notation: CUBE4X4.notation,
     methods: [
-      { title: 'Reducción', text: 'Centros, aristas y después como un 3x3. Incluye las dos paridades.', href: linkTo('4x4/reduccion'), accent: 'green' },
-      { title: 'Yau', text: 'El método de los más rápidos: parte de la cruz antes de terminar los centros.', href: linkTo('4x4/yau'), accent: 'blue' },
+      { title: 'Reducción', text: 'Centros, aristas y después como un 3x3. Incluye las dos paridades.', href: linkTo('4x4/reduccion'), accent: 'green', n: 4 },
+      { title: 'Yau', text: 'El método de los más rápidos: parte de la cruz antes de terminar los centros.', href: linkTo('4x4/yau'), accent: 'blue', n: 4 },
     ],
   },
 };
 
 const CFOP_PARTS = [
-  { title: '1. Cruz', text: 'Armar la cruz en pocos movimientos, planeada en la inspección.', href: linkTo('3x3/cfop/cruz'), accent: 'white' },
-  { title: '2. F2L', text: 'Las dos primeras capas de a pares esquina-arista: 41 casos.', href: linkTo('3x3/cfop/f2l'), accent: 'green' },
-  { title: '3. OLL', text: 'Orientar la última capa: 57 casos (o 10 en dos pasos).', href: linkTo('3x3/cfop/oll'), accent: 'yellow' },
-  { title: '4. PLL', text: 'Permutar la última capa: 21 casos.', href: linkTo('3x3/cfop/pll'), accent: 'red' },
+  {
+    title: '1. Cruz',
+    text: 'Armar la cruz en pocos movimientos, planeada en la inspección.',
+    href: linkTo('3x3/cfop/cruz'),
+    accent: 'white',
+    art: { top: [G, HEX.white, G, HEX.white, HEX.white, HEX.white, G, HEX.white, G], left: [G, HEX.green, G, G, G, G, G, G, G], right: [G, HEX.red, G, G, G, G, G, G, G] },
+  },
+  {
+    title: '2. F2L',
+    text: 'Las dos primeras capas de a pares esquina-arista: 41 casos.',
+    href: linkTo('3x3/cfop/f2l'),
+    accent: 'green',
+    art: { top: G, left: lowerTwo(HEX.green), right: lowerTwo(HEX.red) },
+  },
+  {
+    title: '3. OLL',
+    text: 'Orientar la última capa: 57 casos (o 10 en dos pasos).',
+    href: linkTo('3x3/cfop/oll'),
+    accent: 'yellow',
+    art: { top: HEX.yellow, left: lowerTwo(HEX.green), right: lowerTwo(HEX.red) },
+  },
+  {
+    title: '4. PLL',
+    text: 'Permutar la última capa: 21 casos.',
+    href: linkTo('3x3/cfop/pll'),
+    accent: 'red',
+    art: { top: HEX.yellow, left: [HEX.red, HEX.green, HEX.orange, ...lowerTwo(HEX.green).slice(3)], right: [HEX.blue, HEX.red, HEX.green, ...lowerTwo(HEX.red).slice(3)] },
+  },
 ];
 
 const escape = (s) => s.replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
@@ -72,10 +104,13 @@ function breadcrumb(items) {
   return `<nav class="breadcrumb" aria-label="Ubicación">${parts.join('<span class="sep" aria-hidden="true">›</span>')}</nav>`;
 }
 
-function linkCards(items) {
-  return `<div class="link-grid">${items
+// Dibujo de cada tarjeta: el que trae, o un cubo con la cara de arriba del color del método.
+const artFor = (m) => m.art ?? { n: m.n ?? 3, top: HEX[m.accent], left: G, right: D };
+
+function linkCards(items, className = '') {
+  return `<div class="link-grid ${className}">${items
     .map((m) => {
-      const inner = `<h3>${escape(m.title)}</h3><p>${escape(m.text)}</p>${m.href ? '' : '<span class="soon-badge">Próximamente</span>'}`;
+      const inner = `<div class="card-art">${cubeSvg({ n: 3, ...artFor(m) })}</div><h3>${escape(m.title)}</h3><p>${escape(m.text)}</p>${m.href ? '' : '<span class="soon-badge">Próximamente</span>'}`;
       return m.href
         ? `<a class="link-card accent-${m.accent}" href="${m.href}">${inner}</a>`
         : `<div class="link-card accent-${m.accent} is-soon" aria-disabled="true">${inner}</div>`;
@@ -123,7 +158,7 @@ function indexPage(route) {
       <h2>Métodos</h2>
       <p>Guías paso a paso para armar cada puzzle, con los casos animados. Elegí un puzzle.</p>
     </header>
-    ${linkCards(PUZZLES)}
+    ${linkCards(PUZZLES, 'covers')}
   </div>`);
 }
 

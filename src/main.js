@@ -1,4 +1,5 @@
 // Punto de entrada: estilos, timer, navegación entre vistas e historial (Atrás/Adelante).
+import './fonts.css';
 import './style.css';
 import { initUI, setTimerActive, isTimerIdle } from './ui.js';
 import { startRouter } from './router.js';

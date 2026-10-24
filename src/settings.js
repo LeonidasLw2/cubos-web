@@ -2,7 +2,7 @@
 import { loadStoredSettings, saveStoredSettings } from './storage.js';
 
 export const HOLD_OPTIONS = [300, 500, 800];
-export const TIMER_DISPLAYS = ['time', 'solving']; // mostrar el tiempo o solo "Resolviendo..."
+export const TIMER_DISPLAYS = ['time', 'solving']; // mostrar el tiempo u ocultarlo (cubo que late)
 
 export const DEFAULT_SETTINGS = Object.freeze({
   inspection: true,

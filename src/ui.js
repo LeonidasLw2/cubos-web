@@ -14,6 +14,8 @@ import {
   saveTrainerData,
 } from './storage.js';
 import { buildExport, exportFileName, parseImport, mergeSolves } from './transfer.js';
+import { recentTimes, sparkline } from './sparkline.js';
+import { cubeSvg } from './cube-art.js';
 import { normalizeTrainer, mergeTrainer, countTimes } from './trainer-store.js';
 
 const $ = (id) => document.getElementById(id);
@@ -29,6 +31,14 @@ const els = {
   hint: $('hint'),
   cancelInspection: $('cancel-inspection'),
   pbBadge: $('pb-badge'),
+  pbBurst: $('pb-burst'),
+  inspRing: $('insp-ring'),
+  solvingIndicator: $('solving-indicator'),
+  trend: $('trend'),
+  trendChart: $('trend-chart'),
+  trendRange: $('trend-range'),
+  emptyArt: $('empty-art'),
+  emptyHint: $('empty-hint'),
   openSettings: $('open-settings'),
   settings: $('settings'),
   settingsForm: $('settings-form'),
@@ -169,6 +179,26 @@ function renderStats() {
   for (const [key, el] of Object.entries(els.stats)) el.textContent = formatTime(s[key]);
   els.count.textContent = String(s.count);
   els.dnf.textContent = String(s.dnfCount);
+  renderTrend();
+}
+
+// Mini gráfica de los últimos 20 tiempos (los más rápidos, arriba).
+function renderTrend() {
+  const values = recentTimes(state.solves, 20);
+  const g = sparkline(values, 300, 64, 6);
+  els.trend.hidden = !g;
+  if (!g) return;
+  const [bx, by] = g.points[g.best];
+  const [lx, ly] = g.points.at(-1);
+  els.trendChart.innerHTML = `
+    <defs><linearGradient id="trend-fill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" style="stop-color: var(--c-blue); stop-opacity: 0.35" /><stop offset="1" style="stop-color: var(--c-blue); stop-opacity: 0" />
+    </linearGradient></defs>
+    <path d="${g.area}" fill="url(#trend-fill)" />
+    <path d="${g.line}" class="trend-line" />
+    <circle cx="${bx}" cy="${by}" r="3.5" class="trend-best" />
+    <circle cx="${lx}" cy="${ly}" r="3" class="trend-last" />`;
+  els.trendRange.textContent = `${formatTime(g.min)} – ${formatTime(g.max)}`;
 }
 
 // Fecha y hora corta del solve: "23/10/26, 15:40".
@@ -258,6 +288,7 @@ function addSolve(result) {
 function celebratePB() {
   replay(els.timer, 'pb');
   replay(els.pbBadge, 'show');
+  replay(els.pbBurst, 'show');
 }
 
 function onSolveAction(e) {
@@ -319,6 +350,9 @@ function updateHint(phase = document.body.dataset.phase ?? 'idle') {
       : 'Mantené apretada la barra espaciadora y soltá para empezar';
   }
   els.hint.textContent = text;
+  els.emptyHint.textContent = isTouch
+    ? 'Tocá el tiempo de arriba para empezar.'
+    : 'Apretá la barra espaciadora para empezar.';
 }
 
 const timer = createTimer({
@@ -330,7 +364,10 @@ const timer = createTimer({
     els.timer.dataset.state = s;
     els.timer.toggleAttribute('data-inspecting', inspecting);
     if (!inspecting) delete els.timer.dataset.level;
-    els.timer.classList.toggle('solving', s === 'running' && settings.timerDisplay === 'solving');
+    const hidden = s === 'running' && settings.timerDisplay === 'solving';
+    els.timer.classList.toggle('solving', hidden);
+    els.timerZone.classList.toggle('is-solving', hidden);
+    if (!inspecting) delete els.timerZone.dataset.level;
 
     const phase = phaseOf(s, inspecting);
     document.body.dataset.phase = phase;
@@ -341,19 +378,24 @@ const timer = createTimer({
       if (settings.voice) primeAudio();
       els.timer.textContent = '15';
       els.timer.dataset.level = 'normal';
+      els.timerZone.dataset.level = 'normal';
+      replay(els.inspRing, 'run'); // el anillo arranca lleno y se vacía en 15 s
     } else if (s === 'holding' && !inspecting) {
       els.timer.textContent = '0.00';
     } else if (s === 'running') {
       els.timer.textContent = settings.timerDisplay === 'solving' ? 'Resolviendo...' : '0.00';
     } else if (s === 'idle' || s === 'stopped') {
       els.timer.textContent = state.lastResult; // tiempo recién hecho, o el anterior si se canceló
+      if (s === 'stopped' && prev === 'running') replay(els.timer, 'landed'); // el tiempo final "aterriza"
     }
+    if (!inspecting) els.inspRing.classList.remove('run');
   },
 
   onInspectionTick(elapsed) {
     const { text, level } = inspectionDisplay(elapsed);
     if (els.timer.textContent !== text) els.timer.textContent = text;
     els.timer.dataset.level = level;
+    if (els.timerZone.dataset.level !== level) els.timerZone.dataset.level = level;
   },
 
   onInspectionAlert(ms) {
@@ -555,6 +597,9 @@ export function isTimerIdle() {
 // ---------- Inicio ----------
 
 export function initUI() {
+  // Ilustraciones: el cubo del estado vacío y el que late con "ocultar el tiempo".
+  els.emptyArt.innerHTML = cubeSvg({ n: 3 });
+  els.solvingIndicator.insertAdjacentHTML('afterbegin', cubeSvg({ n: 3, className: 'solving-cube' }));
   renderEvents();
   els.events.addEventListener('click', (e) => {
     const btn = e.target.closest('.event-btn');
@@ -568,9 +613,13 @@ export function initUI() {
   els.timer.addEventListener('animationend', (e) => {
     if (e.animationName === 'alert') els.timer.classList.remove('alert');
     if (e.animationName === 'pb-glow') els.timer.classList.remove('pb');
+    if (e.animationName === 'land') els.timer.classList.remove('landed');
   });
   // Igual con el aviso de PB: si quedara la clase, se repetiría al volver a mostrar el timer.
   els.pbBadge.addEventListener('animationend', () => els.pbBadge.classList.remove('show'));
+  els.pbBurst.addEventListener('animationend', (e) => {
+    if (e.target === els.pbBurst.lastElementChild) els.pbBurst.classList.remove('show');
+  });
 
   els.openSettings.addEventListener('click', openSettings);
   els.settingsForm.addEventListener('change', onSettingsChange);
