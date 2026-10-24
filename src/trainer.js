@@ -2,7 +2,7 @@
 // su mezcla, y toma el tiempo de la resolución. Guarda los tiempos de cada caso.
 import 'cubing/twisty';
 import { TRAINER_SETS, findSet } from './data/trainer-sets.js';
-import { caseScramble, AUFS } from './case-scramble.js';
+import { caseScramble, realCaseScramble, AUFS } from './case-scramble.js';
 import { DISPLAY_SETUP, STICKERING } from './data/stickering.js';
 import { createTimer } from './timer.js';
 import { formatTime } from './stats.js';
@@ -21,6 +21,28 @@ let active = false; // la vista del entrenador está a la vista
 let els = null;
 let player = null;
 let discard = false;
+let upcoming = null; // { setId, caseId, promise }: la mezcla siguiente, preparada de antemano
+let shown = 0; // número del caso a la vista (para ignorar mezclas que llegan tarde)
+
+// Solver de cubing.js (corre en un worker). Se carga la primera vez que hace falta.
+let tools = null;
+const loadTools = () =>
+  (tools ??= Promise.all([import('cubing/search'), import('cubing/puzzles')]).then(async ([search, puzzles]) => ({
+    '3x3x3': { kpuzzle: await puzzles.cube3x3x3.kpuzzle(), solve: search.experimentalSolve3x3x3IgnoringCenters },
+    '2x2x2': { kpuzzle: await puzzles.cube2x2x2.kpuzzle(), solve: search.experimentalSolve2x2x2, faces: ['R', 'U', 'F'] },
+  })));
+const algsOf = (id) => TRAINER_SETS.find((s) => s.id === id).cases.map((c) => c.alg);
+const POOLS = { pll: algsOf('pll'), oll: algsOf('oll'), pbl: algsOf('pbl') };
+
+// Mezcla real (con el solver); si algo falla, el algoritmo al revés con un giro de U.
+async function makeScramble(s, c) {
+  try {
+    return (await realCaseScramble(s.id, c.alg, { ...(await loadTools())[s.puzzle], pools: POOLS })).scramble;
+  } catch {
+    return caseScramble(c.alg, AUFS[Math.floor(Math.random() * 4)]);
+  }
+}
+const prepare = (s, caseId) => ({ setId: s.id, caseId, promise: makeScramble(s, s.cases.find((x) => x.id === caseId)) });
 
 const save = () => saveTrainerData(data);
 const selectedIds = () => {
@@ -81,9 +103,13 @@ function showCase() {
   player.alg = '';
 }
 
-function nextCase() {
-  const id = pickCase(selectedIds(), current?.case.id);
-  if (!id) {
+async function nextCase() {
+  const ids = selectedIds();
+  // Si ya había una mezcla preparada para un caso que sigue elegido, se usa esa.
+  const ready = upcoming && upcoming.setId === set.id && ids.includes(upcoming.caseId) && upcoming.caseId !== current?.case.id;
+  const next = ready ? upcoming : (() => { const id = pickCase(ids, current?.case.id); return id && prepare(set, id); })();
+  upcoming = null;
+  if (!next) {
     current = null;
     els.empty.hidden = false;
     els.practice.hidden = true;
@@ -91,9 +117,16 @@ function nextCase() {
   }
   els.empty.hidden = true;
   els.practice.hidden = false;
-  const c = set.cases.find((x) => x.id === id);
-  current = { case: c, scramble: caseScramble(c.alg, AUFS[Math.floor(Math.random() * 4)]) };
+  const turn = ++shown;
+  current = { case: set.cases.find((x) => x.id === next.caseId), scramble: null };
+  els.scramble.textContent = 'Generando mezcla…';
+  const scramble = await next.promise;
+  if (turn !== shown) return; // mientras tanto se pidió otro caso
+  current.scramble = scramble;
   showCase();
+  // Preparar la siguiente mientras se resuelve esta.
+  const after = pickCase(ids, current.case.id);
+  if (after) upcoming = prepare(set, after);
 }
 
 function showLast({ case: c }, time) {

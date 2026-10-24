@@ -46,7 +46,7 @@ Todas las etapas pedidas están hechas. Trabajar una etapa a la vez; no adelanta
     - Roux: bloques y LSE con condiciones del paso (qué tiene que estar armado antes y después); CMLL agrupado comparando la orientación de esquinas con OLL 21-27, 42 casos distintos.
     - 2x2: KPuzzle de 2x2 (cualquier rotación del cubo cuenta como resuelto); CLL 42 distintos, OLL 7 grupos, PBL 5 tipos.
     - 4x4 (`scripts/lib/cube4x4.js`): los 4 centros de un color son iguales, así que se compara por colores; las parejas de alas se calculan solas. Las paridades se prueban contra casos armados a mano y viendo el 4x4 reducido como un 3x3 (orientación y paridad de permutación).
-    - Entrenador: la mezcla de cada caso (`src/case-scramble.js`) tiene que armar el caso con los 4 giros de U.
+    - Entrenador: `src/case-scramble.js` arma mezclas reales (estado del caso con las partes que no importan al azar + 5 giros al azar + el solver de cubing.js). verify-algs genera una por caso y comprueba que lleve al caso (con los 4 giros de U) y que haya salido del solver. El respaldo (algoritmo al revés) también se comprueba.
   - Para verificar que el verificador sirve: romper algo a propósito y comprobar que falla.
 - Deploy: `.github/workflows/deploy.yml` corre en cada push a `main`: `npm ci` → `npm test` → `npm run verify-algs` → `npm run build` → publica `dist/`. Si un paso falla, no se publica (queda la versión anterior). También se puede lanzar a mano desde la pestaña Actions.
 - Build (`vite.config.js`): `base: '/cubos-web/'`. Para que el worker de scrambles de cubing.js funcione en el build:

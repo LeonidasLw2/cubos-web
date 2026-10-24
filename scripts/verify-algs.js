@@ -776,26 +776,45 @@ check('PLL', pllCases.length === 21, `hay ${pllCases.length} casos en vez de 21`
 checkDistinct('PLL', pllCases, pllKey);
 
 // ---------- Entrenador: las mezclas de cada caso ----------
-// La mezcla tiene que dejar el caso: después de un giro de U y del algoritmo, el
-// cubo queda armado (2x2: admitiendo girarlo entero y la capa de abajo, como en PBL).
+// Para cada caso se genera una mezcla real (solver de cubing.js) y una simple (respaldo).
+// Las dos tienen que llevar al caso: con alguno de los 4 giros de U y el algoritmo,
+// queda lo que pide cada grupo (las partes que no importan quedan al azar).
 let trainerLine = '';
 {
   const { TRAINER_SETS } = await import('../src/data/trainer-sets.js');
-  const { caseScramble, AUFS: TRAINER_AUFS } = await import('../src/case-scramble.js');
+  const { caseScramble, realCaseScramble } = await import('../src/case-scramble.js');
+  const { experimentalSolve3x3x3IgnoringCenters, experimentalSolve2x2x2 } = await import('cubing/search');
+  const algsOf = (id) => TRAINER_SETS.find((x) => x.id === id).cases.map((c) => c.alg);
+  const pools = { pll: algsOf('pll'), oll: algsOf('oll'), pbl: algsOf('pbl') };
+  let seed = 2024;
+  const rng = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
+  const GOAL = {
+    pll: (p) => withAUF(p, (q) => q.isIdentical(SOLVED)),
+    oll: (p) => f2l(p) && llOriented(p),
+    f2l: (p) => f2l(p),
+    cmll: (p) => bothBlocks(p) && llCornersAUF(p),
+    oll2: (p) => orientedAt(p, TOP2) === 4 && orientedAt(p, BOTTOM2) === 4,
+    pbl: (p) => solved2UD(p),
+  };
   for (const s of TRAINER_SETS) {
     let ok = true;
+    let real = 0;
+    const two = s.puzzle === '2x2x2';
+    const tools = two
+      ? { kpuzzle: kp2, solve: experimentalSolve2x2x2, faces: ['R', 'U', 'F'] }
+      : { kpuzzle, solve: experimentalSolve3x3x3IgnoringCenters };
     for (const c of s.cases) {
       const body = c.alg.replace(/^\([^)]*\)\s*/, '');
-      for (const auf of TRAINER_AUFS) {
-        const scramble = caseScramble(c.alg, auf);
-        const solves =
-          s.puzzle === '2x2x2'
-            ? AUFS.some((u) => solved2UD(SOLVED2.applyAlg(scramble).applyAlg(u || 'U4').applyAlg(body)))
-            : AUFS.some((u) => withAUF(SOLVED.applyAlg(scramble).applyAlg(u || 'U4').applyAlg(body), (q) => q.isIdentical(SOLVED)));
-        ok = check(`Entrenador › ${s.title} › ${c.name}`, solves, `la mezcla "${scramble}" no arma el caso`) && ok;
+      const generated = await realCaseScramble(s.id, c.alg, { ...tools, rng, pools });
+      if (generated.real) real++;
+      for (const scramble of [generated.scramble, caseScramble(c.alg, 'U')]) {
+        const start = (two ? SOLVED2 : SOLVED).applyAlg(scramble);
+        const solves = AUFS.some((u) => GOAL[s.id](start.applyAlg(u || 'U4').applyAlg(body)));
+        ok = check(`Entrenador › ${s.title} › ${c.name}`, solves, `la mezcla "${scramble}" no lleva al caso`) && ok;
       }
     }
-    trainerLine += ` ${ok ? '✔' : '✖'} ${s.title} (${s.cases.length})`;
+    ok = check(`Entrenador › ${s.title}`, real === s.cases.length, `solo ${real} de ${s.cases.length} mezclas salieron del solver`) && ok;
+    trainerLine += ` ${ok ? '✔' : '✖'} ${s.title} (${real}/${s.cases.length} reales)`;
   }
 }
 
@@ -824,3 +843,4 @@ if (failures.length) {
   process.exit(1);
 }
 console.log('✔ Todos los algoritmos son correctos.');
+process.exit(0); // el solver deja un worker abierto
