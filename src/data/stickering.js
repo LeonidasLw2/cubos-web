@@ -30,4 +30,15 @@ export const STICKERING = {
   // esquina ULF (3) del cubo sin rotar. Ese par en color; la cruz y los otros
   // slots atenuados; la última capa en gris.
   f2l: mask('DDDDIIIID-DD', 'DDD-IIII'),
+
+  // Roux. Con z2, el bloque de la izquierda lo forman (por identidad) la arista UR (1),
+  // FR (8), BR (10), las esquinas UFR (0) y URB (1) y el centro R (3); el de la derecha,
+  // UL (3), FL (9), BL (11), ULF (3), UBL (2) y el centro L (1). Arriba: DF (4) UB←DB (6),
+  // UL←DR (5), UR←DL (7); abajo en el medio: DF←UF (0), DB←UB (2).
+  'roux-fb': mask('I-IIIIII-I-I', '--IIIIII', 'III-II'),
+  'roux-sb': mask('IDI-IIIID-D-', 'DD--IIII', 'I-IDII'),
+  cmll: mask('IDIDIIIIDDDD', 'DDDD----', 'IDIDII'),
+  'lse-eo': mask('ODODOOOODDDD', 'DDDDDDDD', '-D-D--'),
+  'lse-ulur': mask('IDIDI-I-DDDD', 'DDDDDDDD', '-D-D--'),
+  'lse-l4e': mask('-D-D-D-DDDDD', 'DDDDDDDD', '-D-D--'),
 };

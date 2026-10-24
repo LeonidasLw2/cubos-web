@@ -4,6 +4,7 @@ import { PLL } from './data/pll.js';
 import { OLL, OLL_2LOOK } from './data/oll.js';
 import { F2L, describeF2L } from './data/f2l.js';
 import { CROSS } from './data/cross.js';
+import { ROUX } from './data/roux.js';
 import { createCaseCard } from './case-card.js';
 import { METHOD_PAGES, methodHref } from './data/method-pages.js';
 
@@ -284,6 +285,74 @@ function crossPage(route) {
   return page;
 }
 
+function rouxPage(route) {
+  const page = pageHead(ROUX, route);
+
+  // Comparación corta con CFOP
+  page.append(
+    el(`<section class="method-step">
+      <h3>CFOP vs Roux</h3>
+      <div class="compare-wrap">
+        <table class="compare">
+          <thead><tr><th></th><th>CFOP</th><th>Roux</th></tr></thead>
+          <tbody>${ROUX.comparison
+            .map(([what, cfop, roux]) => `<tr><th scope="row">${escape(what)}</th><td>${escape(cfop)}</td><td>${escape(roux)}</td></tr>`)
+            .join('')}</tbody>
+        </table>
+      </div>
+    </section>`),
+  );
+
+  page.append(
+    sectionIndex([
+      ...ROUX.stages.map((s) => ({ id: s.id, title: s.title.replace(/^\d\.\s*/, '') })),
+      { id: 'cmll', title: 'CMLL' },
+      { id: 'lse', title: 'LSE' },
+    ]),
+  );
+
+  // 1 y 2: bloques (intuitivos, con ejemplos)
+  for (const stage of ROUX.stages) {
+    const section = el(`<section class="method-step" id="sec-${stage.id}">
+      <h3>${escape(stage.title)}</h3>
+      ${paragraphs(stage.text)}
+    </section>`);
+    section.append(caseGrid(stage.cases, stage.stickering));
+    page.append(section);
+  }
+
+  // 3: CMLL (42 casos por grupo)
+  const cmll = el(`<section class="method-step" id="sec-cmll">
+    <h3>${escape(ROUX.cmll.title)} <small>42 casos</small></h3>
+    ${paragraphs(ROUX.cmll.text)}
+  </section>`);
+  page.append(cmll);
+  for (const group of ROUX.cmll.groups) {
+    page.append(
+      caseSection({
+        id: `cmll-${group.id}`,
+        title: `CMLL ${group.title}`,
+        count: group.cases.length,
+        text: group.text,
+        cases: group.cases,
+        stickering: ROUX.cmll.stickering,
+      }),
+    );
+  }
+
+  // 4: LSE
+  page.append(
+    el(`<section class="method-step" id="sec-lse">
+      <h3>${escape(ROUX.lse.title)}</h3>
+      ${paragraphs(ROUX.lse.text)}
+    </section>`),
+  );
+  for (const step of ROUX.lse.steps) {
+    page.append(caseSection({ id: `lse-${step.id}`, title: step.title, text: step.text, cases: step.cases, stickering: step.stickering }));
+  }
+  return page;
+}
+
 function soonPage(route) {
   const title = route.title;
   return el(`<div class="methods-page">
@@ -307,6 +376,7 @@ const PAGES = {
   f2l: f2lPage,
   oll: ollPage,
   pll: pllPage,
+  roux: rouxPage,
 };
 
 // Muestra la página de la ruta dentro del contenedor.

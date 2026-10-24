@@ -13,7 +13,7 @@ export const METHOD_PAGES = {
   '3x3/cfop/f2l': { title: 'F2L', page: 'f2l' },
   '3x3/cfop/oll': { title: 'OLL', page: 'oll' },
   '3x3/cfop/pll': { title: 'PLL', page: 'pll' },
-  '3x3/roux': { title: 'Roux', page: 'soon' },
+  '3x3/roux': { title: 'Roux', page: 'roux' },
 
   '2x2': { title: '2x2', page: 'puzzle', puzzle: '2x2' },
   '4x4': { title: '4x4', page: 'puzzle', puzzle: '4x4' },

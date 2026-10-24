@@ -21,6 +21,7 @@ import { PLL } from '../src/data/pll.js';
 import { OLL, OLL_2LOOK } from '../src/data/oll.js';
 import { F2L } from '../src/data/f2l.js';
 import { CROSS as CROSS_PAGE } from '../src/data/cross.js';
+import { ROUX } from '../src/data/roux.js';
 import { PLL_REFERENCE } from './pll-reference.js';
 import { OLL_REFERENCE } from './oll-reference.js';
 import { createCrossSolver } from './lib/cross-solver.js';
@@ -385,6 +386,129 @@ checkDistinct('OLL', ollCases, ollKey);
 for (const c of OLL_2LOOK.edges.cases) runCase('CFOP · OLL en 2 pasos', 'eoll', c);
 for (const id of OLL_2LOOK.corners.caseIds) {
   check('OLL en 2 pasos', ollCases.some((c) => c.id === id), `no existe el caso ${id}`);
+}
+
+// ---------- Roux ----------
+// Bloques de Roux (en el cubo sin rotar): primero a la izquierda, segundo a la derecha.
+const ROUX_PARTS = {
+  dl: (p) => edgeOk(p, 7),
+  fbFront: (p) => edgeOk(p, 9) && cornerOk(p, 5),
+  fbBack: (p) => edgeOk(p, 11) && cornerOk(p, 6),
+  dr: (p) => edgeOk(p, 5),
+  sbFront: (p) => edgeOk(p, 8) && cornerOk(p, 4),
+  sbBack: (p) => edgeOk(p, 10) && cornerOk(p, 7),
+};
+const rlCenters = (p) => orbit(p, 'CENTERS').pieces[1] === 1 && orbit(p, 'CENTERS').pieces[3] === 3;
+const firstBlock = (p) => ['dl', 'fbFront', 'fbBack'].every((k) => ROUX_PARTS[k](p));
+const bothBlocks = (p) => Object.values(ROUX_PARTS).every((ok) => ok(p)) && rlCenters(p);
+const llCornersAUF = (p) => withAUF(p, (q) => LL.every((i) => cornerOk(q, i)));
+const LSE_EDGES = [0, 1, 2, 3, 4, 6]; // UF UR UB UL DF DB
+const MSLICE = ['', 'M', 'M2', "M'"];
+const facingOf = (p, piece) => locate(p, EDGES[piece]).facing;
+const uCenterOnAxis = (p) => [0, 5].includes(orbit(p, 'CENTERS').pieces.indexOf(0));
+// EO: con el centro de arriba en U o D (alineando M), las 6 aristas miran arriba/abajo.
+const lseAligned = (p) => MSLICE.map((m) => (m ? p.applyAlg(m) : p)).find(uCenterOnAxis);
+const badEdges = (p) => LSE_EDGES.filter((i) => !'UD'.includes(facingOf(lseAligned(p), i))).length;
+const eoDone = (p) => MSLICE.some((m) => {
+  const q = m ? p.applyAlg(m) : p;
+  return uCenterOnAxis(q) && LSE_EDGES.every((i) => 'UD'.includes(facingOf(q, i)));
+});
+const centersHome = (q) => orbit(q, 'CENTERS').pieces.every((x, i) => x === i);
+const withUM = (p, cond) => AUFS.some((u) => MSLICE.some((m) => cond(p.applyAlg(`${u} ${m}`))));
+const ulurDone = (p) => withUM(p, (q) => centersHome(q) && edgeOk(q, 1) && edgeOk(q, 3));
+const lseDone = (p) => withUM(p, (q) => q.isIdentical(SOLVED));
+
+// Bloques: antes/después según before/goal del caso, sin rotar el cubo.
+for (const stage of ROUX.stages) {
+  for (const c of stage.cases) {
+    const label = `Roux › ${stage.title} › ${c.name}`;
+    const alg = parse(c.alg);
+    let ok = check(label, alg !== null, `no se puede leer "${c.alg}"`);
+    if (ok) {
+      const shown = shownCase(c.alg);
+      const end = shown.applyAlg(alg);
+      const needFirst = stage.id === 'sb';
+      ok = check(label, rlCenters(SOLVED.applyAlg(alg)), 'mueve los centros de los costados') && ok;
+      ok = check(label, c.before.every((k) => ROUX_PARTS[k](shown)), `el caso no tiene armado: ${c.before.join(', ')}`) && ok;
+      ok = check(label, !c.goal.every((k) => ROUX_PARTS[k](shown)), 'el caso ya está resuelto') && ok;
+      ok = check(label, c.goal.every((k) => ROUX_PARTS[k](end)), `no queda armado: ${c.goal.join(', ')}`) && ok;
+      if (needFirst) ok = check(label, firstBlock(end), 'rompe el primer bloque') && ok;
+    }
+    results.push({ section: 'Roux · Bloques', name: `${stage.id.toUpperCase()} · ${c.name}`, algs: 1, ok });
+  }
+}
+
+// CMLL: bloques intactos, las 4 esquinas resueltas (las aristas y M no importan),
+// el grupo coincide con la orientación de las esquinas (comparada con OLL 21–27) y son 42 distintos.
+const ollByNumber = (n) => ollCases.find((c) => c.number === n).alg.replace(/^\(U2?'?\)\s*/, '');
+const cornerOri = (alg) => AUFS.map((_, k) => LL.map((i) => orbit(turnU(shownCase(alg), k), 'CORNERS').orientation[i]).join('')).sort()[0];
+const CMLL_GROUP_BY_ORI = new Map([
+  ['0000', 'O'],
+  [cornerOri(ollByNumber(21)), 'H'],
+  [cornerOri(ollByNumber(22)), 'Pi'],
+  [cornerOri(ollByNumber(23)), 'U'],
+  [cornerOri(ollByNumber(24)), 'T'],
+  [cornerOri(ollByNumber(27)), 'S'],
+  [cornerOri(ollByNumber(26)), 'AS'],
+  [cornerOri(ollByNumber(25)), 'L'],
+]);
+const cmllCases = ROUX.cmll.groups.flatMap((g) => g.cases);
+for (const c of cmllCases) {
+  const label = `Roux › CMLL › ${c.name}`;
+  const alg = parse(c.alg);
+  let ok = check(label, alg !== null, `no se puede leer "${c.alg}"`);
+  if (ok) {
+    const shown = shownCase(c.alg);
+    ok = check(label, bothBlocks(SOLVED.applyAlg(alg)) && bothBlocks(shown), 'toca los bloques (o rota el cubo)') && ok;
+    ok = check(label, !llCornersAUF(shown), 'el caso ya tiene las esquinas resueltas') && ok;
+    ok = check(label, llCornersAUF(shown.applyAlg(alg)), 'no deja las 4 esquinas resueltas') && ok;
+    const group = CMLL_GROUP_BY_ORI.get(cornerOri(c.alg));
+    ok = check(label, group === c.group, `está en el grupo ${c.group} pero las esquinas son de ${group}`) && ok;
+  }
+  results.push({ section: 'Roux · CMLL', name: c.name, algs: 1, ok });
+}
+check('CMLL', cmllCases.length === 42, `hay ${cmllCases.length} casos en vez de 42`);
+// Clave sin AUF antes ni después, mirando solo las esquinas de arriba.
+const cmllKey = (alg) => {
+  const t = kpuzzle.algToTransformation(new Alg(alg).invert());
+  const keys = [];
+  for (const pre of AUFS) for (const post of AUFS) {
+    const c = orbit(SOLVED.applyAlg(pre).applyTransformation(t).applyAlg(post), 'CORNERS');
+    keys.push(LL.map((i) => `${c.pieces[i]}${c.orientation[i]}`).join(' '));
+  }
+  return keys.sort()[0];
+};
+checkDistinct('CMLL', cmllCases, cmllKey);
+
+// LSE: solo M y U; antes: bloques y esquinas; cada paso con su objetivo.
+for (const step of ROUX.lse.steps) {
+  for (const c of step.cases) {
+    const label = `Roux › LSE › ${c.name}`;
+    const alg = parse(c.alg);
+    let ok = check(label, alg !== null, `no se puede leer "${c.alg}"`);
+    ok = ok && check(label, /^[MU2' ]+$/.test(c.alg), 'usa giros que no son M ni U');
+    if (ok) {
+      const shown = shownCase(c.alg);
+      const end = shown.applyAlg(alg);
+      ok = check(label, bothBlocks(shown) && llCornersAUF(shown), 'el caso no tiene bloques y esquinas armados') && ok;
+      ok = check(label, centersHome(shown), 'el caso no tiene los centros en su lugar') && ok;
+      if (c.step === 'eo') {
+        ok = check(label, !eoDone(shown) && eoDone(end), 'no orienta las aristas') && ok;
+        ok = check(label, badEdges(shown) === c.bad, `dice ${c.bad} aristas malas y son ${badEdges(shown)}`) && ok;
+      } else if (c.step === 'ulur') {
+        ok = check(label, eoDone(shown) && !ulurDone(shown), 'el caso no es de UL/UR') && ok;
+        ok = check(label, ulurDone(end) && eoDone(end), 'no deja UL y UR en su lugar') && ok;
+        const at = (piece) => EDGES[orbit(shown, 'EDGES').pieces.indexOf(piece)];
+        ok = check(label, at(3) === c.ul && at(1) === c.ur, `dice UL en ${c.ul} y UR en ${c.ur}, y están en ${at(3)} y ${at(1)}`) && ok;
+      } else {
+        ok = check(label, eoDone(shown) && ulurDone(shown) && !lseDone(shown), 'el caso no es de las últimas 4 aristas') && ok;
+        ok = check(label, lseDone(end), 'no termina el cubo') && ok;
+        const moved = [0, 2, 4, 6].filter((i) => orbit(shown, 'EDGES').pieces[i] !== i).length;
+        ok = check(label, moved === c.moved, `dice ${c.moved} aristas fuera de lugar y son ${moved}`) && ok;
+      }
+    }
+    results.push({ section: 'Roux · LSE', name: c.name, algs: 1, ok });
+  }
 }
 
 // ---------- CFOP: PLL ----------

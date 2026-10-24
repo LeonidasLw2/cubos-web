@@ -1039,6 +1039,46 @@ a.link-card:hover {
   background: currentColor;
 }
 
+/* Roux: comparación con CFOP */
+.compare-wrap {
+  overflow-x: auto; /* en celular la tabla se desliza dentro de su caja */
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.compare {
+  width: 100%;
+  min-width: 520px;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.compare th,
+.compare td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.45;
+}
+
+.compare thead th {
+  background: var(--surface-2);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+}
+
+.compare tbody th {
+  color: var(--muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.compare tr:last-child th,
+.compare tr:last-child td {
+  border-bottom: 0;
+}
+
 /* Cruz: consejos */
 .tip-grid {
   display: grid;
