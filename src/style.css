@@ -1473,6 +1473,81 @@ a.link-card:hover {
   }
 }
 
+/* ---------- Pantallas táctiles: botones de al menos ~44 px para el dedo ---------- */
+@media (pointer: coarse) {
+  .tabs a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 16px;
+  }
+
+  .event-btn {
+    min-height: 44px;
+    padding: 0 16px;
+  }
+
+  .icon-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .text-btn {
+    min-height: 44px;
+    padding: 0 12px;
+  }
+
+  /* Lista de tiempos: +2, DNF y borrar */
+  .solve-actions {
+    gap: 6px;
+  }
+
+  .solve-actions button {
+    min-width: 44px;
+    min-height: 40px;
+    font-size: 0.8rem;
+  }
+
+  .solve-time {
+    min-height: 40px;
+  }
+
+  /* Tarjetas de casos */
+  .case-controls {
+    gap: 8px;
+  }
+
+  .case-controls button {
+    width: 48px;
+    height: 44px;
+  }
+
+  .case-controls .play {
+    width: 60px;
+  }
+
+  .case-alg {
+    min-height: 44px;
+  }
+
+  .case-alts summary {
+    padding: 12px 0;
+  }
+
+  .step-index a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 14px;
+  }
+
+  .breadcrumb a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
+
 /* ---------- Movimiento reducido ---------- */
 @media (prefers-reduced-motion: reduce) {
   *:not(.pb-badge),
