@@ -3,8 +3,8 @@
 //   armadas antes y después (dl, fbFront, fbBack = primer bloque; dr, sbFront, sbBack = segundo).
 // · CMLL: los 42 casos. El grupo (O, H, Pi, U, T, S, AS, L) lo calcula el script comparando la
 //   orientación de las esquinas con OLL 21–27; los 42 tienen que ser distintos (= están todos).
-//   Los algoritmos salen de algoritmos de OLL/PLL ya verificados (el comentario dice de cuál),
-//   que respetan los bloques; tres casos usan dos algoritmos seguidos.
+//   Algoritmos estándar de CMLL (lista pública de scheopner.com) o, donde esa lista no tenía
+//   uno más corto, el más corto de una búsqueda propia; el comentario dice de dónde sale cada uno.
 // · LSE: ejemplos con M y U. Para EO, "bad" es la cantidad de aristas mal orientadas del caso;
 //   para UL/UR, "ul"/"ur" dicen dónde están esas aristas; para las últimas 4, "moved" es cuántas
 //   de esas aristas están fuera de lugar.
@@ -101,7 +101,7 @@ export const ROUX = {
     stickering: 'cmll',
     text: [
       'Con los dos bloques armados, se resuelven las cuatro esquinas de arriba en un solo algoritmo, sin importar las aristas ni la capa del medio. Son 42 casos, agrupados por cómo están giradas las esquinas (el mismo criterio que la OLL de esquinas).',
-      'Para empezar alcanza con hacerlo en dos pasos: primero orientar las esquinas (los 7 casos de la cruz de la OLL) y después permutarlas. Los algoritmos de esta lista vienen de algoritmos de OLL y PLL que ya conocés, que no tocan los bloques.',
+      'Para empezar alcanza con hacerlo en dos pasos: primero orientar las esquinas (los 7 casos de la cruz de la OLL) y después permutarlas. Los algoritmos de esta lista son los cortos y conocidos de CMLL (en general de 7 a 11 movimientos) y no tocan los bloques.',
     ],
     groups: [
       {
@@ -110,7 +110,7 @@ export const ROUX = {
         text: 'Las cuatro esquinas ya miran arriba: solo hay que permutarlas (dos casos: intercambio adyacente o en diagonal).',
         cases: [
           { id: 'cmll-o1', name: 'O 1', group: 'O', alg: "R2 F2 R' B' R F2 R' B R'" }, // PLL Aa óptimo
-          { id: 'cmll-o2', name: 'O 2', group: 'O', alg: "R' U R2 B2 U R' B2 R U' B2 R2 U' R" }, // PLL Na óptimo
+          { id: 'cmll-o2', name: 'O 2', group: 'O', alg: "R2 U2 F2 U' R2 U2 F2 U R2 U2 F2" }, // búsqueda propia (el más corto encontrado)
         ],
       },
       {
@@ -121,7 +121,7 @@ export const ROUX = {
           { id: 'cmll-h1', name: 'H 1', group: 'H', alg: "R U R' U R U' R' U R U2 R'" }, // OLL 21
           { id: 'cmll-h2', name: 'H 2', group: 'H', alg: "R U' R2 D' r U' r' D R2 U R'" }, // OLL 1
           { id: 'cmll-h3', name: 'H 3', group: 'H', alg: "R U2' R2' F R F' U2 R' F R F'" }, // OLL 1
-          { id: 'cmll-h4', name: 'H 4', group: 'H', alg: "U F (R U R' U')3 F'" }, // OLL 21
+          { id: 'cmll-h4', name: 'H 4', group: 'H', alg: "F R U R' U' R U R' U' R U R' U' F'", alts: ["F R2 F2 U2 F R2 F' U2 F2 R2 F'"] }, // estándar (lista de CMLL de scheopner.com)
         ],
       },
       {
@@ -147,7 +147,7 @@ export const ROUX = {
           { id: 'cmll-u3', name: 'U 3', group: 'U', alg: "R2' D' R U2 R' D R U2 R" }, // OLL 23
           { id: 'cmll-u4', name: 'U 4', group: 'U', alg: "F U R U2' R' U R U2 R' U' F'" }, // OLL 30 inv
           { id: 'cmll-u5', name: 'U 5', group: 'U', alg: "F2 R U' R' U R U R2' F' R F'" }, // OLL 30 inv
-          { id: 'cmll-u6', name: 'U 6', group: 'U', alg: "R U R2 F' U' F U R U2' R' F R F'" }, // OLL 18
+          { id: 'cmll-u6', name: 'U 6', group: 'U', alg: "F R2 D R' U R D' R2 U' F'" }, // estándar (lista de CMLL de scheopner.com)
         ],
       },
       {
@@ -155,12 +155,12 @@ export const ROUX = {
         title: 'T',
         text: 'Dos esquinas vecinas miran arriba y las otras dos tienen el color de arriba hacia lados opuestos.',
         cases: [
-          { id: 'cmll-t1', name: 'T 1', group: 'T', alg: "l' U' L U l F' L' F" }, // OLL 24 esp
-          { id: 'cmll-t2', name: 'T 2', group: 'T', alg: "r U R' U' r' F R F'" }, // OLL 24
+          { id: 'cmll-t1', name: 'T 1', group: 'T', alg: "L' U' L U L F' L' F" }, // estándar, mismo largo sin giros anchos ni B
+          { id: 'cmll-t2', name: 'T 2', group: 'T', alg: "R U R' U' R' F R F'" }, // estándar, mismo largo sin giros anchos ni B
           { id: 'cmll-t3', name: 'T 3', group: 'T', alg: "F R' F R2 U' R' U' R U R' F2'" }, // OLL 30
           { id: 'cmll-t4', name: 'T 4', group: 'T', alg: "F U R U2' R' U' R U2 R' U' F'" }, // OLL 30
           { id: 'cmll-t5', name: 'T 5', group: 'T', alg: "r2' D' r U r' D r2 U' r' U' r" }, // OLL 29
-          { id: 'cmll-t6', name: 'T 6', group: 'T', alg: "l' U2 L U L' U l U F' L' B' L F L' B L" }, // OLL 5 + OLL 25 esp
+          { id: 'cmll-t6', name: 'T 6', group: 'T', alg: "r' U r U2 R2 F R F' R" }, // estándar (lista de CMLL de scheopner.com)
         ],
       },
       {
@@ -168,12 +168,12 @@ export const ROUX = {
         title: 'S (Sune)',
         text: 'Una sola esquina mira arriba; las otras tres están giradas igual (forma de "pez", como en el Sune).',
         cases: [
-          { id: 'cmll-s1', name: 'S 1', group: 'S', alg: "l' U2 L U L' U l" }, // OLL 5
+          { id: 'cmll-s1', name: 'S 1', group: 'S', alg: "R U R' U R U2 R'" }, // estándar, mismo largo sin giros anchos ni B
           { id: 'cmll-s2', name: 'S 2', group: 'S', alg: "F R' F' R U2' R U2 R'" }, // OLL 8 inv
           { id: 'cmll-s3', name: 'S 3', group: 'S', alg: "L' U2 L U2 L F' L' F" }, // OLL 8 esp
-          { id: 'cmll-s4', name: 'S 4', group: 'S', alg: "F U F' R' F R U' R' F' R" }, // OLL 10
+          { id: 'cmll-s4', name: 'S 4', group: 'S', alg: "R U' L' U R' U' L" }, // estándar (lista de CMLL de scheopner.com)
           { id: 'cmll-s5', name: 'S 5', group: 'S', alg: "R U R' U R' F R F' R U2' R'" }, // OLL 10
-          { id: 'cmll-s6', name: 'S 6', group: 'S', alg: "F R' F' R U2' R U2 R2' U' F' U F R" }, // OLL 8 inv + OLL 43
+          { id: 'cmll-s6', name: 'S 6', group: 'S', alg: "R U2 R2 F2 R F R' F2 R2 U2 R'" }, // búsqueda propia (el más corto encontrado)
         ],
       },
       {
@@ -181,12 +181,12 @@ export const ROUX = {
         title: 'AS (Antisune)',
         text: 'Una sola esquina mira arriba; las otras tres están giradas igual pero hacia el otro lado (Antisune).',
         cases: [
-          { id: 'cmll-as1', name: 'AS 1', group: 'AS', alg: "l' U' L U' L' U2' l" }, // OLL 5 inv
+          { id: 'cmll-as1', name: 'AS 1', group: 'AS', alg: "L' U' L U' L' U2 L" }, // estándar, mismo largo sin giros anchos ni B
           { id: 'cmll-as2', name: 'AS 2', group: 'AS', alg: "F' L F L' U2' L' U2' L" }, // OLL 8 esp inv
           { id: 'cmll-as3', name: 'AS 3', group: 'AS', alg: "R U2' R' U2 R' F R F'" }, // OLL 8
-          { id: 'cmll-as4', name: 'AS 4', group: 'AS', alg: "R' F R U R' F' R F U' F'" }, // OLL 10 inv
+          { id: 'cmll-as4', name: 'AS 4', group: 'AS', alg: "L' U R U' L U R'" }, // estándar (lista de CMLL de scheopner.com)
           { id: 'cmll-as5', name: 'AS 5', group: 'AS', alg: "R U2 R' F R' F' R U' R U' R'" }, // OLL 10 inv
-          { id: 'cmll-as6', name: 'AS 6', group: 'AS', alg: "F' L F L' U2' L' U2' L R' U' F' U F R" }, // OLL 8 esp inv + OLL 43
+          { id: 'cmll-as6', name: 'AS 6', group: 'AS', alg: "R U2 R2 F2 R F' R' F2 R2 U2 R'" }, // búsqueda propia (el más corto encontrado)
         ],
       },
       {
@@ -194,12 +194,12 @@ export const ROUX = {
         title: 'L',
         text: 'Dos esquinas en diagonal miran arriba.',
         cases: [
-          { id: 'cmll-l1', name: 'L 1', group: 'L', alg: "F R' F' r U R U' r'" }, // OLL 24 inv
-          { id: 'cmll-l2', name: 'L 2', group: 'L', alg: "F' L F l' U' L' U l" }, // OLL 24 esp inv
+          { id: 'cmll-l1', name: 'L 1', group: 'L', alg: "F R' F' R U R U' R'" }, // estándar, mismo largo sin giros anchos ni B
+          { id: 'cmll-l2', name: 'L 2', group: 'L', alg: "F' L F L' U' L' U L" }, // estándar, mismo largo sin giros anchos ni B
           { id: 'cmll-l3', name: 'L 3', group: 'L', alg: "L U2' L D L' U2' L D' L2'" }, // OLL 23 esp inv
           { id: 'cmll-l4', name: 'L 4', group: 'L', alg: "R U2' R2' F R F' R U2' R'" }, // OLL 35
           { id: 'cmll-l5', name: 'L 5', group: 'L', alg: "R' U2' R' D' R U2' R' D R2" }, // OLL 23 inv
-          { id: 'cmll-l6', name: 'L 6', group: 'L', alg: "R U R' F' R U R' U' R' F R U' R' F R F'" }, // OLL 36
+          { id: 'cmll-l6', name: 'L 6', group: 'L', alg: "R U2 R' U' R U R' U' R U R' U' R U' R'", alts: ["R U R2 F R F' U F U2 F U2 F'"] }, // estándar (lista de CMLL de scheopner.com)
         ],
       },
     ],

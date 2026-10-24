@@ -456,22 +456,26 @@ const CMLL_GROUP_BY_ORI = new Map([
 ]);
 const cmllCases = ROUX.cmll.groups.flatMap((g) => g.cases);
 for (const c of cmllCases) {
-  const label = `Roux › CMLL › ${c.name}`;
-  const alg = parse(c.alg);
-  let ok = check(label, alg !== null, `no se puede leer "${c.alg}"`);
-  if (ok) {
-    const shown = shownCase(c.alg);
+  let ok = true;
+  const algs = [c.alg, ...(c.alts ?? [])];
+  for (const [i, text] of algs.entries()) {
+    const label = `Roux › CMLL › ${c.name}${i ? ` (alternativa ${i})` : ''}`;
+    const alg = parse(text);
+    if (!check(label, alg !== null, `no se puede leer "${text}"`)) { ok = false; continue; }
+    const shown = shownCase(text);
     ok = check(label, bothBlocks(SOLVED.applyAlg(alg)) && bothBlocks(shown), 'toca los bloques (o rota el cubo)') && ok;
     ok = check(label, !llCornersAUF(shown), 'el caso ya tiene las esquinas resueltas') && ok;
     ok = check(label, llCornersAUF(shown.applyAlg(alg)), 'no deja las 4 esquinas resueltas') && ok;
-    const group = CMLL_GROUP_BY_ORI.get(cornerOri(c.alg));
+    const group = CMLL_GROUP_BY_ORI.get(cornerOri(text));
     ok = check(label, group === c.group, `está en el grupo ${c.group} pero las esquinas son de ${group}`) && ok;
+    // Las alternativas tienen que resolver el mismo caso que el principal.
+    if (i) ok = check(label, cmllKey(text) === cmllKey(c.alg), 'no es el mismo caso que el algoritmo principal') && ok;
   }
-  results.push({ section: 'Roux · CMLL', name: c.name, algs: 1, ok });
+  results.push({ section: 'Roux · CMLL', name: c.name, algs: algs.length, ok });
 }
 check('CMLL', cmllCases.length === 42, `hay ${cmllCases.length} casos en vez de 42`);
 // Clave sin AUF antes ni después, mirando solo las esquinas de arriba.
-const cmllKey = (alg) => {
+function cmllKey(alg) {
   const t = kpuzzle.algToTransformation(new Alg(alg).invert());
   const keys = [];
   for (const pre of AUFS) for (const post of AUFS) {
@@ -479,7 +483,7 @@ const cmllKey = (alg) => {
     keys.push(LL.map((i) => `${c.pieces[i]}${c.orientation[i]}`).join(' '));
   }
   return keys.sort()[0];
-};
+}
 checkDistinct('CMLL', cmllCases, cmllKey);
 
 // LSE: solo M y U; antes: bloques y esquinas; cada paso con su objetivo.
@@ -546,15 +550,18 @@ const centersFree2 = (alg) => { try { SOLVED2.applyAlg(alg); return true; } catc
 const oriKey2 = (alg) => AUFS.map((u) => { const p = shown2(alg).applyAlg(u); return TOP2.map((i) => c2(p).orientation[i]).join(''); }).sort()[0];
 check('2x2', oriKey2("R U R' U R U2 R'") === cornerOri("R U R' U R U2 R'"), 'la numeración de esquinas de 2x2 y 3x3 no coincide');
 
+// Comprueba el algoritmo y sus alternativas; checks(shown, end, alg) da los problemas posibles.
 function run2(section, c, checks) {
-  const label = `${section} › ${c.name}`;
-  let ok = check(label, centersFree2(c.alg), `no se puede usar en 2x2: "${c.alg}"`);
-  if (ok) {
-    const shown = shown2(c.alg);
-    const end = shown.applyAlg(c.alg);
-    for (const [problem, good] of checks(shown, end)) ok = check(label, good, problem) && ok;
+  let ok = true;
+  const algs = [c.alg, ...(c.alts ?? [])];
+  for (const [i, alg] of algs.entries()) {
+    const label = `${section} › ${c.name}${i ? ` (alternativa ${i})` : ''}`;
+    if (!check(label, centersFree2(alg), `no se puede usar en 2x2: "${alg}"`)) { ok = false; continue; }
+    const shown = shown2(alg);
+    const end = shown.applyAlg(alg);
+    for (const [problem, good] of checks(shown, end, alg)) ok = check(label, good, problem) && ok;
   }
-  results.push({ section, name: c.name, algs: 1, ok });
+  results.push({ section, name: c.name, algs: algs.length, ok });
 }
 
 for (const step of BEGINNER_2X2.steps) {
@@ -616,7 +623,8 @@ check('PBL', pblKinds.size === 5, `hay ${pblKinds.size} casos distintos de PBL e
 
 const cllCases = CLL.groups.flatMap((g) => g.cases);
 for (const c of cllCases) {
-  run2('2x2 · CLL', c, (shown, end) => [
+  run2('2x2 · CLL', c, (shown, end, alg) => [
+    ['no es el mismo caso que el algoritmo principal', cllKey(alg) === cllKey(c.alg)],
     ['toca la primera capa', bottomSolved2(shown) && bottomSolved2(end)],
     ['el caso ya está resuelto', !AUFS.some((u) => TOP2.every((i) => ok2(shown.applyAlg(u || 'U4'), i)))],
     ['no deja las esquinas de arriba resueltas', AUFS.some((u) => TOP2.every((i) => ok2(u ? end.applyAlg(u) : end, i)))],
@@ -624,7 +632,7 @@ for (const c of cllCases) {
   ]);
 }
 check('CLL', cllCases.length === 42, `hay ${cllCases.length} casos en vez de 42`);
-const cllKey = (alg) => {
+function cllKey(alg) {
   const t = kp2.algToTransformation(new Alg(alg).invert());
   const keys = [];
   for (const pre of AUFS) for (const post of AUFS) {
@@ -633,7 +641,7 @@ const cllKey = (alg) => {
     keys.push(TOP2.map((i) => `${c2(q).pieces[i]}${c2(q).orientation[i]}`).join(' '));
   }
   return keys.sort()[0];
-};
+}
 checkDistinct('CLL', cllCases, cllKey);
 
 // ---------- 4x4 ----------

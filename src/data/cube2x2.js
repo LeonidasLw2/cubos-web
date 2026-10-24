@@ -2,9 +2,9 @@
 // Todo se comprueba con `npm run verify-algs` en el KPuzzle de 2x2 (que no tiene centros:
 // "resuelto" puede ser cualquier rotación del cubo entero, y el script lo tiene en cuenta).
 // · OLL de Ortega y CLL: el grupo se calcula comparando la orientación de las esquinas con
-//   OLL 21–27 del 3x3 (misma numeración de esquinas). Los algoritmos salen de algoritmos de
-//   3x3 ya verificados que usan solo caras exteriores (el comentario dice de cuál), más
-//   algunos clásicos de 2x2; los CLL que no tenían uno solo combinan dos.
+//   OLL 21–27 del 3x3 (misma numeración de esquinas). Los CLL son algoritmos estándar de 2x2/CMLL
+//   que usan solo caras exteriores o, si no había uno más corto, el más corto de una búsqueda
+//   propia (el comentario dice de dónde sale cada uno).
 // · PBL: top/bottom dicen cómo están permutadas las capas de arriba y de abajo en el caso.
 
 export const CUBE2X2 = {
@@ -134,7 +134,7 @@ export const CLL = {
         text: 'Las cuatro esquinas ya miran arriba: solo falta permutarlas.',
         cases: [
           { id: 'cll-o1', name: 'O 1', group: 'O', alg: "R2 F2 R' B' R F2 R' B R'" }, // PLL Aa óptimo
-          { id: 'cll-o2', name: 'O 2', group: 'O', alg: "R' U R2 B2 U R' B2 R U' B2 R2 U' R" }, // PLL Na óptimo
+          { id: 'cll-o2', name: 'O 2', group: 'O', alg: "R U' R' U' F2 U' R U R' U F2" }, // estándar de 2x2
         ],
       },
       {
@@ -144,8 +144,8 @@ export const CLL = {
         cases: [
           { id: 'cll-h1', name: 'H 1', group: 'H', alg: "R2 U2 R U2 R2" }, // 2x2 clásico
           { id: 'cll-h2', name: 'H 2', group: 'H', alg: "R U2' R2' F R F' U2 R' F R F'" }, // OLL 1
-          { id: 'cll-h3', name: 'H 3', group: 'H', alg: "R' F U R U' R2' F' R2 U R' U' R" }, // OLL 55
-          { id: 'cll-h4', name: 'H 4', group: 'H', alg: "U F R U R' U' R U R' U' R U R' U' F'" }, // OLL 21
+          { id: 'cll-h3', name: 'H 3', group: 'H', alg: "R U R' U R U R' F R' F' R" }, // estándar de 2x2
+          { id: 'cll-h4', name: 'H 4', group: 'H', alg: "R2 F' U2 F2 R2 F' R2", alts: ["F R U R' U' R U R' U' R U R' U' F'"] }, // búsqueda propia (el más corto encontrado)
         ],
       },
       {
@@ -158,7 +158,7 @@ export const CLL = {
           { id: 'cll-pi3', name: 'Pi 3', group: 'Pi', alg: "F R' F' R U2' F R' F' R2 U2 R'" }, // OLL 1 inv
           { id: 'cll-pi4', name: 'Pi 4', group: 'Pi', alg: "F R' F' R U2 R U' R' U R U2' R'" }, // OLL 47
           { id: 'cll-pi5', name: 'Pi 5', group: 'Pi', alg: "R U2 R' U' R U R' U2' R' F R F'" }, // OLL 47 inv
-          { id: 'cll-pi6', name: 'Pi 6', group: 'Pi', alg: "R' U R U' R2' F R2 U R' U' F' R" }, // OLL 55 inv
+          { id: 'cll-pi6', name: 'Pi 6', group: 'Pi', alg: "R' F R F' R U' R' U' R U' R'" }, // estándar de 2x2
         ],
       },
       {
@@ -169,9 +169,9 @@ export const CLL = {
           { id: 'cll-u1', name: 'U 1', group: 'U', alg: "R' U' F' U F R" }, // OLL 43
           { id: 'cll-u2', name: 'U 2', group: 'U', alg: "L2 D L' U2 L D' L' U2 L'" }, // OLL 23 esp
           { id: 'cll-u3', name: 'U 3', group: 'U', alg: "R2' D' R U2 R' D R U2 R" }, // OLL 23
-          { id: 'cll-u4', name: 'U 4', group: 'U', alg: "F U R U2' R' U R U2 R' U' F'" }, // OLL 30 inv
+          { id: 'cll-u4', name: 'U 4', group: 'U', alg: "R2 F2 R U2 R' F2 R F2 R" }, // búsqueda propia (el más corto encontrado)
           { id: 'cll-u5', name: 'U 5', group: 'U', alg: "F2 R U' R' U R U R2' F' R F'" }, // OLL 30 inv
-          { id: 'cll-u6', name: 'U 6', group: 'U', alg: "R U R2 F' U' F U R U2' R' F R F'" }, // OLL 18
+          { id: 'cll-u6', name: 'U 6', group: 'U', alg: "F R2 D R' U R D' R2 U' F'" }, // estándar de 2x2
         ],
       },
       {
@@ -179,12 +179,12 @@ export const CLL = {
         title: 'T',
         text: 'Dos esquinas vecinas miran arriba y las otras dos, hacia lados opuestos.',
         cases: [
-          { id: 'cll-t1', name: 'T 1', group: 'T', alg: "L' B' L F' L' B L F" }, // OLL 25 esp inv
-          { id: 'cll-t2', name: 'T 2', group: 'T', alg: "R B R' F R B' R' F'" }, // OLL 25 inv
-          { id: 'cll-t3', name: 'T 3', group: 'T', alg: "R' U' F' U F R3 U2 R U2 R2" }, // OLL 43 + 2x2 clásico
+          { id: 'cll-t1', name: 'T 1', group: 'T', alg: "R U R' U' R' F R F'" }, // estándar, mismo largo sin giros anchos ni B
+          { id: 'cll-t2', name: 'T 2', group: 'T', alg: "L' U' L U L F' L' F" }, // estándar, mismo largo sin giros anchos ni B
+          { id: 'cll-t3', name: 'T 3', group: 'T', alg: "R' U' F' U F R' U2 R U2 R2" }, // el mismo de antes, escrito sin R3
           { id: 'cll-t4', name: 'T 4', group: 'T', alg: "F R' F R2 U' R' U' R U R' F2'" }, // OLL 30
-          { id: 'cll-t5', name: 'T 5', group: 'T', alg: "F U R U2' R' U' R U2 R' U' F'" }, // OLL 30
-          { id: 'cll-t6', name: 'T 6', group: 'T', alg: "F R B R' F' R B' U2 R' U' R U' R'" }, // OLL 25 + OLL 26
+          { id: 'cll-t5', name: 'T 5', group: 'T', alg: "F R' U' R F' R' U F' R" }, // búsqueda propia (el más corto encontrado)
+          { id: 'cll-t6', name: 'T 6', group: 'T', alg: "R' U R U2 R2 F R F' R" }, // estándar de 2x2
         ],
       },
       {
@@ -195,9 +195,9 @@ export const CLL = {
           { id: 'cll-s1', name: 'S 1', group: 'S', alg: "R U R' U R U2' R'" }, // OLL 26 inv
           { id: 'cll-s2', name: 'S 2', group: 'S', alg: "F R' F' R U2' R U2 R'" }, // OLL 8 inv
           { id: 'cll-s3', name: 'S 3', group: 'S', alg: "L' U2 L U2 L F' L' F" }, // OLL 8 esp
-          { id: 'cll-s4', name: 'S 4', group: 'S', alg: "F U F' R' F R U' R' F' R" }, // OLL 10
+          { id: 'cll-s4', name: 'S 4', group: 'S', alg: "R U' L' U R' U' L" }, // estándar de 2x2
           { id: 'cll-s5', name: 'S 5', group: 'S', alg: "R U R' U R' F R F' R U2' R'" }, // OLL 10
-          { id: 'cll-s6', name: 'S 6', group: 'S', alg: "F R' F' R U2' R U2 R2' U' F' U F R" }, // OLL 8 inv + OLL 43
+          { id: 'cll-s6', name: 'S 6', group: 'S', alg: "F2 R U F2 R F2 U' R' F2" }, // búsqueda propia (el más corto encontrado)
         ],
       },
       {
@@ -208,9 +208,9 @@ export const CLL = {
           { id: 'cll-as1', name: 'AS 1', group: 'AS', alg: "R U2 R' U' R U' R'" }, // OLL 26
           { id: 'cll-as2', name: 'AS 2', group: 'AS', alg: "F' L F L' U2' L' U2' L" }, // OLL 8 esp inv
           { id: 'cll-as3', name: 'AS 3', group: 'AS', alg: "R U2' R' U2 R' F R F'" }, // OLL 8
-          { id: 'cll-as4', name: 'AS 4', group: 'AS', alg: "R' F R U R' F' R F U' F'" }, // OLL 10 inv
+          { id: 'cll-as4', name: 'AS 4', group: 'AS', alg: "L' U R U' L U R'" }, // estándar de 2x2
           { id: 'cll-as5', name: 'AS 5', group: 'AS', alg: "R U2 R' F R' F' R U' R U' R'" }, // OLL 10 inv
-          { id: 'cll-as6', name: 'AS 6', group: 'AS', alg: "F' L F L' U2' L' U2' L2 U F U' F' L'" }, // OLL 8 esp inv + OLL 43 esp
+          { id: 'cll-as6', name: 'AS 6', group: 'AS', alg: "F2 R U F2 R' F2 U' R' F2" }, // búsqueda propia (el más corto encontrado)
         ],
       },
       {
@@ -218,12 +218,12 @@ export const CLL = {
         title: 'L',
         text: 'Dos esquinas en diagonal miran arriba.',
         cases: [
-          { id: 'cll-l1', name: 'L 1', group: 'L', alg: "F R B R' F' R B' R'" }, // OLL 25
-          { id: 'cll-l2', name: 'L 2', group: 'L', alg: "F' L' B' L F L' B L" }, // OLL 25 esp
+          { id: 'cll-l1', name: 'L 1', group: 'L', alg: "F' L F L' U' L' U L" }, // estándar, mismo largo sin giros anchos ni B
+          { id: 'cll-l2', name: 'L 2', group: 'L', alg: "F R' F' R U R U' R'" }, // estándar, mismo largo sin giros anchos ni B
           { id: 'cll-l3', name: 'L 3', group: 'L', alg: "L U2' L D L' U2' L D' L2'" }, // OLL 23 esp inv
           { id: 'cll-l4', name: 'L 4', group: 'L', alg: "R U2' R2' F R F' R U2' R'" }, // OLL 35
           { id: 'cll-l5', name: 'L 5', group: 'L', alg: "R' U2' R' D' R U2' R' D R2" }, // OLL 23 inv
-          { id: 'cll-l6', name: 'L 6', group: 'L', alg: "R U R' F' R U R' U' R' F R U' R' F R F'" }, // OLL 36
+          { id: 'cll-l6', name: 'L 6', group: 'L', alg: "R2 U R' U2 R U2 R' U R2" }, // estándar de 2x2
         ],
       },
   ],
