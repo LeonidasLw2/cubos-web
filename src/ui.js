@@ -4,7 +4,8 @@ import { inspectionDisplay, announce, primeAudio } from './inspection.js';
 import { loadSettings, saveSettings } from './settings.js';
 import { EVENTS, DEFAULT_EVENT, getEvent, nextScramble } from './scramble.js';
 import { summarize, bestTime, effectiveTime, formatTime, formatSolve } from './stats.js';
-import { loadSolves, saveSolves, loadSelectedEvent, saveSelectedEvent } from './storage.js';
+import { loadSolves, saveSolves, loadSelectedEvent, saveSelectedEvent, isStoragePersistent } from './storage.js';
+import { buildExport, exportFileName, parseImport, mergeSolves } from './transfer.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -22,6 +23,11 @@ const els = {
   openSettings: $('open-settings'),
   settings: $('settings'),
   settingsForm: $('settings-form'),
+  exportSolves: $('export-solves'),
+  importSolves: $('import-solves'),
+  importFile: $('import-file'),
+  dataStatus: $('data-status'),
+  storageStatus: $('storage-status'),
   stats: {
     best: $('stat-best'),
     worst: $('stat-worst'),
@@ -456,7 +462,76 @@ function onSettingsChange() {
 function openSettings() {
   if (timer.state !== 'idle') return;
   fillSettingsForm();
+  els.dataStatus.textContent = '';
+  showStorageStatus();
   els.settings.showModal();
+}
+
+// ---------- Exportar / importar tiempos ----------
+
+function showDataStatus(text, kind = 'ok') {
+  els.dataStatus.textContent = text;
+  els.dataStatus.dataset.kind = kind;
+}
+
+async function showStorageStatus() {
+  const persistent = await isStoragePersistent();
+  els.storageStatus.textContent =
+    persistent === true
+      ? 'Almacenamiento protegido: el navegador no va a borrar tus tiempos.'
+      : persistent === false
+        ? 'Si el celular se queda sin espacio, el navegador podría borrar los datos de esta página. Instalar la app los protege; igual conviene exportar de vez en cuando.'
+        : '';
+}
+
+function exportSolves() {
+  const data = buildExport(Object.fromEntries(EVENTS.map((ev) => [ev.id, loadSolves(ev.id)])));
+  const total = Object.values(data.events).reduce((n, list) => n + list.length, 0);
+  if (!total) return showDataStatus('Todavía no hay tiempos para exportar.', 'error');
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = exportFileName();
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  showDataStatus(`Se exportaron ${total} ${total === 1 ? 'tiempo' : 'tiempos'}.`);
+}
+
+async function importSolves(file) {
+  let parsed;
+  try {
+    parsed = parseImport(await file.text(), EVENTS.map((ev) => ev.id));
+  } catch (err) {
+    return showDataStatus(err.message, 'error');
+  }
+  let added = 0;
+  let duplicates = 0;
+  let failed = false;
+  for (const [eventId, incoming] of Object.entries(parsed.events)) {
+    const result = mergeSolves(loadSolves(eventId), incoming);
+    added += result.added;
+    duplicates += result.duplicates;
+    if (result.added && !saveSolves(eventId, result.merged)) failed = true;
+  }
+  // La categoría que se está viendo puede haber cambiado.
+  state.solves = loadSolves(state.event);
+  state.newSolveId = null;
+  renderSession();
+
+  if (failed) return showDataStatus('No hay espacio suficiente para guardar todos los tiempos.', 'error');
+  const parts = [`Se importaron ${added} ${added === 1 ? 'tiempo' : 'tiempos'}`];
+  if (duplicates) parts.push(`${duplicates} ya ${duplicates === 1 ? 'estaba' : 'estaban'}`);
+  if (parsed.invalid) parts.push(`${parsed.invalid} con datos inválidos se ignoraron`);
+  if (parsed.unknownEvents.length) parts.push(`categorías desconocidas ignoradas: ${parsed.unknownEvents.join(', ')}`);
+  showDataStatus(`${parts.join(' · ')}.`, added ? 'ok' : 'info');
+}
+
+// La PWA solo puede recargar (para actualizar) si el timer está quieto.
+export function isTimerIdle() {
+  return timer.state === 'idle' && !els.settings.open;
 }
 
 // ---------- Inicio ----------
@@ -481,6 +556,12 @@ export function initUI() {
 
   els.openSettings.addEventListener('click', openSettings);
   els.settingsForm.addEventListener('change', onSettingsChange);
+  els.exportSolves.addEventListener('click', exportSolves);
+  els.importSolves.addEventListener('click', () => els.importFile.click());
+  els.importFile.addEventListener('change', () => {
+    const [file] = els.importFile.files;
+    if (file) importSolves(file).finally(() => (els.importFile.value = ''));
+  });
   // Clic fuera del panel (en el fondo oscuro) lo cierra.
   els.settings.addEventListener('click', (e) => {
     if (e.target === els.settings) els.settings.close();

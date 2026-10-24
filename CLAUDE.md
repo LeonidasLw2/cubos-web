@@ -23,7 +23,7 @@ Página web de speedcubing: timer, scrambles y guías de métodos para cubos de 
    - 3C (pendiente): Roux (hoy aparece como "Próximamente").
 4. Entrenador de casos (OLL/PLL/F2L al azar).
 5. ✅ Publicar en GitHub Pages (repo público `cubos-web`, deploy automático con GitHub Actions).
-6. PWA: que se pueda instalar como app y funcione sin conexión.
+6. ✅ PWA: instalable en Android, funciona sin conexión, aviso de versión nueva, almacenamiento persistente y exportar/importar tiempos.
 
 Orden de trabajo (cambió después de la 3B): 5 (publicar) → 6 (PWA) → 3C (Roux) → 4 (entrenador).
 Trabajar una etapa a la vez; no adelantar etapas sin que se pida.
@@ -46,6 +46,11 @@ Trabajar una etapa a la vez; no adelantar etapas sin que se pida.
   - `modulePreload: false`, `cssCodeSplit: false` y el ayudante `preload-helper` de Vite en su propio archivo (`codeSplitting.groups`).
   - `setSearchDebug({ prioritizeEsbuildWorkaroundForWorkerInstantiation: true })` evita un 404 al arrancar el worker.
   - Antes de publicar algo que toque cubing.js, probar el build con `npm run build` + `npm run preview` (el servidor de desarrollo no muestra estos problemas).
+- PWA (`vite-plugin-pwa`, configurada en `vite.config.js`; registro y aviso en `src/pwa.js`):
+  - Manifest con `start_url`, `scope` e `id` = `/cubos-web/`. Íconos propios: `public/icon.svg` y `public/icon-maskable.svg`; los PNG se regeneran con `npm run icons`.
+  - El service worker guarda en caché TODO el build (incluidos los workers y archivos de cubing.js). Si se agregan otros tipos de archivo, sumarlos a `globPatterns`.
+  - `registerType: 'prompt'`: la página NUNCA se recarga sola. Aparece "Hay una versión nueva — Actualizar"; el aviso se oculta durante inspección/resolución y el botón solo recarga si el timer está quieto (`isTimerIdle` en ui.js).
+  - Datos: se pide `navigator.storage.persist()`; en Ajustes, "Exportar/Importar tiempos" (`src/transfer.js`, formato `cubos-web/tiempos` v1). Al importar no se duplican tiempos (mismo id, o mismo tiempo y fecha).
 - Comentarios breves en español.
 - Diseño oscuro, moderno, con acentos en los 6 colores del cubo. Debe funcionar bien en celular.
 - Explicar los cambios en español; el usuario está aprendiendo.

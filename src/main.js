@@ -1,7 +1,8 @@
 // Punto de entrada: estilos, timer y navegación entre vistas.
 import './style.css';
-import { initUI, setTimerActive } from './ui.js';
+import { initUI, setTimerActive, isTimerIdle } from './ui.js';
 import { startRouter } from './router.js';
+import { initPWA } from './pwa.js';
 
 const views = {
   timer: document.getElementById('view-timer'),
@@ -38,3 +39,5 @@ async function showRoute(route) {
 
 initUI();
 startRouter(showRoute);
+// Service worker (sin conexión + aviso de versión nueva). Solo actualiza con el timer quieto.
+initPWA({ canUpdate: isTimerIdle });

@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#0e1014" />
     <meta name="description" content="Timer de speedcubing con scrambles oficiales, estadísticas y guías de métodos." />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png" />
+    <!-- El enlace al manifest lo agrega vite-plugin-pwa al armar la página. -->
     <title>Cubos · Timer</title>
   </head>
   <body>
@@ -128,7 +130,28 @@
           </div>
         </fieldset>
       </form>
+
+      <!-- Fuera del formulario: estos botones no son ajustes que se guardan. -->
+      <section class="settings-data" aria-labelledby="data-title">
+        <h3 id="data-title">Tus tiempos</h3>
+        <p class="data-help">Pasá tus tiempos a otro dispositivo con un archivo: exportás acá e importás allá.</p>
+        <div class="data-actions">
+          <button class="data-btn" id="export-solves" type="button">Exportar tiempos</button>
+          <button class="data-btn" id="import-solves" type="button">Importar tiempos</button>
+          <input id="import-file" type="file" accept="application/json,.json" hidden />
+        </div>
+        <p class="data-status" id="data-status" role="status" aria-live="polite"></p>
+        <p class="data-help" id="storage-status"></p>
+      </section>
     </dialog>
+
+    <!-- Aviso de versión nueva: nunca recarga sola; se oculta durante una inspección o resolución. -->
+    <div class="update-banner fadeable" id="update-banner" role="status" hidden>
+      <span>Hay una versión nueva</span>
+      <button class="update-btn" id="update-btn" type="button">Actualizar</button>
+      <button class="update-dismiss" id="update-dismiss" type="button" aria-label="Cerrar aviso">✕</button>
+    </div>
+    <div class="offline-toast" id="offline-toast" role="status" hidden>Lista para usar sin conexión</div>
 
     <script type="module" src="/src/main.js"></script>
   </body>

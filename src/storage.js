@@ -10,20 +10,24 @@ function read(key, fallback) {
   }
 }
 
+// Devuelve false si no se pudo guardar.
 function write(key, value) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
+    return true;
   } catch {
     // Sin espacio o almacenamiento bloqueado: la app sigue funcionando en memoria.
+    return false;
   }
 }
 
 const isPenalty = (p) => p === '+2' || p === 'DNF';
 
 // Asegura el formato { id, time, penalty, autoPenalty, scramble, date } en datos
-// guardados por versiones anteriores o incompletos. Descarta solo lo que no tiene tiempo.
-function normalizeSolve(raw, index) {
-  if (!raw || typeof raw.time !== 'number' || !Number.isFinite(raw.time)) return null;
+// guardados por versiones anteriores, incompletos o importados de un archivo.
+// Descarta solo lo que no tiene un tiempo válido. Es pura (no toca localStorage).
+export function normalizeSolve(raw, index) {
+  if (!raw || typeof raw.time !== 'number' || !Number.isFinite(raw.time) || raw.time < 0) return null;
   return {
     id: typeof raw.id === 'string' ? raw.id : `old-${index}-${raw.time}`,
     time: raw.time,
@@ -42,8 +46,31 @@ export function loadSolves(eventId) {
   return solves.map(normalizeSolve).filter(Boolean);
 }
 
+// Devuelve false si no se pudo guardar (por ejemplo, sin espacio).
 export function saveSolves(eventId, solves) {
-  write(`${PREFIX}:solves:${eventId}`, solves);
+  return write(`${PREFIX}:solves:${eventId}`, solves);
+}
+
+// Pide que el navegador no borre los datos de la página cuando falta espacio
+// (Android lo hace con las páginas que no están protegidas).
+// Devuelve 'granted', 'denied' o 'unsupported'.
+export async function requestPersistentStorage() {
+  try {
+    if (!navigator.storage?.persist) return 'unsupported';
+    if (await navigator.storage.persisted()) return 'granted';
+    return (await navigator.storage.persist()) ? 'granted' : 'denied';
+  } catch {
+    return 'unsupported';
+  }
+}
+
+// Solo consulta (sin pedir): para mostrar el estado en Ajustes.
+export async function isStoragePersistent() {
+  try {
+    return navigator.storage?.persisted ? await navigator.storage.persisted() : null;
+  } catch {
+    return null;
+  }
 }
 
 export function loadSelectedEvent(fallback) {
