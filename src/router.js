@@ -31,8 +31,9 @@ export function parseRoute(hash) {
 export function startRouter(onRoute) {
   const handle = () => {
     const route = parseRoute(location.hash);
-    // Corrige la URL si estaba vacía o no existía (sin agregar una entrada al historial).
-    if (route.notFound || location.hash === '') history.replaceState(null, '', DEFAULT_HASH);
+    // Corrige la URL si estaba vacía o no existía (sin agregar una entrada al historial
+    // y sin perder lo que el historial de navegación guardó en history.state).
+    if (route.notFound || location.hash === '') history.replaceState(history.state, '', DEFAULT_HASH);
     onRoute(route);
   };
   window.addEventListener('hashchange', handle);

@@ -82,6 +82,24 @@ button:focus-visible {
   letter-spacing: 0.02em;
 }
 
+/* Atrás / Adelante */
+.history-nav {
+  display: flex;
+  gap: 4px;
+  margin-left: 6px;
+}
+
+.history-nav .icon-btn {
+  width: 34px;
+  height: 34px;
+  color: var(--text);
+}
+
+.history-nav .icon-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
 .logo {
   display: grid;
   grid-template-columns: repeat(3, 8px);
@@ -1434,6 +1452,15 @@ a.link-card:hover {
     right: 14px;
   }
 
+  /* Flechas a la derecha de la fila del logo (dejando lugar al engranaje en el timer) */
+  .history-nav {
+    margin-left: auto;
+  }
+
+  body[data-view='timer'] .brand {
+    padding-right: 56px;
+  }
+
   .events {
     margin-left: 0;
   }
@@ -1487,7 +1514,8 @@ a.link-card:hover {
     padding: 0 16px;
   }
 
-  .icon-btn {
+  .icon-btn,
+  .history-nav .icon-btn {
     width: 44px;
     height: 44px;
   }

@@ -17,6 +17,15 @@
           <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
         </span>
         <h1>Cubos</h1>
+        <!-- Atrás / Adelante: hacen falta sobre todo en la app instalada (no tiene barra del navegador). -->
+        <div class="history-nav" role="group" aria-label="Historial">
+          <button class="icon-btn" id="nav-back" type="button" title="Atrás" aria-label="Atrás" disabled>
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+          </button>
+          <button class="icon-btn" id="nav-forward" type="button" title="Adelante" aria-label="Adelante" disabled>
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6" /></svg>
+          </button>
+        </div>
       </div>
       <nav class="tabs" aria-label="Secciones">
         <a href="#/timer" data-view="timer">Timer</a>
@@ -152,6 +161,7 @@
       <button class="update-dismiss" id="update-dismiss" type="button" aria-label="Cerrar aviso">✕</button>
     </div>
     <div class="offline-toast" id="offline-toast" role="status" hidden>Lista para usar sin conexión</div>
+    <div class="offline-toast" id="exit-toast" role="status" hidden>Tocá atrás otra vez para salir</div>
 
     <script type="module" src="/src/main.js"></script>
   </body>
