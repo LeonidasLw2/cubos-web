@@ -5,29 +5,43 @@ import { OLL, OLL_2LOOK } from './data/oll.js';
 import { F2L, describeF2L } from './data/f2l.js';
 import { CROSS } from './data/cross.js';
 import { createCaseCard } from './case-card.js';
+import { METHOD_PAGES, methodHref } from './data/method-pages.js';
 
-// Métodos y sus partes. href null = "Próximamente".
-const METHODS = [
-  {
-    title: 'Principiante',
-    text: 'Capa por capa. El primer método para aprender a armar el cubo.',
-    href: '#/metodos/principiante',
-    accent: 'green',
-  },
-  {
-    title: 'CFOP',
-    text: 'Cruz, F2L, OLL y PLL. El método más usado en speedcubing.',
-    href: '#/metodos/cfop',
-    accent: 'blue',
-  },
-  { title: 'Roux', text: 'Bloques y la capa del medio al final. Muy eficiente en movimientos.', href: null, accent: 'orange' },
+// Enlace a una página de Métodos, o null si todavía es "Próximamente".
+const linkTo = (sub) => (METHOD_PAGES[sub] && METHOD_PAGES[sub].page !== 'soon' ? methodHref(sub) : null);
+
+// Puzzles de la portada de Métodos.
+const PUZZLES = [
+  { title: '2x2', text: 'El cubo de bolsillo: sin centros fijos. Principiante, Ortega y CLL.', href: linkTo('2x2'), accent: 'orange' },
+  { title: '3x3', text: 'El clásico. Método principiante, CFOP y Roux.', href: linkTo('3x3'), accent: 'blue' },
+  { title: '4x4', text: 'Reducción a 3x3, paridades y método Yau.', href: linkTo('4x4'), accent: 'green' },
 ];
 
+// Métodos de cada puzzle (las páginas que todavía no existen salen como "Próximamente").
+const PUZZLE_METHODS = {
+  '3x3': {
+    intro: 'Tres métodos para el 3x3: empezá por el principiante y, cuando lo domines, pasá a CFOP (el más usado) o a Roux.',
+    methods: [
+      { title: 'Principiante', text: 'Capa por capa. El primer método para aprender a armar el cubo.', href: linkTo('3x3/principiante'), accent: 'green' },
+      { title: 'CFOP', text: 'Cruz, F2L, OLL y PLL. El método más usado en speedcubing.', href: linkTo('3x3/cfop'), accent: 'blue' },
+      { title: 'Roux', text: 'Bloques y la capa del medio al final. Muy eficiente en movimientos.', href: linkTo('3x3/roux'), accent: 'orange' },
+    ],
+  },
+  '2x2': {
+    intro: 'El 2x2 es como un 3x3 sin aristas ni centros. Se puede armar con lo que ya sabés del 3x3 o con métodos propios más rápidos.',
+    methods: [],
+  },
+  '4x4': {
+    intro: 'El 4x4 se arma casi siempre "reduciéndolo" a un 3x3: primero los centros y las aristas, y después como un 3x3, con un par de casos nuevos (las paridades).',
+    methods: [],
+  },
+};
+
 const CFOP_PARTS = [
-  { title: '1. Cruz', text: 'Armar la cruz en pocos movimientos, planeada en la inspección.', href: '#/metodos/cfop/cruz', accent: 'white' },
-  { title: '2. F2L', text: 'Las dos primeras capas de a pares esquina-arista: 41 casos.', href: '#/metodos/cfop/f2l', accent: 'green' },
-  { title: '3. OLL', text: 'Orientar la última capa: 57 casos (o 10 en dos pasos).', href: '#/metodos/cfop/oll', accent: 'yellow' },
-  { title: '4. PLL', text: 'Permutar la última capa: 21 casos.', href: '#/metodos/cfop/pll', accent: 'red' },
+  { title: '1. Cruz', text: 'Armar la cruz en pocos movimientos, planeada en la inspección.', href: linkTo('3x3/cfop/cruz'), accent: 'white' },
+  { title: '2. F2L', text: 'Las dos primeras capas de a pares esquina-arista: 41 casos.', href: linkTo('3x3/cfop/f2l'), accent: 'green' },
+  { title: '3. OLL', text: 'Orientar la última capa: 57 casos (o 10 en dos pasos).', href: linkTo('3x3/cfop/oll'), accent: 'yellow' },
+  { title: '4. PLL', text: 'Permutar la última capa: 21 casos.', href: linkTo('3x3/cfop/pll'), accent: 'red' },
 ];
 
 const escape = (s) => s.replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
@@ -39,7 +53,7 @@ function el(html) {
   return tpl.content.firstElementChild;
 }
 
-// Migas de pan: [['Métodos', '#/metodos'], ['CFOP', '#/metodos/cfop'], ['PLL']]
+// Migas de pan: [['Métodos', '#/metodos'], ['3x3', '#/metodos/3x3'], …]; la última es la página actual.
 function breadcrumb(items) {
   const parts = items.map(([label, href], i) =>
     href && i < items.length - 1 ? `<a href="${href}">${escape(label)}</a>` : `<span aria-current="page">${escape(label)}</span>`,
@@ -91,20 +105,35 @@ function caseSection({ id, title, count, text, cases, stickering }) {
 
 // ---------- Páginas ----------
 
-function indexPage() {
+function indexPage(route) {
   return el(`<div class="methods-page">
-    ${breadcrumb([['Métodos']])}
+    ${breadcrumb(route.crumbs)}
     <header class="page-head">
       <h2>Métodos</h2>
-      <p>Guías paso a paso para armar el 3x3, con cada caso animado.</p>
+      <p>Guías paso a paso para armar cada puzzle, con los casos animados. Elegí un puzzle.</p>
     </header>
-    ${linkCards(METHODS)}
+    ${linkCards(PUZZLES)}
   </div>`);
 }
 
-function cfopPage() {
+function puzzlePage(route) {
+  const data = PUZZLE_METHODS[route.puzzle];
+  const body = data.methods.length
+    ? linkCards(data.methods)
+    : '<div class="soon-page"><span class="soon-badge">Próximamente</span><p>Los métodos de este puzzle todavía no están listos.</p></div>';
   return el(`<div class="methods-page">
-    ${breadcrumb([['Métodos', '#/metodos'], ['CFOP']])}
+    ${breadcrumb(route.crumbs)}
+    <header class="page-head">
+      <h2>${escape(route.title)}</h2>
+      <p>${escape(data.intro)}</p>
+    </header>
+    ${body}
+  </div>`);
+}
+
+function cfopPage(route) {
+  return el(`<div class="methods-page">
+    ${breadcrumb(route.crumbs)}
     <header class="page-head">
       <h2>CFOP</h2>
       <p>También llamado método Fridrich. Se arma la cruz, después las dos primeras capas (F2L) de a pares, y la última capa en dos pasos: orientar (OLL) y permutar (PLL).</p>
@@ -113,15 +142,15 @@ function cfopPage() {
   </div>`);
 }
 
-function beginnerPage() {
+function beginnerPage(route) {
   const page = el(`<div class="methods-page">
-    ${breadcrumb([['Métodos', '#/metodos'], ['Principiante']])}
+    ${breadcrumb(route.crumbs)}
     <header class="page-head">
       <h2>${escape(BEGINNER.title)}</h2>
       ${paragraphs(BEGINNER.intro)}
     </header>
     <ol class="step-index">
-      ${BEGINNER.steps.map((s) => `<li><a href="#/metodos/principiante" data-step="${s.id}">${escape(s.title)}</a></li>`).join('')}
+      ${BEGINNER.steps.map((s) => `<li><a href="#" data-step="${s.id}">${escape(s.title)}</a></li>`).join('')}
     </ol>
   </div>`);
 
@@ -145,10 +174,10 @@ function beginnerPage() {
   return page;
 }
 
-// Encabezado común de las partes de CFOP.
-function cfopHead(data, crumb) {
+// Encabezado común de las páginas de casos.
+function pageHead(data, route) {
   return el(`<div class="methods-page">
-    ${breadcrumb([['Métodos', '#/metodos'], ['CFOP', '#/metodos/cfop'], [crumb]])}
+    ${breadcrumb(route.crumbs)}
     <header class="page-head">
       <h2>${escape(data.title)} <small>${escape(data.subtitle)}</small></h2>
       ${paragraphs(data.intro)}
@@ -157,8 +186,8 @@ function cfopHead(data, crumb) {
 }
 
 // Página con grupos de casos (PLL, OLL, F2L) e índice para saltar entre grupos.
-function groupedPage(data, crumb, mapCase = (c) => c) {
-  const page = cfopHead(data, crumb);
+function groupedPage(data, route, mapCase = (c) => c) {
+  const page = pageHead(data, route);
   page.append(sectionIndex(data.groups));
   for (const group of data.groups) {
     page.append(
@@ -175,21 +204,21 @@ function groupedPage(data, crumb, mapCase = (c) => c) {
   return page;
 }
 
-function pllPage() {
-  return groupedPage(PLL, 'PLL');
+function pllPage(route) {
+  return groupedPage(PLL, route);
 }
 
-function f2lPage() {
+function f2lPage(route) {
   let n = 0;
-  return groupedPage(F2L, 'F2L', (c) => ({
+  return groupedPage(F2L, route, (c) => ({
     ...c,
     name: `Caso ${++n}`,
     description: describeF2L(c), // generada desde la posición verificada
   }));
 }
 
-function ollPage() {
-  const page = cfopHead(OLL, 'OLL');
+function ollPage(route) {
+  const page = pageHead(OLL, route);
   page.append(
     sectionIndex([{ id: '2-pasos', title: 'OLL en 2 pasos' }, ...OLL.groups]),
   );
@@ -236,8 +265,8 @@ function ollPage() {
   return page;
 }
 
-function crossPage() {
-  const page = cfopHead(CROSS, 'Cruz');
+function crossPage(route) {
+  const page = pageHead(CROSS, route);
   page.append(
     el(`<div class="tip-grid">
       ${CROSS.tips.map((t, i) => `<article class="tip-card"><span class="tip-number">${i + 1}</span><h3>${escape(t.title)}</h3><p>${escape(t.text)}</p></article>`).join('')}
@@ -255,20 +284,23 @@ function crossPage() {
   return page;
 }
 
-function soonPage(title) {
+function soonPage(route) {
+  const title = route.title;
   return el(`<div class="methods-page">
-    ${breadcrumb([['Métodos', '#/metodos'], [title]])}
+    ${breadcrumb(route.crumbs)}
     <div class="soon-page">
       <span class="soon-badge">Próximamente</span>
       <h2>${escape(title)}</h2>
-      <p>Esta parte todavía no está lista. Mientras tanto podés ver el método principiante o la PLL.</p>
-      <p><a class="text-link" href="#/metodos">Volver a Métodos</a></p>
+      <p>Esta parte todavía no está lista. Mientras tanto podés ver los otros métodos.</p>
+      <p><a class="text-link" href="${route.crumbs.at(-2)?.[1] ?? '#/metodos'}">Volver</a></p>
     </div>
   </div>`);
 }
 
 const PAGES = {
   index: indexPage,
+  puzzle: puzzlePage,
+  soon: soonPage,
   cfop: cfopPage,
   beginner: beginnerPage,
   cross: crossPage,
@@ -279,6 +311,6 @@ const PAGES = {
 
 // Muestra la página de la ruta dentro del contenedor.
 export function renderMethods(container, route) {
-  const page = route.page === 'soon' ? soonPage(route.title) : PAGES[route.page]();
+  const page = PAGES[route.page](route);
   container.replaceChildren(page);
 }
