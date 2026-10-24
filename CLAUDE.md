@@ -6,7 +6,8 @@ Página web de speedcubing: timer, scrambles y guías de métodos para cubos de 
 - Vite + JavaScript (sin framework) + CSS.
 - Librería `cubing.js` para scrambles (`randomScrambleForEvent`) y visualización (`<twisty-player>`).
 - Datos guardados en `localStorage` (no hay servidor).
-- Se publicará en GitHub Pages.
+- Publicada en GitHub Pages: https://leonidaslw2.github.io/cubos-web/ (repo público https://github.com/LeonidasLw2/cubos-web).
+  - En local también vive en la subcarpeta: http://localhost:5173/cubos-web/ (dev) y http://localhost:4173/cubos-web/ (`npm run preview`, sirve el build).
 
 ## Categorías del timer (IDs WCA de cubing.js)
 2x2 `222` · 3x3 `333` · 4x4 `444` · 5x5 `555` · 7x7 `777` · Megaminx `minx` · Pyraminx `pyram`
@@ -21,7 +22,7 @@ Página web de speedcubing: timer, scrambles y guías de métodos para cubos de 
    - ✅ 3B: CFOP cruz (consejos + ejemplos óptimos), F2L (41 casos con la idea de cada uno), OLL (57 casos por forma + OLL en 2 pasos).
    - 3C (pendiente): Roux (hoy aparece como "Próximamente").
 4. Entrenador de casos (OLL/PLL/F2L al azar).
-5. Publicar en GitHub Pages (repo público `cubos-web`, deploy automático con GitHub Actions).
+5. ✅ Publicar en GitHub Pages (repo público `cubos-web`, deploy automático con GitHub Actions).
 6. PWA: que se pueda instalar como app y funcione sin conexión.
 
 Orden de trabajo (cambió después de la 3B): 5 (publicar) → 6 (PWA) → 3C (Roux) → 4 (entrenador).
@@ -39,6 +40,12 @@ Trabajar una etapa a la vez; no adelantar etapas sin que se pida.
     - F2L: cada caso guarda `corner`/`edge` (dónde está cada pieza) y `pair` (la parte que arma el par); el script comprueba las dos cosas y que los 41 casos sean distintos (= están todos). El slot es siempre el de adelante a la derecha y los algoritmos no usan rotaciones.
     - Cruz: `scripts/lib/cross-solver.js` recorre las 190.080 posiciones de la cruz; los ejemplos tienen que ser óptimos. Las mezclas se hacen con blanco arriba y verde al frente, y se resuelve después de `z2`.
   - Para verificar que el verificador sirve: romper algo a propósito y comprobar que falla.
+- Deploy: `.github/workflows/deploy.yml` corre en cada push a `main`: `npm ci` → `npm test` → `npm run verify-algs` → `npm run build` → publica `dist/`. Si un paso falla, no se publica (queda la versión anterior). También se puede lanzar a mano desde la pestaña Actions.
+- Build (`vite.config.js`): `base: '/cubos-web/'`. Para que el worker de scrambles de cubing.js funcione en el build:
+  - `cubing/scramble` y `cubing/twisty` se importan con `import()` dinámico (nunca estático): su código no puede quedar en el archivo principal, porque el worker lo importaría junto con la interfaz (que usa `document`).
+  - `modulePreload: false`, `cssCodeSplit: false` y el ayudante `preload-helper` de Vite en su propio archivo (`codeSplitting.groups`).
+  - `setSearchDebug({ prioritizeEsbuildWorkaroundForWorkerInstantiation: true })` evita un 404 al arrancar el worker.
+  - Antes de publicar algo que toque cubing.js, probar el build con `npm run build` + `npm run preview` (el servidor de desarrollo no muestra estos problemas).
 - Comentarios breves en español.
 - Diseño oscuro, moderno, con acentos en los 6 colores del cubo. Debe funcionar bien en celular.
 - Explicar los cambios en español; el usuario está aprendiendo.
