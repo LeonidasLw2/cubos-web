@@ -9,7 +9,7 @@ Este documento registra el plan de trabajo en fases (A–G) y su estado actual.
 - [x] **Fase D:** Nueva sección de Notación (`#/notacion`) con parser verificable y animaciones.
 - [x] **Fase E:** Inicio de sesión (Google / Firebase Auth) y sincronización en la nube (Firestore local-first).
 - [x] **Fase F:** Nueva sección Solver (`#/solver`) para 2x2, 3x3, 4x4, 5x5 y Pyraminx con verificación KPuzzle.
-- [ ] **Fase G:** Revisión final integral, tests, build y reporte.
+- [x] **Fase G:** Revisión final integral, tests, build y reporte.
 
 ---
 
