@@ -27,7 +27,12 @@ Este documento registra el plan de trabajo en fases (A–G) y su estado actual.
   - *Categoría Timer:* Agregado `{ id: 'mirror', name: 'Mirror', puzzle: 'mirror', view: '2D', scrambleEvent: '333' }` a `EVENTS` en `src/scramble.js`. Utiliza scrambles reales de `randomScrambleForEvent('333')`.
   - *Vista previa:* Monta el visor Mirror 3D/2D para previsualizar la mezcla antes de resolver; en celular selecciona vista 2D por defecto y permite alternar a 3D.
   - *Persistencia, importación y nube:* Historial y estadísticas independientes en `cubos-web:solves:mirror`, exportación e importación probadas en `tests/transfer.test.js` con compatibilidad hacia atrás total y sincronización Firestore automática por mapeo de `EVENTS`.
-- [ ] **Fase 4 (Mirror):** Métodos (`#/metodos/mirror`, reconocimiento por forma, principiante adaptado, portada y `method-pages.js`).
+- [x] **Fase 4 (Mirror):** Métodos (`#/metodos/mirror`, reconocimiento por forma, principiante adaptado, portada y `method-pages.js`).
+  - *Página de método:* Creada `src/data/mirror-method.js` con los 7 pasos del método principiante adaptados al Mirror Cube (cruz en capa gruesa, esquinas de la base, aristas medias, cruz superior, orientar esquinas, permutar esquinas y permutar aristas) reutilizando los mismos 17 algoritmos verificados de `src/data/beginner.js`.
+  - *Guías específicas:* Bloque de identificación por alturas de centros, piezas al ras y grosor, más sección explicativa sobre cómo aplicar CFOP en el Mirror Cube y enlace directo a `#/metodos/3x3/cfop`.
+  - *Modal y tarjeta de caso:* Botón interactivo "🎨 Ver con colores / 🪞 Ver Mirror" en la barra de herramientas del modal de animación para comparar inmediatamente la pieza metálica con su sticker de color correspondiente. Miniaturas isométricas metálicas en `src/case-preview.js`.
+  - *Navegación y portada:* Tarjeta de Mirror Cube agregada a la grilla de portadas en `#/metodos`, entrada registrada en `src/data/method-pages.js` y `PAGE_METADATA` con chips, estadísticas, consejos y errores comunes específicos.
+  - *Verificación:* `scripts/verify-algs.js` verifica todos los casos con KPuzzle (357 casos y 428 algoritmos validados).
 - [ ] **Fase 5 (Mirror):** Notación (Mirror en `#/notacion`, animación en visor 3D y probador de secuencias).
 - [ ] **Fase 6 (Mirror):** Solver (modo "Deshacer mezcla" animado en visor Mirror).
 - [ ] **Fase 7 (Mirror):** Entrenador (casos en Mirror si aplica).

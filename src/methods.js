@@ -18,6 +18,7 @@ import { CUBE5X5, REDUCTION_5X5, YAU5 } from './data/cube5x5.js';
 import { CUBE7X7, REDUCTION_7X7 } from './data/cube7x7.js';
 import { MEGAMINX, MEGAMINX_STANDARD } from './data/megaminx.js';
 import { PYRAMINX, PYRAMINX_BEGINNER, PYRAMINX_ADVANCED } from './data/pyraminx.js';
+import { MIRROR_METHOD } from './data/mirror-method.js';
 import { PAGE_METADATA, UNIFIED_COUNTS, CFOP_BADGE } from './data/methods-metadata.js';
 import { createCaseCard, mountHeroPlayer, openSharedCaseModal } from './case-card.js';
 import { cubeSvg } from './cube-art.js';
@@ -106,6 +107,14 @@ const PUZZLES = [
     accent: 'green',
     customSvg: pyraminxSvg(),
     tag: 'Principiante · Keyhole · L4E',
+  },
+  {
+    title: 'Mirror Cube',
+    text: 'El 3x3 que se desforma: mismo mecanismo y notación, pero las piezas se reconocen por grosor y relieve.',
+    href: linkTo('mirror'),
+    accent: 'celeste',
+    art: { n: 3, top: '#e2e6ec', left: '#9ea5b1', right: '#c4cad4' },
+    tag: 'Monocromo · Reconocimiento por forma',
   },
 ];
 
@@ -1408,6 +1417,50 @@ function pyraminxAdvancedPage(route) {
   return stepsPage(PYRAMINX_ADVANCED, route, 'pyraminx', 'pyraminxAdvanced');
 }
 
+function mirrorPage(route) {
+  const page = stepsPage(MIRROR_METHOD, route, 'mirror', 'mirror');
+
+  // Sección explicativa: Cómo identificar las piezas
+  const recognitionSection = el(`<section class="other-methods-card" style="margin-top: 24px;">
+    <div class="other-methods-head">
+      <span class="presentation-badge">Reconocimiento</span>
+      <h4>Cómo identificar las piezas en el Mirror</h4>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-top: 12px;">
+      ${MIRROR_METHOD.recognitionGuide
+        .map(
+          (g) => `
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 10px; padding: 14px;">
+          <h5 style="margin: 0 0 6px; color: var(--accent); font-size: 0.95rem;">${g.title}</h5>
+          <p style="margin: 0; font-size: 0.85rem; color: var(--muted); line-height: 1.45;">${g.desc}</p>
+        </div>`
+        )
+        .join('')}
+    </div>
+  </section>`);
+  page.append(recognitionSection);
+
+  // Sección explicativa: CFOP en el Mirror
+  const cfopSection = el(`<section class="other-methods-card" style="margin-top: 20px;">
+    <div class="other-methods-head">
+      <span class="presentation-badge">Nivel Avanzado</span>
+      <h4>${MIRROR_METHOD.cfopGuide.title}</h4>
+    </div>
+    <p style="margin: 8px 0 10px; font-size: 0.88rem; color: var(--muted); line-height: 1.5;">
+      ${MIRROR_METHOD.cfopGuide.desc}
+    </p>
+    <ul style="margin: 0 0 14px; padding-left: 20px; font-size: 0.86rem; color: var(--text); line-height: 1.55;">
+      ${MIRROR_METHOD.cfopGuide.points.map((pt) => `<li>${pt}</li>`).join('')}
+    </ul>
+    <p style="margin: 0;">
+      <a class="text-link" href="${MIRROR_METHOD.cfopGuide.linkHref}">${MIRROR_METHOD.cfopGuide.linkText}</a>
+    </p>
+  </section>`);
+  page.append(cfopSection);
+
+  return page;
+}
+
 function groupedStagePage(data, route, metaKey, mapCase = (c) => c, extraBeforeCases = null) {
   const meta = PAGE_METADATA[metaKey] ?? {};
   const page = el(`<div class="methods-page">
@@ -1884,6 +1937,7 @@ const RENDERERS = {
   megaminxStandard: megaminxStandardPage,
   pyraminxBeginner: pyraminxBeginnerPage,
   pyraminxAdvanced: pyraminxAdvancedPage,
+  mirror: mirrorPage,
   pll: pllPage,
   oll: ollPage,
   f2l: f2lPage,

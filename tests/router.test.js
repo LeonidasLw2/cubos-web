@@ -39,6 +39,7 @@ test('páginas de métodos ordenadas por puzzle', () => {
   assert.equal(parseRoute('#/metodos/pyraminx').puzzle, 'pyraminx');
   assert.equal(parseRoute('#/metodos/pyraminx/principiante').page, 'pyraminxBeginner');
   assert.equal(parseRoute('#/metodos/pyraminx/avanzados').page, 'pyraminxAdvanced');
+  assert.equal(parseRoute('#/metodos/mirror').page, 'mirror');
 });
 
 test('migas de pan', () => {

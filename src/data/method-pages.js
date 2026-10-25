@@ -37,6 +37,8 @@ export const METHOD_PAGES = {
   pyraminx: { title: 'Pyraminx', page: 'puzzle', puzzle: 'pyraminx' },
   'pyraminx/principiante': { title: 'Principiante', page: 'pyraminxBeginner' },
   'pyraminx/avanzados': { title: 'Keyhole y L4E', page: 'pyraminxAdvanced' },
+
+  mirror: { title: 'Mirror Cube', page: 'mirror' },
 };
 
 // Rutas de antes de ordenar los métodos por puzzle: se redirigen a las nuevas,

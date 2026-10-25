@@ -103,6 +103,7 @@ function ensureCaseModal() {
         <div class="case-modal-toolbar">
           <button type="button" class="chip-btn" id="case-modal-vis" title="Alternar vista 3D / 2D">Vista: 3D</button>
           <button type="button" class="chip-btn" id="case-modal-camera" title="Rotar cámara para ver la cara trasera">Ver desde atrás</button>
+          <button type="button" class="chip-btn" id="case-modal-colors" title="Ver como 3x3 de colores para aprender a reconocer las piezas" hidden>Ver con colores</button>
           <button type="button" class="chip-btn" id="case-modal-speed" title="Cambiar velocidad">Velocidad: 1.3×</button>
         </div>
       </div>
@@ -121,6 +122,7 @@ function ensureCaseModal() {
   const stageEl = modalEl.querySelector('#case-modal-stage');
   const visBtn = modalEl.querySelector('#case-modal-vis');
   const camBtn = modalEl.querySelector('#case-modal-camera');
+  const colorsBtn = modalEl.querySelector('#case-modal-colors');
   const speedBtn = modalEl.querySelector('#case-modal-speed');
   const algsBox = modalEl.querySelector('#case-modal-algs');
 
@@ -182,6 +184,30 @@ function ensureCaseModal() {
     camBtn.textContent = activeModalState.backCamera ? 'Ver desde el frente' : 'Ver desde atrás';
   });
 
+  colorsBtn.addEventListener('click', async () => {
+    if (!activeModalState || activeModalState.puzzle !== 'mirror') return;
+    activeModalState.showColors = !activeModalState.showColors;
+    colorsBtn.textContent = activeModalState.showColors ? '🪞 Ver Mirror' : '🎨 Ver con colores';
+    const alg = activeModalState.algs[activeModalState.currentAlgIndex || 0] ?? activeModalState.data.alg;
+    activeModalPlayer = await getPlayer(stageEl, {
+      scope: 'methods',
+      puzzle: 'mirror',
+      showColors: activeModalState.showColors,
+      stickering: activeModalState.stickering,
+      alg,
+      anchor: 'end',
+      setupAlg: DISPLAY_SETUP,
+      useDefaultZ2: true,
+      visualization: activeModalState.vis,
+      tempoScale: SPEEDS[currentSpeedIdx],
+      cameraLongitude: 25,
+      cameraLatitude: 30,
+      onPlayingChange: syncPlayButtonIcon,
+    });
+    activeModalPlayer?.jumpToStart?.();
+    activeModalPlayer?.play?.();
+  });
+
   speedBtn.addEventListener('click', () => {
     currentSpeedIdx = (currentSpeedIdx + 1) % SPEEDS.length;
     const tempo = SPEEDS[currentSpeedIdx];
@@ -217,13 +243,27 @@ export async function openSharedCaseModal(
   const algsEl = modal.querySelector('#case-modal-algs');
   const visBtn = modal.querySelector('#case-modal-vis');
   const camBtn = modal.querySelector('#case-modal-camera');
+  const colorsBtn = modal.querySelector('#case-modal-colors');
   const speedBtn = modal.querySelector('#case-modal-speed');
 
   const algs = [data.alg, ...(data.alts ?? [])];
   const currentVis = activeModalState?.vis && modal.open ? activeModalState.vis : '3D';
-  activeModalState = { data, stickering, puzzle, algs, vis: currentVis, backCamera: false };
+  activeModalState = {
+    data,
+    stickering,
+    puzzle,
+    algs,
+    vis: currentVis,
+    backCamera: false,
+    showColors: false,
+    currentAlgIndex: initialAlgIndex,
+  };
   visBtn.textContent = `Vista: ${currentVis}`;
   camBtn.textContent = 'Ver desde atrás';
+  if (colorsBtn) {
+    colorsBtn.hidden = puzzle !== 'mirror';
+    colorsBtn.textContent = '🎨 Ver con colores';
+  }
   speedBtn.textContent = `Velocidad: ${SPEEDS[currentSpeedIdx]}×`;
 
   titleEl.innerHTML = `${escape(data.name)}${data.nickname ? ` <small>${escape(data.nickname)}</small>` : ''}`;

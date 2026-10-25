@@ -28,6 +28,7 @@ import { CUBE5X5, REDUCTION_5X5, YAU5 } from '../src/data/cube5x5.js';
 import { CUBE7X7, REDUCTION_7X7 } from '../src/data/cube7x7.js';
 import { MEGAMINX, MEGAMINX_STANDARD } from '../src/data/megaminx.js';
 import { PYRAMINX, PYRAMINX_BEGINNER, PYRAMINX_ADVANCED } from '../src/data/pyraminx.js';
+import { MIRROR_METHOD } from '../src/data/mirror-method.js';
 import { PLL_REFERENCE } from './pll-reference.js';
 import { OLL_REFERENCE } from './oll-reference.js';
 import { createCrossSolver } from './lib/cross-solver.js';
@@ -313,6 +314,10 @@ function checkDistinct(section, cases, keyOf) {
 
 for (const step of BEGINNER.steps) {
   for (const c of step.cases) runCase(`Principiante · ${step.title}`, step.id, c);
+}
+
+for (const step of MIRROR_METHOD.steps) {
+  for (const c of step.cases) runCase(`Mirror · ${step.title}`, step.id, c);
 }
 
 // ---------- CFOP: cruz ----------

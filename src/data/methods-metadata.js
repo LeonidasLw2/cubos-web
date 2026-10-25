@@ -528,4 +528,48 @@ export const PAGE_METADATA = {
     prev: { label: 'Pyraminx · Principiante', href: '#/metodos/pyraminx/principiante' },
     next: { label: 'Portada de Métodos', href: '#/metodos' },
   },
+
+  mirror: {
+    puzzle: 'mirror',
+    stickering: 'cross',
+    setupAlg: "R U R' U'",
+    accent: 'celeste',
+    chips: ['Dificultad: Media', '100% algoritmos de 3x3', 'Reconocimiento por forma'],
+    stats: [
+      { icon: 'layers', label: 'Mecanismo', value: '3x3 idéntico' },
+      { icon: 'book', label: 'Color', value: 'Plateado / Dorado' },
+      { icon: 'moves', label: 'Algoritmos', value: 'Mismos que 3x3' },
+      { icon: 'clock', label: 'Dificultad', value: 'Reconocimiento' },
+    ],
+    prerequisites: [
+      'Saber armar el cubo de Rubik 3x3x3 clásico (idealmente con método principiante o CFOP).',
+      'Conocer la notación estándar de giros de 3x3 (R, U, F, L, D, B).',
+    ],
+    tips: [
+      {
+        title: 'Empezá por la cara más gruesa',
+        text: 'Identificá el centro más alto y usalo como base. Las piezas más grandes son las más fáciles de distinguir y le dan una base firme al cubo.',
+      },
+      {
+        title: 'Buscá siempre que quede "al ras"',
+        text: 'Pasá la yema del dedo entre piezas contiguas: si sentís una superficie plana y sin escalones, la pieza está bien orientada y en la capa correcta.',
+      },
+      {
+        title: 'No pierdas la referencia de los centros',
+        text: 'Como todas las piezas tienen el mismo color, es fácil rotar todo el cubo sin darte cuenta. Mantené la cara gruesa abajo y un centro reconocible al frente.',
+      },
+    ],
+    mistakes: [
+      {
+        title: 'Confundir aristas de tamaño parecido',
+        text: 'Varias aristas intermedias tienen dimensiones muy similares. Antes de aplicar el algoritmo completo, presentá la pieza con un solo giro: si no queda al ras con el centro frontal, probá en otra posición.',
+      },
+      {
+        title: 'Intentar reconocer OLL y PLL por colores',
+        text: 'En la última capa no hay amarillo: el reconocimiento se hace pasando el dedo o mirando el relieve de frente para ver qué piezas están en el plano superior.',
+      },
+    ],
+    prev: { label: '3x3 · Principiante', href: '#/metodos/3x3/principiante' },
+    next: { label: 'CFOP 3x3', href: '#/metodos/3x3/cfop' },
+  },
 };

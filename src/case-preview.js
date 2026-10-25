@@ -510,6 +510,12 @@ export function casePreviewSvg(alg, { stickering = '', puzzle = '3x3x3' } = {}) 
   if (puzzle === 'megaminx') {
     return megaminxSvg({ accent: '#74acdf' });
   }
+  if (puzzle === 'mirror') {
+    const topColors = Array(9).fill('#e2e6ec');
+    const leftColors = Array(9).fill('#9ea5b1');
+    const rightColors = Array(9).fill('#c4cad4');
+    return cubeSvg({ n: 3, top: topColors, left: leftColors, right: rightColors, className: 'case-svg-iso mirror-case-svg' });
+  }
   const n = puzzleDimension(puzzle);
   const stickers = createSolvedStickers(n);
   applyAlgInverse(stickers, alg, n);
