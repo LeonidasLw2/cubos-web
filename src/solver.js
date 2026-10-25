@@ -2,7 +2,6 @@
 // validador matemático en español, resolución en Web Worker y reproductor paso a paso
 // para 2x2, 3x3, 4x4, 5x5 y Pyraminx + modo "Deshacer mezcla".
 
-import 'cubing/twisty';
 import {
   SOLVER_PUZZLES,
   getSolverEngine,
@@ -26,6 +25,7 @@ import { parseNotationSequence, normalizePuzzleKey } from './notation-parser.js'
 import { loadSolverPrefs, saveSolverPrefs } from './cloud-sync.js';
 import { loadCustomScrambleInTimer } from './ui.js';
 import { nextScramble } from './scramble.js';
+import { getPlayer, updatePlayerOptions } from './twisty/playerManager.js';
 
 const FACE_TITLES_CUBE = {
   U: 'U · Arriba (Blanco)',
@@ -117,8 +117,11 @@ const solverState = {
   currentStep: 0, // 0..moves.length
   isPlaying: false,
   stepByStepMode: false,
+  vis: '3D',
   prefs: loadSolverPrefs(),
 };
+
+let activeSolverPlayer = null;
 
 let activeWorker = null;
 let workerJobId = 0;
@@ -191,8 +194,7 @@ function renderSolverDOM(container) {
   const facesList = puzzleKey === 'pyraminx' ? PYRAMINX_FACES : CUBE_FACES;
   const faceTitles = puzzleKey === 'pyraminx' ? FACE_TITLES_PYRAMINX : FACE_TITLES_CUBE;
 
-  container.innerHTML = `
-    <div class="solver-page">
+  const topHtml = `
       <nav class="breadcrumbs" aria-label="Ruta de navegación">
         <a href="#/timer">Inicio</a>
         <span class="breadcrumb-sep" aria-hidden="true">/</span>
@@ -257,13 +259,11 @@ function renderSolverDOM(container) {
         <span class="solver-orientation-icon" aria-hidden="true">🧭</span>
         <span>${getOrientationGuide(puzzleKey)}</span>
       </div>
+  `;
 
-      <div class="solver-workspace">
-        <!-- Columna izquierda: Editor 2D o Entrada de mezcla -->
-        <section class="solver-editor-card" aria-label="Configuración del estado del puzzle">
-          ${
-            solverState.mode === 'paint'
-              ? `
+  const leftHtml =
+    solverState.mode === 'paint'
+      ? `
             <div class="solver-card-head">
               <div>
                 <h2>1. Pintá los stickers de tu ${meta.name}</h2>
@@ -443,7 +443,7 @@ function renderSolverDOM(container) {
               </div>
             </div>
           `
-              : `
+      : `
             <!-- Modo 2: Deshacer mezcla -->
             <div class="solver-card-head">
               <div>
@@ -472,37 +472,70 @@ function renderSolverDOM(container) {
               </div>
               <div id="solver-undo-feedback" class="solver-validation-box" hidden></div>
             </div>
-          `
-          }
-        </section>
+          `;
 
-        <!-- Columna derecha: Visor 3D único y Reproductor paso a paso -->
-        <section class="solver-player-card" aria-label="Visor 3D y solución paso a paso">
-          <div class="solver-card-head">
+  const playerHeadHtml = `
             <div>
               <h2>2. Visor 3D y Reproductor paso a paso</h2>
               <p class="solver-sub">Arrastrá el puzzle 3D para mirarlo desde cualquier ángulo.</p>
             </div>
-            ${
-              solverState.solution && solverState.currentStep === solverState.solution.moves.length
-                ? `<span class="solver-solved-badge">🎉 ¡Resuelto!</span>`
-                : ''
-            }
-          </div>
-
-          <div class="solver-3d-stage" id="solver-3d-stage"></div>
-
-          ${renderSolutionPlayerSection(puzzleKey, meta)}
-        </section>
-      </div>
-
-      <footer class="solver-footer-note">
-        <p>
-          <strong>Nota sobre 7x7 y Megaminx:</strong> Por su enorme espacio de estados y tiempos de cómputo en dispositivos móviles, 7x7 y Megaminx no tienen solver automático de estado arbitrario; podés aprender sus métodos completos con casos verificados en <a href="#/metodos/7x7">Métodos 7x7</a> y <a href="#/metodos/megaminx">Métodos Megaminx</a>.
-        </p>
-      </footer>
-    </div>
+            <div class="solver-history-btns">
+              <button type="button" class="btn-secondary btn-sm" id="solver-vis-btn" title="Cambiar entre vista 3D y red 2D">
+                Vista: ${solverState.vis || '3D'}
+              </button>
+              ${
+                solverState.solution && solverState.currentStep === solverState.solution.moves.length
+                  ? `<span class="solver-solved-badge">🎉 ¡Resuelto!</span>`
+                  : ''
+              }
+            </div>
   `;
+
+  const solutionHtml = renderSolutionPlayerSection(puzzleKey, meta);
+  const existingStage = container.querySelector('#solver-3d-stage');
+
+  if (existingStage && container.querySelector('.solver-page')) {
+    const topRegion = container.querySelector('#solver-top-region');
+    const leftRegion = container.querySelector('#solver-left-region');
+    const headRegion = container.querySelector('#solver-player-head');
+    const solRegion = container.querySelector('#solver-solution-region');
+    if (topRegion) topRegion.innerHTML = topHtml;
+    if (leftRegion) leftRegion.innerHTML = leftHtml;
+    if (headRegion) headRegion.innerHTML = playerHeadHtml;
+    if (solRegion) solRegion.innerHTML = solutionHtml;
+  } else {
+    container.innerHTML = `
+      <div class="solver-page">
+        <div id="solver-top-region">${topHtml}</div>
+
+        <div class="solver-workspace">
+          <!-- Columna izquierda: Editor 2D o Entrada de mezcla -->
+          <section class="solver-editor-card" id="solver-left-region" aria-label="Configuración del estado del puzzle">
+            ${leftHtml}
+          </section>
+
+          <!-- Columna derecha: Visor 3D único y Reproductor paso a paso -->
+          <section class="solver-player-card" aria-label="Visor 3D y solución paso a paso">
+            <div class="solver-card-head" id="solver-player-head">
+              ${playerHeadHtml}
+            </div>
+
+            <div class="solver-3d-stage" id="solver-3d-stage"></div>
+
+            <div id="solver-solution-region">
+              ${solutionHtml}
+            </div>
+          </section>
+        </div>
+
+        <footer class="solver-footer-note">
+          <p>
+            <strong>Nota sobre 7x7 y Megaminx:</strong> Por su enorme espacio de estados y tiempos de cómputo en dispositivos móviles, 7x7 y Megaminx no tienen solver automático de estado arbitrario; podés aprender sus métodos completos con casos verificados en <a href="#/metodos/7x7">Métodos 7x7</a> y <a href="#/metodos/megaminx">Métodos Megaminx</a>.
+          </p>
+        </footer>
+      </div>
+    `;
+  }
 
   mountSolverTwistyPlayer(container);
   bindSolverEvents(container);
@@ -873,47 +906,48 @@ function mountSolverTwistyPlayer(container) {
   if (!stage) return;
 
   const meta = getPuzzleMeta(solverState.puzzleKey);
-  const player = document.createElement('twisty-player');
-  player.setAttribute('puzzle', meta.puzzleId);
-  player.setAttribute('visualization', '3D');
-  player.setAttribute('background', 'none');
-  player.setAttribute('control-panel', 'none');
-  player.setAttribute('hint-facelets', 'none');
-  player.tempoScale = Number(solverState.prefs.turnSpeed) || 1;
+  activeSolverPlayer = getPlayer(stage, {
+    scope: 'solver',
+    puzzle: meta.puzzleId,
+    visualization: solverState.vis || '3D',
+    tempoScale: Number(solverState.prefs.turnSpeed) || 1,
+  });
 
-  stage.replaceChildren(player);
   syncTwistyPlayerToState(container);
 }
 
 function syncTwistyPlayerToState(container) {
-  const player = container.querySelector('#solver-3d-stage twisty-player');
+  const player = activeSolverPlayer || container.querySelector('#solver-3d-stage twisty-player');
   if (!player) return;
 
-  player.tempoScale = Number(solverState.prefs.turnSpeed) || 1;
+  const tempoScale = Number(solverState.prefs.turnSpeed) || 1;
 
   if (solverState.solution) {
     const sol = solverState.solution;
     const baseSetup = sol.baseSetupAlg || invertAlgStr(sol.alg);
     const appliedMoves = sol.moves.slice(0, solverState.currentStep).join(' ');
-    try {
-      player.experimentalSetupAlg = baseSetup;
-      player.alg = appliedMoves;
-      player.timestamp = 'end';
-    } catch {}
+    updatePlayerOptions(player, {
+      tempoScale,
+      experimentalSetupAlg: baseSetup,
+      alg: appliedMoves,
+      timestamp: 'end',
+    });
     return;
   }
 
   if (solverState.previewAlg) {
-    try {
-      player.experimentalSetupAlg = '';
-      player.alg = solverState.previewAlg;
-      player.timestamp = 'end';
-    } catch {}
+    updatePlayerOptions(player, {
+      tempoScale,
+      experimentalSetupAlg: '',
+      alg: solverState.previewAlg,
+      timestamp: 'end',
+    });
   } else {
-    try {
-      player.experimentalSetupAlg = '';
-      player.alg = '';
-    } catch {}
+    updatePlayerOptions(player, {
+      tempoScale,
+      experimentalSetupAlg: '',
+      alg: '',
+    });
   }
 }
 
@@ -1089,6 +1123,17 @@ function scheduleNextAutoStep(container) {
 }
 
 function bindSolverEvents(container) {
+  // Cambiar entre vista 3D y 2D en el visor del Solver
+  const visBtn = container.querySelector('#solver-vis-btn');
+  visBtn?.addEventListener('click', () => {
+    solverState.vis = solverState.vis === '2D' ? '3D' : '2D';
+    visBtn.textContent = `Vista: ${solverState.vis}`;
+    const player = activeSolverPlayer || container.querySelector('#solver-3d-stage twisty-player');
+    if (player) {
+      updatePlayerOptions(player, { visualization: solverState.vis });
+    }
+  });
+
   // Cambiar modo (Pintar vs Deshacer mezcla)
   container.querySelectorAll('[data-mode]').forEach((btn) => {
     btn.addEventListener('click', () => {

@@ -5,6 +5,7 @@ import { initUI, setTimerActive, isTimerIdle, openSettingsDialog } from './ui.js
 import { startRouter } from './router.js';
 import { createNavHistory } from './nav-history.js';
 import { initPWA } from './pwa.js';
+import { destroyScopePlayer } from './twisty/playerManager.js';
 
 const views = {
   timer: document.getElementById('view-timer'),
@@ -155,7 +156,12 @@ async function showRoute(route) {
     if (shownMethodsPath !== route.path) return;
     renderMethods(views.methods, route);
   }
-  if (route.view !== 'methods') shownMethodsPath = null;
+  if (route.view !== 'methods') {
+    shownMethodsPath = null;
+    const caseModal = document.getElementById('case-anim-modal');
+    if (caseModal?.open) caseModal.close();
+    destroyScopePlayer('methods');
+  }
 
   if (route.view === 'notation' && route.path !== shownNotationPath) {
     shownNotationPath = route.path;
@@ -163,7 +169,10 @@ async function showRoute(route) {
     if (shownNotationPath !== route.path) return;
     renderNotation(views.notation, route);
   }
-  if (route.view !== 'notation') shownNotationPath = null;
+  if (route.view !== 'notation') {
+    shownNotationPath = null;
+    destroyScopePlayer('notation');
+  }
 
   if (route.view === 'solver' && route.path !== shownSolverPath) {
     shownSolverPath = route.path;
@@ -171,7 +180,10 @@ async function showRoute(route) {
     if (shownSolverPath !== route.path) return;
     renderSolver(views.solver, route);
   }
-  if (route.view !== 'solver') shownSolverPath = null;
+  if (route.view !== 'solver') {
+    shownSolverPath = null;
+    destroyScopePlayer('solver');
+  }
 
   window.scrollTo({ top: scrollTarget });
 }

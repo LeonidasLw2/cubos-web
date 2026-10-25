@@ -1,6 +1,5 @@
 // Entrenador de casos: muestra un caso al azar del grupo elegido (PLL, OLL…), con
 // su mezcla, y toma el tiempo de la resolución. Guarda los tiempos de cada caso.
-import 'cubing/twisty';
 import { TRAINER_SETS, findSet } from './data/trainer-sets.js';
 import { caseScramble, realCaseScramble, AUFS } from './case-scramble.js';
 import { DISPLAY_SETUP, STICKERING } from './data/stickering.js';
@@ -8,6 +7,7 @@ import { createTimer } from './timer.js';
 import { formatTime } from './stats.js';
 import { loadTrainerData, saveTrainerData } from './storage.js';
 import { normalizeTrainer, addTime, caseStats, pickCase } from './trainer-store.js';
+import { getPlayer, destroyScopePlayer } from './twisty/playerManager.js';
 
 const escape = (s) => String(s).replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
 const fmt = (ms) => (ms === null ? '-' : formatTime(ms));
@@ -90,17 +90,15 @@ function showCase() {
   els.solution.hidden = true;
   els.solution.innerHTML = `<strong>${escape(c.name)}</strong>${c.nickname ? ` <small>${escape(c.nickname)}</small>` : ''} · <code>${escape(solutionOf(c))}</code>`;
   els.reveal.hidden = false;
-  if (!player) {
-    player = document.createElement('twisty-player');
-    player.controlPanel = 'none';
-    player.background = 'none';
-    player.hintFacelets = 'none';
-    els.cube.append(player);
-  }
-  player.puzzle = set.puzzle;
-  player.experimentalStickeringMaskOrbits = STICKERING[set.stickering];
-  player.experimentalSetupAlg = `${DISPLAY_SETUP} ${scramble}`;
-  player.alg = '';
+  if (!active || !els.cube) return;
+  player = getPlayer(els.cube, {
+    scope: 'trainer',
+    puzzle: set.puzzle,
+    visualization: '3D',
+    experimentalStickeringMaskOrbits: STICKERING[set.stickering],
+    experimentalSetupAlg: `${DISPLAY_SETUP} ${scramble}`,
+    alg: '',
+  });
 }
 
 async function nextCase() {
@@ -296,6 +294,10 @@ export function setTrainerActive(on) {
     timer.cancel();
     discard = false;
     if (els) els.time.textContent = formatTime(0);
+    player = null;
+    destroyScopePlayer('trainer');
+  } else if (els && current?.scramble) {
+    showCase();
   }
   if (listening) return;
   listening = true;

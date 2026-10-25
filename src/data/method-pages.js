@@ -49,6 +49,8 @@ export const LEGACY_METHOD_PATHS = {
   'cfop/oll': '3x3/cfop/oll',
   'cfop/pll': '3x3/cfop/pll',
   roux: '3x3/roux',
+  'megaminx/capa-por-capa': 'megaminx/estandar',
+  'pyraminx/lbl': 'pyraminx/principiante',
 };
 
 export const methodHref = (sub) => (sub ? `#/metodos/${sub}` : '#/metodos');

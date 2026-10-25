@@ -1,4 +1,4 @@
-// Sección interactiva de Notación (#/notacion) con visor <twisty-player> único compartido,
+// Sección interactiva de Notación (#/notacion) con visor <twisty-player> único gestionado por playerManager,
 // selector para los 7 puzzles, grilla de tarjetas con botones de variante y probador de secuencias en vivo.
 import {
   PUZZLE_NOTATION_SPECS,
@@ -6,36 +6,17 @@ import {
   parseNotationSequence,
   describeMove,
 } from './notation-parser.js';
+import { getPlayer, updatePlayerOptions } from './twisty/playerManager.js';
 
 const PUZZLE_ORDER = ['2x2', '3x3', '4x4', '5x5', '7x7', 'pyraminx', 'megaminx'];
 
-let sharedPlayer = null;
-let cubingReadyPromise = null;
+let activePlayer = null;
 let loopTimer = null;
 let isLooping = false;
 let currentTempo = 1.2;
+let currentVis = '3D';
 let activeAlg = 'R';
 let activePuzzleKey = '3x3';
-
-function ensureTwistyLoaded() {
-  if (!cubingReadyPromise) {
-    cubingReadyPromise = import('cubing/twisty');
-  }
-  return cubingReadyPromise;
-}
-
-function getOrCreateNotationPlayer(puzzleId) {
-  if (!sharedPlayer) {
-    sharedPlayer = document.createElement('twisty-player');
-    sharedPlayer.background = 'none';
-    sharedPlayer.controlPanel = 'none';
-    sharedPlayer.hintFacelets = 'none';
-    sharedPlayer.experimentalDragInput = 'auto';
-  }
-  sharedPlayer.puzzle = puzzleId;
-  sharedPlayer.tempoScale = currentTempo;
-  return sharedPlayer;
-}
 
 function stopLoopTimer() {
   if (loopTimer) {
@@ -47,22 +28,20 @@ function stopLoopTimer() {
 function playSequenceOnViewer(alg, { fromSolved = true, autoPlay = true } = {}) {
   stopLoopTimer();
   activeAlg = alg || '';
-  if (!sharedPlayer) return;
+  if (!activePlayer) return;
   try {
-    if (fromSolved) {
-      sharedPlayer.experimentalSetupAlg = '';
-    } else {
-      // Empieza en el estado inverso para que la secuencia resuelva el puzzle
-      sharedPlayer.experimentalSetupAnchor = 'end';
-    }
-    sharedPlayer.experimentalSetupAnchor = fromSolved ? 'start' : 'end';
-    sharedPlayer.alg = activeAlg;
-    sharedPlayer.tempoScale = currentTempo;
-    sharedPlayer.timestamp = 0;
+    updatePlayerOptions(activePlayer, {
+      experimentalSetupAlg: fromSolved ? '' : undefined,
+      experimentalSetupAnchor: fromSolved ? 'start' : 'end',
+      alg: activeAlg,
+      tempoScale: currentTempo,
+      visualization: currentVis,
+    });
+    activePlayer.timestamp = 0;
     if (autoPlay && activeAlg) {
       requestAnimationFrame(() => {
         try {
-          sharedPlayer.play();
+          activePlayer?.play?.();
         } catch {
           // Ignorar en entornos sin WebGL
         }
@@ -71,13 +50,13 @@ function playSequenceOnViewer(alg, { fromSolved = true, autoPlay = true } = {}) 
         const moveCount = Math.max(1, activeAlg.trim().split(/\s+/).length);
         const periodMs = Math.max(1300, Math.round((moveCount * 950) / currentTempo) + 600);
         loopTimer = setInterval(() => {
-          if (!sharedPlayer || !document.body.contains(sharedPlayer)) {
+          if (!activePlayer || !document.body.contains(activePlayer)) {
             stopLoopTimer();
             return;
           }
           try {
-            sharedPlayer.timestamp = 0;
-            sharedPlayer.play();
+            activePlayer.timestamp = 0;
+            activePlayer.play?.();
           } catch {
             // Ignorar
           }
@@ -91,7 +70,9 @@ function playSequenceOnViewer(alg, { fromSolved = true, autoPlay = true } = {}) 
 
 export function renderNotation(container, route = {}) {
   stopLoopTimer();
-  const initialKey = normalizePuzzleKey(route.puzzle || route.params?.puzzle || activePuzzleKey || '3x3');
+  const initialKey = normalizePuzzleKey(
+    route.puzzle || route.params?.puzzle || activePuzzleKey || '3x3'
+  );
   activePuzzleKey = PUZZLE_ORDER.includes(initialKey) ? initialKey : '3x3';
   const spec = PUZZLE_NOTATION_SPECS[activePuzzleKey];
   const initialMove = route.params?.move || spec.groups[0]?.moves[0]?.base || 'R';
@@ -145,9 +126,8 @@ export function renderNotation(container, route = {}) {
         <span class="notation-puzzle-tag">${spec.name}</span>
       </div>
       <p class="notation-viewer-desc" id="notation-active-desc">${moveDesc.description}</p>
-      <div class="notation-stage-box" id="notation-stage-box" aria-label="Visor 3D de notación">
-        <div class="notation-stage-hint">Arrastrá con el mouse o el dedo para rotar la vista</div>
-      </div>
+      <div class="notation-stage-box" id="notation-stage-box" aria-label="Visor 3D de notación"></div>
+      <div class="notation-stage-hint">Arrastrá con el mouse o el dedo para rotar la vista</div>
       <div class="notation-controls">
         <button type="button" class="btn-secondary btn-sm" id="notation-btn-play" title="Reproducir giro">
           ▶ Reproducir
@@ -158,12 +138,15 @@ export function renderNotation(container, route = {}) {
         <button type="button" class="btn-secondary btn-sm" id="notation-btn-reset" title="Reiniciar al estado resuelto">
           ↺ Reiniciar
         </button>
+        <button type="button" class="btn-secondary btn-sm" id="notation-btn-vis" title="Alternar vista 3D / 2D">
+          Vista: ${currentVis}
+        </button>
         <button type="button" class="btn-secondary btn-sm ${isLooping ? 'is-active' : ''}" id="notation-btn-loop" aria-pressed="${isLooping}" title="Repetir en bucle">
           🔁 Loop
         </button>
       </div>
       <div class="notation-speed-row">
-        <label for="notation-speed-select">Velocidad de giro:</label>
+        <label>Velocidad de giro:</label>
         <div class="notation-speed-pills" role="group" aria-label="Velocidad de animación">
           ${[
             { label: '0.5×', val: 0.6 },
@@ -173,7 +156,7 @@ export function renderNotation(container, route = {}) {
           ]
             .map(
               (s) =>
-                `<button type="button" class="notation-speed-btn ${Math.abs(currentTempo - s.val) < 0.1 ? 'is-active' : ''}" data-tempo="${s.val}">${s.label}</button>`,
+                `<button type="button" class="notation-speed-btn ${Math.abs(currentTempo - s.val) < 0.1 ? 'is-active' : ''}" data-tempo="${s.val}">${s.label}</button>`
             )
             .join('')}
         </div>
@@ -233,7 +216,7 @@ export function renderNotation(container, route = {}) {
       ${spec.sampleSequences
         .map(
           (s) =>
-            `<button type="button" class="notation-sample-chip" data-sample-alg="${s.alg}">${s.label}: <code>${s.alg}</code></button>`,
+            `<button type="button" class="notation-sample-chip" data-sample-alg="${s.alg}">${s.label}: <code>${s.alg}</code></button>`
         )
         .join('')}
     </div>
@@ -300,18 +283,21 @@ export function renderNotation(container, route = {}) {
   page.appendChild(layout);
   container.appendChild(page);
 
-  // Montar el único <twisty-player> compartido
+  // Montar el único <twisty-player> mediante playerManager (destruye el del contenedor anterior si cambió)
   const stageBox = page.querySelector('#notation-stage-box');
-  ensureTwistyLoaded()
-    .then(() => {
-      if (!document.body.contains(stageBox)) return;
-      const player = getOrCreateNotationPlayer(spec.puzzleId);
-      if (player.parentElement !== stageBox) {
-        stageBox.prepend(player);
-      }
-      playSequenceOnViewer(activeAlg, { fromSolved: true, autoPlay: true });
-    })
-    .catch(() => {});
+  const player = getPlayer(stageBox, {
+    scope: 'notation',
+    puzzle: spec.puzzleId,
+    alg: activeAlg,
+    experimentalSetupAlg: '',
+    experimentalSetupAnchor: 'start',
+    visualization: currentVis,
+    tempoScale: currentTempo,
+  });
+  if (player && document.body.contains(stageBox)) {
+    activePlayer = player;
+    playSequenceOnViewer(activeAlg, { fromSolved: true, autoPlay: true });
+  }
 
   // Helper para seleccionar y animar un movimiento o secuencia en el visor
   const badgeEl = page.querySelector('#notation-active-badge');
@@ -362,22 +348,31 @@ export function renderNotation(container, route = {}) {
   page.querySelector('#notation-btn-pause')?.addEventListener('click', () => {
     stopLoopTimer();
     try {
-      sharedPlayer?.pause();
+      activePlayer?.pause?.();
     } catch {
       // Ignorar
     }
   });
   page.querySelector('#notation-btn-reset')?.addEventListener('click', () => {
     stopLoopTimer();
-    if (sharedPlayer) {
+    if (activePlayer) {
       try {
-        sharedPlayer.pause();
-        sharedPlayer.timestamp = 0;
+        activePlayer.pause?.();
+        activePlayer.timestamp = 0;
       } catch {
         // Ignorar
       }
     }
   });
+  const visBtn = page.querySelector('#notation-btn-vis');
+  visBtn?.addEventListener('click', () => {
+    currentVis = currentVis === '3D' ? '2D' : '3D';
+    visBtn.textContent = `Vista: ${currentVis}`;
+    if (activePlayer) {
+      updatePlayerOptions(activePlayer, { visualization: currentVis });
+    }
+  });
+
   const loopBtn = page.querySelector('#notation-btn-loop');
   loopBtn?.addEventListener('click', () => {
     isLooping = !isLooping;
@@ -396,7 +391,7 @@ export function renderNotation(container, route = {}) {
       for (const b of page.querySelectorAll('[data-tempo]')) {
         b.classList.toggle('is-active', b === speedBtn);
       }
-      if (sharedPlayer) sharedPlayer.tempoScale = currentTempo;
+      if (activePlayer) updatePlayerOptions(activePlayer, { tempoScale: currentTempo });
       if (isLooping) playSequenceOnViewer(activeAlg, { fromSolved: true, autoPlay: true });
     });
   }
@@ -435,7 +430,7 @@ export function renderNotation(container, route = {}) {
               (d, idx) =>
                 `<button type="button" class="notation-step-pill" data-step-token="${d.token}" title="${d.description}">
                   <span class="step-num">${idx + 1}.</span> <code>${d.token}</code>
-                </button>`,
+                </button>`
             )
             .join('')}
         </div>
@@ -452,7 +447,7 @@ export function renderNotation(container, route = {}) {
       selectAndPlayMove(
         result.normalizedAlg,
         `Secuencia (${result.tokens.length} movs)`,
-        `Animando: ${result.tokens.join(' ')} en ${spec.name}.`,
+        `Animando: ${result.tokens.join(' ')} en ${spec.name}.`
       );
     }
   }

@@ -448,12 +448,21 @@ button:focus-visible {
 .scramble-view {
   display: grid;
   place-items: center;
-  height: 200px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  min-height: 220px;
+  max-height: min(60vh, 260px);
+  margin-inline: auto;
+  touch-action: none;
+  pointer-events: auto;
 }
 
 .scramble-view twisty-player {
   width: 100%;
   height: 100%;
+  display: grid;
+  touch-action: none;
+  pointer-events: auto;
 }
 
 /* ---------- Timer ---------- */
@@ -1879,14 +1888,22 @@ a.link-card:hover .card-action {
 
 .hero-cube-stage {
   width: 100%;
-  height: 200px;
+  aspect-ratio: 1 / 1;
+  min-height: 220px;
+  max-height: min(60vh, 260px);
+  margin-inline: auto;
   display: grid;
   place-items: center;
+  touch-action: none;
+  pointer-events: auto;
 }
 
 .hero-cube-stage twisty-player {
   width: 100%;
   height: 100%;
+  display: grid;
+  touch-action: none;
+  pointer-events: auto;
 }
 
 .hero-cube-caption {
@@ -2372,16 +2389,28 @@ a.link-card:hover .card-action {
 
 .case-modal-stage {
   width: 100%;
-  height: 240px;
+  height: clamp(220px, 48vh, 320px);
+  min-height: 220px;
+  max-height: min(60vh, 320px);
+  aspect-ratio: 1 / 1;
+  margin-inline: auto;
+  display: grid;
+  place-items: center;
+  touch-action: none;
+  pointer-events: auto;
 }
 
 .case-modal-stage twisty-player {
   width: 100%;
   height: 100%;
+  display: grid;
+  touch-action: none;
+  pointer-events: auto;
 }
 
 .case-modal-toolbar {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 8px;
   margin-top: 6px;
@@ -2665,7 +2694,8 @@ a.link-card:hover .card-action {
   }
 
   .hero-cube-stage {
-    height: 175px;
+    min-height: 220px;
+    max-height: min(60vh, 240px);
   }
 
   .slide-nav {
@@ -3282,7 +3312,8 @@ a.link-card:hover .card-action {
   }
 
   .scramble-view {
-    height: 170px;
+    min-height: 220px;
+    max-height: min(60vh, 230px);
   }
 
   .timer-zone {
@@ -3481,9 +3512,24 @@ a.link-card:hover .card-action {
   border-radius: 16px;
 }
 
+.trainer-cube {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  min-height: 220px;
+  max-height: min(60vh, 280px);
+  margin-inline: auto;
+  display: grid;
+  place-items: center;
+  touch-action: none;
+  pointer-events: auto;
+}
+
 .trainer-cube twisty-player {
   width: 100%;
-  height: 260px;
+  height: 100%;
+  display: grid;
+  touch-action: none;
+  pointer-events: auto;
 }
 
 .trainer-scramble-label {
@@ -3594,8 +3640,9 @@ a.link-card:hover .card-action {
     padding: 12px;
   }
 
-  .trainer-cube twisty-player {
-    height: 200px;
+  .trainer-cube {
+    min-height: 220px;
+    max-height: min(60vh, 240px);
   }
 
   .trainer-row {
@@ -3959,29 +4006,33 @@ a.link-card:hover .card-action {
 .notation-stage-box {
   position: relative;
   width: 100%;
-  height: 250px;
+  aspect-ratio: 1 / 1;
+  min-height: 220px;
+  max-height: min(60vh, 290px);
+  margin-inline: auto;
   border-radius: 16px;
   background: radial-gradient(circle at 50% 45%, rgba(116, 172, 223, 0.14), rgba(10, 13, 19, 0.7));
   border: 1px solid var(--border);
   display: grid;
   place-items: center;
   overflow: hidden;
+  touch-action: none;
+  pointer-events: auto;
 }
 
 .notation-stage-box twisty-player {
   width: 100%;
-  height: 230px;
+  height: 100%;
+  display: grid;
+  touch-action: none;
+  pointer-events: auto;
 }
 
 .notation-stage-hint {
-  position: absolute;
-  bottom: 6px;
-  left: 0;
-  right: 0;
+  margin-top: -4px;
   text-align: center;
   font-size: 0.72rem;
   color: var(--muted);
-  pointer-events: none;
 }
 
 .notation-controls {
@@ -4347,11 +4398,8 @@ a.link-card:hover .card-action {
   }
 
   .notation-stage-box {
-    height: 190px;
-  }
-
-  .notation-stage-box twisty-player {
-    height: 175px;
+    min-height: 220px;
+    max-height: min(60vh, 240px);
   }
 }
 
@@ -5116,19 +5164,26 @@ a.link-card:hover .card-action {
 /* Visor 3D y Reproductor de solución */
 .solver-3d-stage {
   width: 100%;
-  height: 270px;
+  aspect-ratio: 1 / 1;
+  min-height: 220px;
+  max-height: min(60vh, 300px);
+  margin-inline: auto;
   background: radial-gradient(circle at center, rgba(116, 172, 223, 0.14), rgba(9, 13, 24, 0.85));
   border: 1px solid var(--border);
   border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   overflow: hidden;
+  touch-action: none;
+  pointer-events: auto;
 }
 
 .solver-3d-stage twisty-player {
   width: 100%;
   height: 100%;
+  display: grid;
+  touch-action: none;
+  pointer-events: auto;
 }
 
 .solver-solved-badge {

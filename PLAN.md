@@ -74,3 +74,60 @@ Este documento registra el plan de trabajo en fases (A–G) y su estado actual.
 1. Verificación visual y funcional de todas las rutas en 390 px y 1440 px, sin errores de consola ni desbordes.
 2. Ejecución completa de `vite build`, `node --test tests/*.test.js` y `node scripts/verify-algs.js`.
 3. Resumen final detallado.
+
+---
+
+## Diagnóstico confirmado: Bug de cubos diminutos apilados en `<twisty-player>`
+
+### 1. Mediciones en el navegador integrado (`#/metodos/4x4/reduccion` → modal `"Centro opuesto"`, `2R U2 2R'`)
+- **Carga inicial de `#/metodos/4x4/reduccion`:**
+  - `document.querySelectorAll('twisty-player').length`: `2` (1 oculto en `#scramble-view` del Timer + 1 `sharedPlayer` en `.hero-cube-stage`).
+  - `<canvas>` dentro del `sharedPlayer` (`node.shadow`): `1` canvas (`314 × 200 px`).
+- **Apertura #1 del modal (`openSharedCaseModal` → `stageEl.innerHTML = ''; stageEl.append(player)`):**
+  - Contenedor `#case-modal-stage` (`getBoundingClientRect`): `396 × 240 px`.
+  - `<canvas>` dentro del `sharedPlayer`: **`2` canvases** apilados en columna (`396 × 120 px` cada uno).
+- **Cierre #1 del modal (`heroHost.innerHTML = ''; heroHost.append(player)`):**
+  - `<canvas>` dentro del `sharedPlayer`: **`3` canvases** apilados (`314 × 67 px` cada uno).
+- **Apertura #2 del modal:**
+  - `<canvas>` dentro del `sharedPlayer`: **`4` canvases** apilados (`396 × 60 px` cada uno).
+- **Cierre #2 del modal (o haber navegado antes por `#/metodos/4x4` → `#/metodos/4x4/reduccion` → abrir modal → cambiar de caso):**
+  - `<canvas>` dentro del `sharedPlayer`: **`5` canvases** apilados (`48 px` / `40 px` de alto cada uno).
+- **Apertura #3 del modal:**
+  - `<canvas>` dentro del `sharedPlayer`: **`6` canvases** apilados (`396 × 40 px` cada uno).
+
+### 2. Causa raíz exacta confirmada
+1. **Bug interno de `cubing/twisty` (`Twisty3DSceneWrapper.connectedCallback` en `node_modules/cubing/dist/lib/cubing/twisty/index.js:1755`) al mover o re-adjuntar un `<twisty-player>` en el DOM:**
+   - A diferencia de `TwistyPlayer[intersectedCallback]` (que tiene guardia `if (this.#alreadyConnected) return;`), su sub-elemento en el Shadow DOM `<twisty-3d-scene-wrapper>` ejecuta en cada `connectedCallback()`:
+     ```js
+     const vantage = new Twisty3DVantage(this.model, this);
+     this.addVantage(vantage);
+     ```
+     **sin verificar si ya estaba conectado**.
+   - Según el estándar de Custom Elements, cada vez que un `<twisty-player>` existente se mueve de un contenedor a otro (p. ej. de `.hero-cube-stage` a `#case-modal-stage` y viceversa en `src/case-card.js`) o se hace `container.innerHTML = ''; container.append(player)` (en `src/case-card.js` y `src/notation.js`), el navegador dispara `connectedCallback()` nuevamente sobre `<twisty-3d-scene-wrapper>`.
+   - Cada llamada agrega un nuevo `<twisty-3d-vantage>` (con su propio `<canvas>`) dentro del `.wrapper` (`display: grid`) del mismo `<twisty-player>`. El grid reparte la altura del contenedor entre los $N$ vantages (`height / N`), produciendo 2, 3, 4, 5 o más cubos diminutos apilados en columna.
+2. **Recreación innecesaria en `src/solver.js`:**
+   - `renderSolverDOM` reconstruía `container.innerHTML` en cada clic de sticker o paso del reproductor y creaba un `<twisty-player>` nuevo cada vez en lugar de preservar el contenedor y reutilizar la misma instancia sin desmontarla.
+
+### 3. Solución arquitectónica (`src/twisty/playerManager.js`)
+- Crear un único módulo centralizado `src/twisty/playerManager.js` (`getPlayer(container, opciones)`, `destroyPlayer(container)`, `destroyScopePlayer(scope)`, `updatePlayerOptions(player, opciones)`):
+  - **Regla de oro:** Un `<twisty-player>` **NUNCA** se mueve de un contenedor padre a otro ni se desmonta/re-adjunta con `container.innerHTML = ''`.
+  - Si `container` ya tiene su `<twisty-player>` montado como hijo directo, `getPlayer(container, opciones)` **lo reutiliza in-place** sin tocar el DOM del padre (solo actualiza propiedades reactivas: `puzzle`, `alg`, `experimentalSetupAlg`, `experimentalSetupAnchor`, `experimentalStickeringMaskOrbits`, `visualization`, `tempoScale`, `cameraLongitude`).
+  - Si cambia el puzzle a una geometría distinta (`targetPuzzle !== currentPuzzle`), destruye el anterior limpiamente para evitar colisiones de órbitas o máscaras WebGL.
+  - Además, `inspectAndPrunePlayerShadow` aplica un blindaje defensivo sobre la instancia para que nunca pueda acumular más de 1 `<twisty-3d-vantage>` / `<canvas>` en su Shadow DOM.
+  - Al cambiar de contenedor dentro de un ámbito (por ejemplo abrir el modal en Métodos), el player anterior se destruye limpiamente (`player.remove()` y `container.replaceChildren()`) y se crea una instancia fresca ligada al nuevo contenedor, garantizando que siempre haya **exactamente 1 `<twisty-player>` y 1 `<canvas>`** en el modal y como máximo 1 player activo por vista.
+  - Al cerrar el modal o salir de una sección, `destroyScopePlayer` destruye cualquier reproductor inactivo.
+
+### 4. Verificación y Resultados Confirmados
+- **Test automatizado en `tests/player-manager.test.js`:**
+  - Valida que `src/twisty/playerManager.js` es el ÚNICO archivo en `src/` que instancia `<twisty-player>`.
+  - Verifica la configuración obligatoria por defecto (`hint-facelets="none"`, `back-view="none"`, `control-panel="none"`, `background="none"`).
+  - Simula 10 aperturas/cierres y 10 cambios de caso verificando que nunca se acumulan players ni canvases.
+- **Suite de verificación en navegador headless (Chrome 1440 px escritorio y 390 px móvil):**
+  - 10 aperturas y cierres consecutivos del modal en 4x4 ("Centro opuesto", `2R U2 2R'`): exactamente 1 player y 1 canvas de tamaño completo (>= 220 px) en cada iteración.
+  - 10 cambios de caso consecutivos dentro del modal: reutilización in-place sin duplicación.
+  - Controles de reproducción (inicio, paso anterior, play/pausa, paso siguiente, velocidad, cámara trasera "Ver desde atrás" con `cameraLongitude`, toggle 3D/2D y rotación arrastrando con ratón/touch): funcionamiento verificado.
+  - Los 7 puzzles (`2x2`, `3x3`, `4x4`, `5x5`, `7x7`, `Megaminx`, `Pyraminx`) verificados en Métodos, Notación, Solver y Timer.
+  - **0 errores en consola** en toda la ejecución.
+- **Capturas visuales comparativas:**
+  - Antes (`before-4x4-centro-opuesto.png`): 5 cubos diminutos apilados verticalmente de 40 px de altura.
+  - Después (`after-4x4-centro-opuesto.png`): 1 único cubo grande, nítido y centrado con tamaño responsive de 320 px.

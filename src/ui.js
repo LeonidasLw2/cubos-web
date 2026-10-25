@@ -35,6 +35,7 @@ import {
   touchLocalSettingsMeta,
   initCloudSyncUI,
 } from './cloud-sync.js';
+import { getPlayer as getManagedPlayer, destroyScopePlayer } from './twisty/playerManager.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -100,36 +101,21 @@ const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches
 
 // ---------- Vista del scramble ----------
 
-// cubing/twisty se carga aparte (import dinámico) para que su código no quede en el
-// archivo principal: el worker de scrambles comparte código con él y, si estuviera
-// ahí, cargaría también la interfaz. El player se crea recién cuando está definido
-// (si se le ponen propiedades antes, no se aplican).
-let playerPromise = null;
 let currentViewMode = '3D';
 
-function getPlayer() {
-  playerPromise ??= import('cubing/twisty').then(() => {
-    const player = document.createElement('twisty-player');
-    player.controlPanel = 'none';
-    player.background = 'none';
-    player.hintFacelets = 'none';
-    player.experimentalDragInput = 'auto'; // Permite rotar el cubo interactivamente
-    els.view.append(player);
-    return player;
-  });
-  return playerPromise;
-}
-
-async function updatePlayer() {
+function updatePlayer() {
+  if (els.viewModeBadge) els.viewModeBadge.textContent = currentViewMode;
+  if (!timerActive || !els.view) return;
   const ev = getEvent(state.event);
   const scramble = state.scramble ?? '';
   els.view.dataset.view = currentViewMode;
-  const player = await getPlayer();
-  player.puzzle = ev.puzzle;
-  player.visualization = currentViewMode;
-  player.experimentalSetupAlg = scramble;
-  player.alg = '';
-  if (els.viewModeBadge) els.viewModeBadge.textContent = currentViewMode;
+  getManagedPlayer(els.view, {
+    scope: 'timer',
+    puzzle: ev.puzzle,
+    visualization: currentViewMode,
+    experimentalSetupAlg: scramble,
+    alg: '',
+  });
 }
 
 // Reinicia una animación CSS (quitar la clase, forzar reflow y volver a ponerla).
@@ -488,6 +474,9 @@ export function setTimerActive(active) {
   if (!active) {
     forgetInput();
     timer.cancel();
+    destroyScopePlayer('timer');
+  } else {
+    updatePlayer();
   }
 }
 
@@ -527,7 +516,12 @@ function onKeyUp(e) {
 }
 
 function onTouchStart(e) {
-  if (!timerActive || isAnyDialogOpen() || e.target.closest('button, dialog, a')) return; // botones y links funcionan normal
+  if (
+    !timerActive ||
+    isAnyDialogOpen() ||
+    e.target.closest('button, dialog, a, twisty-player, #scramble-view')
+  )
+    return; // botones, links y el cubo 3D funcionan normal
   // Inactivo: solo la zona del timer. Inspeccionando o corriendo: toda la pantalla.
   if (timer.state === 'idle' && !els.timerZone.contains(e.target)) return;
   e.preventDefault();

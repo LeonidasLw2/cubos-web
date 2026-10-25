@@ -1,13 +1,15 @@
-// Tarjeta de caso reutilizable + Visor 3D único compartido (<twisty-player>).
+// Tarjeta de caso reutilizable + Visor 3D único gestionado por playerManager.
 //
 // Regla de rendimiento y arquitectura:
 // - Cada tarjeta muestra una miniatura 2D en SVG (2D-LL para última capa, isométrica con stickering para el resto),
 //   evitando crear decenas de contextos WebGL.
-// - Existe UN SOLO <twisty-player> compartido por página: vive en el Hero de la página y pasa al modal
-//   interactivo cuando el usuario toca "Ver animación" en cualquier tarjeta.
-import { DISPLAY_SETUP, STICKERING } from './data/stickering.js';
+// - Todos los <twisty-player> se crean y reutilizan exclusivamente mediante src/twisty/playerManager.js,
+//   sin mover nunca un mismo elemento entre contenedores distintos.
+
+import { DISPLAY_SETUP } from './data/stickering.js';
 import { casePreviewSvg } from './case-preview.js';
 import { isCaseLearned, toggleCaseLearned } from './learned-store.js';
+import { getPlayer, destroyPlayer, updatePlayerOptions } from './twisty/playerManager.js';
 
 const ICONS = {
   restart: '<path d="M4 5v14M20 5 9 12l11 7z" />',
@@ -41,61 +43,49 @@ export function getCaseKey(data, stickering = 'default', puzzle = '3x3x3') {
   return `${puzzle}:${stickering}:${idPart}`.toLowerCase().replace(/\s+/g, '-');
 }
 
-// ---------- Único <twisty-player> compartido por página ----------
+// ---------- Estado del Hero y del Modal compartido ----------
 
-let twistyPromise = null;
-let sharedPlayer = null;
 let heroHost = null;
 let heroConfig = null;
 let modalEl = null;
+let activeModalPlayer = null;
 let activeModalState = null;
+const SPEEDS = [0.7, 1.0, 1.3, 1.8];
+let currentSpeedIdx = 2;
 
-function ensureTwistyPlayer() {
-  twistyPromise ??= import('cubing/twisty').then(() => {
-    const p = document.createElement('twisty-player');
-    p.controlPanel = 'none';
-    p.background = 'none';
-    p.hintFacelets = 'none';
-    p.experimentalDragInput = 'auto';
-    p.tempoScale = 1.3;
-    sharedPlayer = p;
-    return p;
-  });
-  return twistyPromise;
-}
-
-function applyPlayerConfig(player, { puzzle = '3x3x3', stickering = '', alg = '', anchor = 'end', setupAlg = DISPLAY_SETUP, visualization = '3D' }) {
-  player.puzzle = puzzle;
-  player.visualization = visualization;
-  // En Pyraminx y Megaminx no hace falta z2
-  const needsZ2 = puzzle.includes('x');
-  player.experimentalSetupAlg = needsZ2 ? setupAlg : '';
-  player.experimentalSetupAnchor = anchor;
-  if (stickering && STICKERING[stickering]) {
-    player.experimentalStickeringMaskOrbits = STICKERING[stickering];
-  } else {
-    player.experimentalStickeringMaskOrbits = undefined;
-    player.experimentalStickering = 'full';
-  }
-  player.alg = alg;
-  player.jumpToStart?.();
-}
-
-// Monta el único <twisty-player> en el Hero de la página actual.
+// Monta el <twisty-player> en el Hero de la página actual usando playerManager.
 export async function mountHeroPlayer(container, config) {
   heroHost = container;
   heroConfig = config;
-  const player = await ensureTwistyPlayer();
-  if (heroHost !== container) return;
-  if (modalEl?.open) return; // si el modal está abierto, vuelve al cerrarse
-  applyPlayerConfig(player, { ...config, visualization: '3D' });
-  container.innerHTML = '';
-  container.append(player);
+  if (modalEl?.open) return; // si el modal está abierto, se montará al cerrarse
+  const player = await getPlayer(container, {
+    scope: 'methods',
+    puzzle: config.puzzle || '3x3x3',
+    stickering: config.stickering || '',
+    alg: config.alg || '',
+    anchor: config.anchor || 'end',
+    setupAlg: config.setupAlg ?? DISPLAY_SETUP,
+    useDefaultZ2: true,
+    visualization: '3D',
+    tempoScale: SPEEDS[currentSpeedIdx],
+  });
+  if (heroHost !== container || !player) return;
+  player.jumpToStart?.();
+}
+
+function syncPlayButtonIcon(playing) {
+  if (!modalEl) return;
+  const playBtn = modalEl.querySelector('#case-modal-play');
+  if (!playBtn) return;
+  playBtn.innerHTML = icon(playing ? 'pause' : 'play');
+  playBtn.title = playing ? 'Pausar' : 'Reproducir';
+  playBtn.setAttribute('aria-label', playBtn.title);
 }
 
 function ensureCaseModal() {
   if (modalEl) return modalEl;
   modalEl = document.createElement('dialog');
+  modalEl.id = 'case-anim-modal';
   modalEl.className = 'settings case-modal';
   modalEl.setAttribute('aria-labelledby', 'case-modal-title');
   modalEl.innerHTML = `
@@ -112,6 +102,7 @@ function ensureCaseModal() {
         <div class="case-modal-stage" id="case-modal-stage"></div>
         <div class="case-modal-toolbar">
           <button type="button" class="chip-btn" id="case-modal-vis" title="Alternar vista 3D / 2D">Vista: 3D</button>
+          <button type="button" class="chip-btn" id="case-modal-camera" title="Rotar cámara para ver la cara trasera">Ver desde atrás</button>
           <button type="button" class="chip-btn" id="case-modal-speed" title="Cambiar velocidad">Velocidad: 1.3×</button>
         </div>
       </div>
@@ -127,8 +118,9 @@ function ensureCaseModal() {
   document.body.append(modalEl);
 
   const closeBtn = modalEl.querySelector('#case-modal-close');
-  const playBtn = modalEl.querySelector('#case-modal-play');
+  const stageEl = modalEl.querySelector('#case-modal-stage');
   const visBtn = modalEl.querySelector('#case-modal-vis');
+  const camBtn = modalEl.querySelector('#case-modal-camera');
   const speedBtn = modalEl.querySelector('#case-modal-speed');
   const algsBox = modalEl.querySelector('#case-modal-algs');
 
@@ -138,87 +130,101 @@ function ensureCaseModal() {
   });
 
   modalEl.addEventListener('close', () => {
-    sharedPlayer?.pause?.();
-    if (heroHost && heroConfig && sharedPlayer) {
-      applyPlayerConfig(sharedPlayer, { ...heroConfig, visualization: '3D' });
-      heroHost.innerHTML = '';
-      heroHost.append(sharedPlayer);
+    destroyPlayer(stageEl);
+    activeModalPlayer = null;
+    if (heroHost && heroConfig && document.body.contains(heroHost)) {
+      mountHeroPlayer(heroHost, heroConfig);
     }
   });
 
   modalEl.addEventListener('click', (e) => {
     const cmdBtn = e.target.closest('[data-modal-cmd]');
-    if (!cmdBtn || !sharedPlayer) return;
+    if (!cmdBtn || !activeModalPlayer) return;
     const cmd = cmdBtn.dataset.modalCmd;
-    const animation = sharedPlayer.controller?.animationController;
+    const animation = activeModalPlayer.controller?.animationController;
     switch (cmd) {
       case 'restart':
-        sharedPlayer.jumpToStart();
+        activeModalPlayer.jumpToStart?.();
         break;
       case 'play':
-        sharedPlayer.togglePlay();
+        activeModalPlayer.togglePlay?.();
         break;
       case 'step':
-        sharedPlayer.pause();
+        activeModalPlayer.pause?.();
         animation?.play({ direction: 1, untilBoundary: 'move' });
         break;
       case 'back':
-        sharedPlayer.pause();
+        activeModalPlayer.pause?.();
         animation?.play({ direction: -1, untilBoundary: 'move' });
         break;
     }
   });
 
   visBtn.addEventListener('click', () => {
-    if (!sharedPlayer || !activeModalState) return;
+    if (!activeModalPlayer || !activeModalState) return;
     activeModalState.vis = activeModalState.vis === '3D' ? '2D' : '3D';
-    sharedPlayer.visualization = activeModalState.vis;
+    updatePlayerOptions(activeModalPlayer, { visualization: activeModalState.vis });
     visBtn.textContent = `Vista: ${activeModalState.vis}`;
   });
 
-  const speeds = [0.7, 1.0, 1.3, 1.8];
-  let speedIdx = 2;
+  camBtn.addEventListener('click', () => {
+    if (!activeModalPlayer || !activeModalState) return;
+    activeModalState.backCamera = !activeModalState.backCamera;
+    if (activeModalState.vis !== '3D') {
+      activeModalState.vis = '3D';
+      visBtn.textContent = 'Vista: 3D';
+    }
+    updatePlayerOptions(activeModalPlayer, {
+      visualization: '3D',
+      cameraLongitude: activeModalState.backCamera ? -155 : 25,
+      cameraLatitude: 30,
+    });
+    camBtn.textContent = activeModalState.backCamera ? 'Ver desde el frente' : 'Ver desde atrás';
+  });
+
   speedBtn.addEventListener('click', () => {
-    if (!sharedPlayer) return;
-    speedIdx = (speedIdx + 1) % speeds.length;
-    sharedPlayer.tempoScale = speeds[speedIdx];
-    speedBtn.textContent = `Velocidad: ${speeds[speedIdx]}×`;
+    currentSpeedIdx = (currentSpeedIdx + 1) % SPEEDS.length;
+    const tempo = SPEEDS[currentSpeedIdx];
+    speedBtn.textContent = `Velocidad: ${tempo}×`;
+    if (activeModalPlayer) {
+      updatePlayerOptions(activeModalPlayer, { tempoScale: tempo });
+    }
   });
 
   algsBox.addEventListener('click', (e) => {
     const btn = e.target.closest('.case-alg');
-    if (!btn || !sharedPlayer || !activeModalState) return;
+    if (!btn || !activeModalPlayer || !activeModalState) return;
     const idx = Number(btn.dataset.algIndex);
     for (const b of algsBox.querySelectorAll('.case-alg')) {
       b.classList.toggle('is-active', Number(b.dataset.algIndex) === idx);
     }
-    sharedPlayer.alg = activeModalState.algs[idx];
-    sharedPlayer.jumpToStart();
-    sharedPlayer.play();
-  });
-
-  ensureTwistyPlayer().then((player) => {
-    player.experimentalModel?.playingInfo?.addFreshListener((info) => {
-      playBtn.innerHTML = icon(info.playing ? 'pause' : 'play');
-      playBtn.title = info.playing ? 'Pausar' : 'Reproducir';
-      playBtn.setAttribute('aria-label', playBtn.title);
-    });
+    updatePlayerOptions(activeModalPlayer, { alg: activeModalState.algs[idx] });
+    activeModalPlayer.jumpToStart?.();
+    activeModalPlayer.play?.();
   });
 
   return modalEl;
 }
 
-export async function openSharedCaseModal(data, { stickering = '', puzzle = '3x3x3', initialAlgIndex = 0 } = {}) {
+export async function openSharedCaseModal(
+  data,
+  { stickering = '', puzzle = '3x3x3', initialAlgIndex = 0 } = {}
+) {
   const modal = ensureCaseModal();
   const titleEl = modal.querySelector('#case-modal-title');
   const descEl = modal.querySelector('#case-modal-desc');
   const stageEl = modal.querySelector('#case-modal-stage');
   const algsEl = modal.querySelector('#case-modal-algs');
   const visBtn = modal.querySelector('#case-modal-vis');
+  const camBtn = modal.querySelector('#case-modal-camera');
+  const speedBtn = modal.querySelector('#case-modal-speed');
 
   const algs = [data.alg, ...(data.alts ?? [])];
-  activeModalState = { data, stickering, puzzle, algs, vis: '3D' };
-  visBtn.textContent = 'Vista: 3D';
+  const currentVis = activeModalState?.vis && modal.open ? activeModalState.vis : '3D';
+  activeModalState = { data, stickering, puzzle, algs, vis: currentVis, backCamera: false };
+  visBtn.textContent = `Vista: ${currentVis}`;
+  camBtn.textContent = 'Ver desde atrás';
+  speedBtn.textContent = `Velocidad: ${SPEEDS[currentSpeedIdx]}×`;
 
   titleEl.innerHTML = `${escape(data.name)}${data.nickname ? ` <small>${escape(data.nickname)}</small>` : ''}`;
   const descParts = [data.description, data.idea ? `Idea: ${data.idea}` : ''].filter(Boolean);
@@ -231,27 +237,42 @@ export async function openSharedCaseModal(data, { stickering = '', puzzle = '3x3
       <button type="button" class="case-alg ${i === initialAlgIndex ? 'is-active' : ''}" data-alg-index="${i}">
         <span class="alg-tag">${i === 0 ? 'Principal' : `Alt ${i}`}</span>
         <code>${algHTML(alg, i === 0 ? data.pair : '')}</code>
-      </button>`,
+      </button>`
     )
     .join('');
 
   if (!modal.open) modal.showModal();
 
-  const player = await ensureTwistyPlayer();
-  applyPlayerConfig(player, {
+  const player = await getPlayer(stageEl, {
+    scope: 'methods',
     puzzle,
     stickering,
     alg: algs[initialAlgIndex] ?? data.alg,
-    visualization: '3D',
+    anchor: 'end',
+    setupAlg: DISPLAY_SETUP,
+    useDefaultZ2: true,
+    visualization: currentVis,
+    tempoScale: SPEEDS[currentSpeedIdx],
+    cameraLongitude: 25,
+    cameraLatitude: 30,
+    onPlayingChange: syncPlayButtonIcon,
   });
-  stageEl.innerHTML = '';
-  stageEl.append(player);
-  setTimeout(() => player.play?.(), 120);
+
+  activeModalPlayer = player;
+  player?.jumpToStart?.();
+  setTimeout(() => {
+    if (modal.open && activeModalPlayer === player) {
+      player?.play?.();
+    }
+  }, 120);
 }
 
 // ---------- Tarjeta de caso (2D SVG + Algoritmos + Ver animación + Aprendido) ----------
 
-export function createCaseCard(data, { stickering = '', index = 0, puzzle = '3x3x3', groupId = '' } = {}) {
+export function createCaseCard(
+  data,
+  { stickering = '', index = 0, puzzle = '3x3x3', groupId = '' } = {}
+) {
   const caseKey = getCaseKey(data, stickering, puzzle);
   const learned = isCaseLearned(caseKey);
 
