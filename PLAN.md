@@ -158,3 +158,37 @@ Este documento registra el plan de trabajo en fases (A–G) y su estado actual.
 - **Capturas visuales comparativas:**
   - Antes (`before-4x4-centro-opuesto.png`): 5 cubos diminutos apilados verticalmente de 40 px de altura.
   - Después (`after-4x4-centro-opuesto.png`): 1 único cubo grande, nítido y centrado con tamaño responsive de 320 px.
+
+---
+
+## Integración de Mirror Cube 3x3 (Mirror Blocks)
+
+### Fase 1 — Investigación y modelo geométrico (`src/data/mirror.js`)
+- Verificado en `node_modules/cubing`: `cubing.js` no cuenta con soporte nativo para Mirror Cube (Mirror Blocks).
+- Implementado modelo geométrico en `src/data/mirror.js` con grosores asimétricos por capa (`x: [0.75, 1.0, 1.25]`, `y: [0.7, 1.0, 1.3]`, `z: [0.8, 1.0, 1.2]`).
+- Funciones puras: `piecesFromPattern(patternData)`, `isPerfectCube(pieces)`, `faceLevels(pieces)`, `layerTurnForMove(move)`, `pieceInTurn(piece, turn)`, `faceNet(pieces)`.
+- Tests en `tests/mirror.test.js`: cubo perfecto resuelto, conservación tras algoritmo e inverso, detección de no-plano en estado mezclado.
+
+### Fase 2 — Visor 3D y 2D del Mirror (`src/twisty/mirrorViewer.js`)
+- Carga dinámica asíncrona de Three.js (`import('three')`).
+- Material plateado reflectante (`#d8dce2`) y dorado (`#d4af37`), bordes oscuros finos (`EdgesGeometry`), animación suave por capas a 60 fps con interpolación cúbica, rotación orbital con ratón y táctil (`touch-action: none`).
+- Vista 2D con red desplegada en SVG proporcional y sombreado de profundidad según desplazamiento relativo a los centros.
+- Integrado con `src/twisty/playerManager.js` gestionando `puzzle: 'mirror'`, soporte de "Ver con colores (ayuda)" y ciclo de vida de instancia única.
+
+### Fase 3 — Timer (`src/scramble.js`, `src/ui.js`, `src/storage.js`)
+- Categoría `mirror` añadida a `EVENTS` con scrambler `randomScrambleForEvent('333')`.
+- Vista previa del scramble adaptada (2D por defecto en dispositivos táctiles/móviles).
+- Almacenamiento aislado e historial independiente (`cubos-web:solves:mirror`).
+- Tests de compatibilidad hacia atrás en exportación e importación (`tests/transfer.test.js`).
+
+### Fase 4 — Métodos (`#/metodos/mirror`)
+- Creada guía de principiante adaptada (`src/data/mirror-method.js`) con los 17 algoritmos estándar de 3x3 y criterios de reconocimiento por rasante/alturas.
+- Explicación de compatibilidad con CFOP y tarjeta en la portada de métodos (`#/metodos`).
+- Modal interactivo con visor Mirror y botón de alternancia "Ver con colores / Ver Mirror".
+
+### Fase 5 — Notación (`#/notacion/mirror`)
+- Registrado `mirror` en `PUZZLE_ALIASES`, `PUZZLE_NOTATION_SPECS` y validador de giros (`src/notation-parser.js`).
+- Agregado chip de Mirror en selector de notación (`src/notation.js`).
+- "Probá una secuencia" soporta validación, reproducción en visor Mirror y cálculo de inversa.
+- Tests completos en `tests/notation.test.js`.
+

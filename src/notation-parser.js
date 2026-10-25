@@ -17,6 +17,8 @@ const PUZZLE_ALIASES = {
   pyram: 'pyraminx',
   megaminx: 'megaminx',
   minx: 'megaminx',
+  mirror: 'mirror',
+  'mirror-cube': 'mirror',
 };
 
 export function normalizePuzzleKey(puzzle = '3x3') {
@@ -529,6 +531,72 @@ export const PUZZLE_NOTATION_SPECS = {
       { label: 'Muestra de mezcla WCA', alg: "R++ D-- R-- D++ U'" },
     ],
   },
+
+  mirror: {
+    id: 'mirror',
+    puzzleId: 'mirror',
+    name: 'Mirror',
+    title: 'Notación de Mirror Cube 3x3 (Mirror Blocks)',
+    intro:
+      'El Mirror Cube tiene el mismo mecanismo interno que el 3x3 clásico: 6 caras, las mismas capas y giros (U, D, R, L, F, B, capas medias M/E/S y rotaciones x/y/z). Todos los algoritmos del 3x3 funcionan igual. La única diferencia es que todas las piezas son del mismo color (plateado o dorado) y las capas tienen distintos grosores en cada eje, reconociéndose por tamaño y relieve.',
+    clockwiseRule:
+      'El sentido horario es exactamente el mismo que en el 3x3: mirando directamente de frente a la cara que vas a girar, rotás según las agujas del reloj.',
+    groups: [
+      {
+        id: 'basic',
+        title: 'Caras exteriores (U, D, R, L, F, B)',
+        subtitle: 'Giros de 90° o 180° de cada cara del cubo.',
+        moves: ['U', 'D', 'R', 'L', 'F', 'B'].map((f) => ({
+          base: f,
+          variants: ['', "'", '2'],
+          label: FACE_NAMES_ES[f].name,
+          meaning: `Gira la ${FACE_NAMES_ES[f].short} mirando ${f} de frente.`,
+        })),
+      },
+      {
+        id: 'wide',
+        title: 'Giros dobles / anchos (Uw/u, Dw/d, Rw/r, Lw/l, Fw/f, Bw/b)',
+        subtitle: 'Mueven la capa exterior junto con la capa central adyacente.',
+        moves: ['U', 'D', 'R', 'L', 'F', 'B'].map((f) => ({
+          base: `${f}w`,
+          alias: f.toLowerCase(),
+          variants: ['', "'", '2'],
+          label: `${f}w / ${f.toLowerCase()} · Doble ${FACE_NAMES_ES[f].short}`,
+          meaning: `Gira la ${FACE_NAMES_ES[f].short} más la capa central contigua.`,
+        })),
+      },
+      {
+        id: 'slices',
+        title: 'Capas medias (M, E, S)',
+        subtitle: 'Capas centrales que siguen el sentido de su cara de referencia.',
+        moves: ['M', 'E', 'S'].map((s) => ({
+          base: s,
+          variants: ['', "'", '2'],
+          label: SLICE_FOLLOWS_ES[s].name,
+          meaning: SLICE_FOLLOWS_ES[s].rule,
+          follows: `Sigue a ${SLICE_FOLLOWS_ES[s].follows}`,
+        })),
+      },
+      {
+        id: 'rotations',
+        title: 'Rotaciones del cubo completo (x, y, z)',
+        subtitle: 'Rotan el cubo sobre sus ejes para cambiar la orientación de trabajo.',
+        moves: ['x', 'y', 'z'].map((r) => ({
+          base: r,
+          variants: ['', "'", '2'],
+          label: ROTATIONS_ES[r].name,
+          meaning: ROTATIONS_ES[r].rule,
+          follows: `Sigue a ${ROTATIONS_ES[r].follows}`,
+        })),
+      },
+    ],
+    sampleSequences: [
+      { label: 'Sexy Move', alg: "R U R' U'" },
+      { label: 'Sune', alg: "R U R' U R U2 R'" },
+      { label: 'Permutación T', alg: "R U R' U' R' F R2 U' R' U' R U R' F'" },
+      { label: 'Sexy move x6 (vuelve a resuelto)', alg: "R U R' U' R U R' U' R U R' U' R U R' U' R U R' U' R U R' U'" },
+    ],
+  },
 };
 
 /**
@@ -671,7 +739,7 @@ export function validateMoveToken(puzzleKey, rawToken) {
         reason: `El cubo 2x2 no admite giros anchos ("${token}"). Usá ${face}${suffix}.`,
       };
     }
-    const maxWide = key === '3x3' || key === '4x4' ? 2 : 3;
+    const maxWide = key === '3x3' || key === '4x4' || key === 'mirror' ? 2 : 3;
     if (depth < 2 || depth > maxWide) {
       return {
         valid: false,
@@ -689,11 +757,11 @@ export function validateMoveToken(puzzleKey, rawToken) {
     const depth = Number(innerMatch[1]);
     const face = innerMatch[2];
     const suffix = (innerMatch[3] || '').replace("2'", '2');
-    if (key === '2x2' || key === '3x3') {
+    if (key === '2x2' || key === '3x3' || key === 'mirror') {
       return {
         valid: false,
         token,
-        reason: `El giro interno "${token}" requiere un cubo de 4x4 o más (en 3x3 usá M, E o S).`,
+        reason: `El giro interno "${token}" requiere un cubo de 4x4 o más (en 3x3 y Mirror usá M, E o S).`,
       };
     }
     const maxInner = key === '4x4' ? 2 : key === '5x5' ? 3 : 4;

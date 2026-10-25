@@ -9,13 +9,14 @@ import {
   describeMove,
 } from '../src/notation-parser.js';
 
-test('catálogo de notación cubre los 7 puzzles y todos sus movimientos son válidos en KPuzzle', async () => {
-  const expectedPuzzles = ['2x2', '3x3', '4x4', '5x5', '7x7', 'pyraminx', 'megaminx'];
+test('catálogo de notación cubre los 8 puzzles y todos sus movimientos son válidos en KPuzzle', async () => {
+  const expectedPuzzles = ['2x2', '3x3', '4x4', '5x5', '7x7', 'pyraminx', 'megaminx', 'mirror'];
   assert.deepEqual(Object.keys(PUZZLE_NOTATION_SPECS), expectedPuzzles);
 
   for (const key of expectedPuzzles) {
     const spec = PUZZLE_NOTATION_SPECS[key];
-    const kp = await puzzles[spec.puzzleId].kpuzzle();
+    const kpId = spec.puzzleId === 'mirror' ? '3x3x3' : spec.puzzleId;
+    const kp = await puzzles[kpId].kpuzzle();
     const solved = kp.defaultPattern();
 
     for (const group of spec.groups) {
@@ -27,7 +28,7 @@ test('catálogo de notación cubre los 7 puzzles y todos sus movimientos son vá
           assert.equal(check.valid, true, `token ${token} debería ser válido en ${key}: ${check.reason}`);
           assert.doesNotThrow(() => {
             solved.applyAlg(check.canonical);
-          }, `KPuzzle de ${spec.puzzleId} falló al aplicar "${check.canonical}"`);
+          }, `KPuzzle de ${kpId} falló al aplicar "${check.canonical}"`);
         }
       }
     }
@@ -56,6 +57,13 @@ test('validaciones específicas por puzzle y mensajes de error en español', () 
   assert.equal(validateMoveToken('3x3', "r'").valid, true);
   assert.equal(validateMoveToken('3x3', 'M2').valid, true);
   assert.equal(validateMoveToken('3x3', '2R').valid, false);
+
+  // Mirror
+  assert.equal(validateMoveToken('mirror', 'Uw').valid, true);
+  assert.equal(validateMoveToken('mirror', "r'").valid, true);
+  assert.equal(validateMoveToken('mirror', 'M2').valid, true);
+  assert.equal(validateMoveToken('mirror', '2R').valid, false);
+  assert.match(validateMoveToken('mirror', '2R').reason, /requiere un cubo de 4x4 o más/);
 
   // 4x4
   assert.equal(validateMoveToken('4x4', '2R2').valid, true);

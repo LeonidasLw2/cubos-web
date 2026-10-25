@@ -8,7 +8,7 @@ import {
 } from './notation-parser.js';
 import { getPlayer, updatePlayerOptions } from './twisty/playerManager.js';
 
-const PUZZLE_ORDER = ['2x2', '3x3', '4x4', '5x5', '7x7', 'pyraminx', 'megaminx'];
+const PUZZLE_ORDER = ['2x2', '3x3', '4x4', '5x5', '7x7', 'pyraminx', 'megaminx', 'mirror'];
 
 function escapeHtml(str) {
   return String(str ?? '')
