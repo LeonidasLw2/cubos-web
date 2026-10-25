@@ -43,11 +43,12 @@ test('ajustes: valores por defecto y datos inválidos', () => {
   assert.equal(DEFAULT_SETTINGS.inspection, true);
   assert.deepEqual(
     sanitizeSettings({ inspection: false, alerts: 'gritos', countdown: 'x', holdMs: 650, showCube: false, timerDisplay: 'solving', extra: 1 }),
-    { inspection: false, alerts: 'voice', countdown: 'down', holdMs: 500, showCube: false, timerDisplay: 'solving' },
+    { inspection: false, alerts: 'voice', countdown: 'down', holdMs: 500, showCube: false, timerDisplay: 'solving', mirrorColor: 'silver' },
   );
   assert.equal(sanitizeSettings({ alerts: 'beep', countdown: 'up' }).alerts, 'beep');
   assert.equal(sanitizeSettings({ countdown: 'up' }).countdown, 'up');
   assert.equal(sanitizeSettings({ holdMs: 800 }).holdMs, 800);
+  assert.equal(sanitizeSettings({ mirrorColor: 'gold' }).mirrorColor, 'gold');
 });
 
 test('ajustes viejos: "voice" (sí/no) pasa a los avisos nuevos', () => {

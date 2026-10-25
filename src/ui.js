@@ -596,6 +596,7 @@ function fillSettingsForm() {
   f.holdMs.value = String(settings.holdMs);
   f.showCube.checked = settings.showCube;
   f.timerDisplay.value = settings.timerDisplay;
+  if (f.mirrorColor) f.mirrorColor.value = settings.mirrorColor || 'silver';
 }
 
 function onSettingsChange() {
@@ -607,6 +608,7 @@ function onSettingsChange() {
     holdMs: Number(f.holdMs.value),
     showCube: f.showCube.checked,
     timerDisplay: f.timerDisplay.value,
+    mirrorColor: f.mirrorColor ? f.mirrorColor.value : settings.mirrorColor || 'silver',
   };
   saveSettings(settings);
   touchLocalSettingsMeta();

@@ -457,7 +457,8 @@ button:focus-visible {
   pointer-events: auto;
 }
 
-.scramble-view twisty-player {
+.scramble-view twisty-player,
+.scramble-view .mirror-viewer {
   width: 100%;
   height: 100%;
   display: grid;
@@ -1898,7 +1899,8 @@ a.link-card:hover .card-action {
   pointer-events: auto;
 }
 
-.hero-cube-stage twisty-player {
+.hero-cube-stage twisty-player,
+.hero-cube-stage .mirror-viewer {
   width: 100%;
   height: 100%;
   display: grid;
@@ -2400,7 +2402,8 @@ a.link-card:hover .card-action {
   pointer-events: auto;
 }
 
-.case-modal-stage twisty-player {
+.case-modal-stage twisty-player,
+.case-modal-stage .mirror-viewer {
   width: 100%;
   height: 100%;
   display: grid;
@@ -3524,7 +3527,8 @@ a.link-card:hover .card-action {
   pointer-events: auto;
 }
 
-.trainer-cube twisty-player {
+.trainer-cube twisty-player,
+.trainer-cube .mirror-viewer {
   width: 100%;
   height: 100%;
   display: grid;
@@ -4020,7 +4024,8 @@ a.link-card:hover .card-action {
   pointer-events: auto;
 }
 
-.notation-stage-box twisty-player {
+.notation-stage-box twisty-player,
+.notation-stage-box .mirror-viewer {
   width: 100%;
   height: 100%;
   display: grid;
@@ -5241,7 +5246,8 @@ a.link-card:hover .card-action {
   pointer-events: auto;
 }
 
-.solver-3d-stage twisty-player {
+.solver-3d-stage twisty-player,
+.solver-3d-stage .mirror-viewer {
   width: 100%;
   height: 100%;
   display: grid;

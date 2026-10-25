@@ -14,6 +14,7 @@
 //    se destruye primero el anterior (player.remove() y container.replaceChildren()).
 
 import { DISPLAY_SETUP, STICKERING } from '../data/stickering.js';
+import { createMirrorViewer } from './mirrorViewer.js';
 
 if (typeof window !== 'undefined' && typeof customElements !== 'undefined') {
   await import('cubing/twisty');
@@ -79,15 +80,21 @@ export function inspectAndPrunePlayerShadow(player) {
 }
 
 /**
- * Destruye el <twisty-player> asociado a un contenedor y limpia sus listeners.
+ * Destruye el <twisty-player> o visor Mirror asociado a un contenedor y limpia sus listeners.
  */
 export function destroyPlayer(container) {
   if (!container) return;
   const entry = containerEntries.get(container);
   if (entry) {
-    try {
-      entry.player?.pause?.();
-    } catch {}
+    if (entry.isMirror) {
+      try {
+        entry.player?.destroy?.();
+      } catch {}
+    } else {
+      try {
+        entry.player?.pause?.();
+      } catch {}
+    }
     for (const cleanup of entry.cleanups) {
       try {
         cleanup();
@@ -102,11 +109,18 @@ export function destroyPlayer(container) {
       scopeEntries.delete(entry.scope);
     }
   }
-  // Asegurar que no quede ningún twisty-player huérfano dentro del contenedor
-  const stray = container.querySelectorAll?.('twisty-player') ?? [];
-  for (const el of stray) {
+  // Asegurar que no quede ningún player huérfano dentro del contenedor
+  const strayTwisty = container.querySelectorAll?.('twisty-player') ?? [];
+  for (const el of strayTwisty) {
     try {
       el.pause?.();
+      el.remove();
+    } catch {}
+  }
+  const strayMirror = container.querySelectorAll?.('.mirror-viewer') ?? [];
+  for (const el of strayMirror) {
+    try {
+      el.destroy?.();
       el.remove();
     } catch {}
   }
@@ -134,10 +148,15 @@ export function destroyAllPlayers() {
 }
 
 /**
- * Aplica las opciones de configuración sobre un <twisty-player> existente sin desmontarlo del DOM.
+ * Aplica las opciones de configuración sobre un reproductor existente sin desmontarlo del DOM.
  */
 export function updatePlayerOptions(player, options = {}) {
   if (!player) return;
+
+  if (typeof player.updateOptions === 'function') {
+    player.updateOptions(options);
+    return;
+  }
 
   const {
     puzzle,
@@ -270,6 +289,7 @@ export function getPlayer(container, options = {}) {
     }
   }
 
+  const isMirrorTarget = options.puzzle === 'mirror' && !options.showColors;
   let entry = containerEntries.get(container);
 
   // Verificar si el player sigue siendo hijo directo de `container`
@@ -278,27 +298,61 @@ export function getPlayer(container, options = {}) {
     entry.player &&
     (entry.player.parentElement === container || entry.player.parentNode === container)
   ) {
-    const currentPuzzle = entry.player.getAttribute?.('puzzle');
-    const targetPuzzle = options.puzzle;
-    if (targetPuzzle && currentPuzzle && targetPuzzle !== currentPuzzle) {
-      // Si el puzzle cambia a una geometría distinta, destruimos el anterior para evitar colisiones de KPuzzle en WebGL
+    if (Boolean(entry.isMirror) !== isMirrorTarget) {
+      // Cambio entre visor Mirror y twisty-player normal (o viceversa)
       destroyPlayer(container);
-    } else {
-      // Eliminar cualquier otro twisty-player duplicado si alguien lo hubiera insertado
-      const allInContainer = container.querySelectorAll?.('twisty-player') ?? [];
-      if (allInContainer.length > 1) {
-        for (const p of allInContainer) {
-          if (p !== entry.player) p.remove();
-        }
-      }
+    } else if (entry.isMirror) {
+      // Reutilizar el MirrorViewer existente in-place
       updatePlayerOptions(entry.player, options);
       return entry.player;
+    } else {
+      const currentPuzzle = entry.player.getAttribute?.('puzzle');
+      const targetPuzzle = options.puzzle === 'mirror' ? '3x3x3' : options.puzzle;
+      if (targetPuzzle && currentPuzzle && targetPuzzle !== currentPuzzle) {
+        destroyPlayer(container);
+      } else {
+        const allInContainer = container.querySelectorAll?.('twisty-player') ?? [];
+        if (allInContainer.length > 1) {
+          for (const p of allInContainer) {
+            if (p !== entry.player) p.remove();
+          }
+        }
+        updatePlayerOptions(entry.player, {
+          ...options,
+          puzzle: options.puzzle === 'mirror' ? '3x3x3' : options.puzzle,
+        });
+        return entry.player;
+      }
     }
   }
 
   // Si había una entrada vieja desconectada, limpiarla primero
   if (entry) {
     destroyPlayer(container);
+  }
+
+  if (isMirrorTarget) {
+    const mirrorPlayer = createMirrorViewer(container, options);
+    entry = {
+      container,
+      player: mirrorPlayer,
+      scope,
+      isMirror: true,
+      cleanups: [],
+    };
+    containerEntries.set(container, entry);
+    if (scope) {
+      scopeEntries.set(scope, entry);
+    }
+    container.replaceChildren(mirrorPlayer);
+
+    const mountedCount = (container.querySelectorAll?.('.mirror-viewer') ?? []).length;
+    if (mountedCount !== 1) {
+      throw new Error(
+        `[playerManager] Se esperaba exactamente 1 visor Mirror en el contenedor, pero hay ${mountedCount}.`
+      );
+    }
+    return mirrorPlayer;
   }
 
   // Crear un <twisty-player> nuevo por única vez para este contenedor
@@ -312,6 +366,7 @@ export function getPlayer(container, options = {}) {
     container,
     player,
     scope,
+    isMirror: false,
     cleanups: [],
   };
   containerEntries.set(container, entry);
@@ -319,10 +374,13 @@ export function getPlayer(container, options = {}) {
     scopeEntries.set(scope, entry);
   }
 
-  updatePlayerOptions(player, {
+  const twistyOpts = {
     visualization: '3D',
     ...options,
-  });
+    puzzle: options.puzzle === 'mirror' ? '3x3x3' : options.puzzle,
+  };
+
+  updatePlayerOptions(player, twistyOpts);
 
   container.replaceChildren(player);
   inspectAndPrunePlayerShadow(player);

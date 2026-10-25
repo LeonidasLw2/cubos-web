@@ -5,6 +5,7 @@ export const HOLD_OPTIONS = [300, 500, 800];
 export const TIMER_DISPLAYS = ['time', 'solving']; // mostrar el tiempo u ocultarlo (cubo que late)
 export const ALERT_MODES = ['voice', 'beep', 'none']; // avisos de 8 y 12 s
 export const COUNTDOWN_MODES = ['down', 'up']; // inspección regresiva (15 → 0) o progresiva (0 → 15)
+export const MIRROR_COLOR_OPTIONS = ['silver', 'gold']; // aspecto de las piezas en el Mirror
 
 export const DEFAULT_SETTINGS = Object.freeze({
   inspection: true,
@@ -13,6 +14,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   holdMs: 500,
   showCube: true,
   timerDisplay: 'time',
+  mirrorColor: 'silver',
 });
 
 // Cada campo inválido o faltante toma su valor por defecto, así un dato viejo
@@ -30,6 +32,7 @@ export function sanitizeSettings(raw) {
     holdMs: pick('holdMs', HOLD_OPTIONS),
     showCube: bool('showCube'),
     timerDisplay: pick('timerDisplay', TIMER_DISPLAYS),
+    mirrorColor: pick('mirrorColor', MIRROR_COLOR_OPTIONS),
   };
 }
 
