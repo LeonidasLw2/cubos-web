@@ -13,6 +13,21 @@ Este documento registra el plan de trabajo en fases (A–G) y su estado actual.
 
 ---
 
+## Actualización: Integración del Mirror Cube 3x3
+- [x] **Fase 1 (Mirror):** Investigación y modelo geométrico (`src/data/mirror.js` y `tests/mirror.test.js`).
+  - *Investigación de `cubing.js`:* Se revisó el catálogo en `node_modules/cubing` (`cubing/puzzles`). La versión instalada (`0.66.1`) **no** incluye Mirror Blocks (solo tiene 3x3x3, 2x2x2, 4x4x4, 5x5x5, 6x6x6, 7x7x7, megaminx, pyraminx, etc.). Las coincidencias de "mirror" son transformaciones de algoritmos de simetría, no geometría de puzzle.
+  - *Modelo geométrico:* Se implementó `src/data/mirror.js` con grosores asimétricos por capa (`MIRROR_LAYERS`), cálculo de piezas por estado de KPuzzle 3x3, verificación de cubo perfecto resuelto (`isPerfectCube`), mapeo de giros de capas (`layerTurnForMove`) y proyección 2D (`faceNet`).
+  - *Tests:* `tests/mirror.test.js` pasa con 8 pruebas verificando cubo perfecto, rotura de forma tras giros y mezclas, y restauración exacta con algoritmos inversos.
+- [ ] **Fase 2 (Mirror):** Visor 3D y 2D del Mirror (`src/twisty/mirrorViewer.js` con Three.js) e integración en `playerManager.js`.
+- [ ] **Fase 3 (Mirror):** Timer (categoría `"mirror"`, scrambles de 333, vista previa Mirror, exportar/importar y sincronización en la nube).
+- [ ] **Fase 4 (Mirror):** Métodos (`#/metodos/mirror`, reconocimiento por forma, principiante adaptado, portada y `method-pages.js`).
+- [ ] **Fase 5 (Mirror):** Notación (Mirror en `#/notacion`, animación en visor 3D y probador de secuencias).
+- [ ] **Fase 6 (Mirror):** Solver (modo "Deshacer mezcla" animado en visor Mirror).
+- [ ] **Fase 7 (Mirror):** Entrenador (casos en Mirror si aplica).
+- [ ] **Fase 8 (Mirror):** Revisión final, capturas, tests y build.
+
+---
+
 ## Detalle por Fase
 
 ### Fase A — Barra superior, logo y sistema de diseño
