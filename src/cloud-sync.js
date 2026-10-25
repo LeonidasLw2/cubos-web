@@ -14,6 +14,24 @@ const SYNC_META_KEY = 'cubos-web:sync-meta';
 const SOLVER_PREFS_KEY = 'cubos-web:solver-prefs';
 const BATCH_CHUNK_SIZE = 400; // Firestore permite hasta 500 operaciones por writeBatch
 
+function escapeHtml(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function sanitizePhotoUrl(url) {
+  if (typeof url !== 'string') return '';
+  const trimmed = url.trim();
+  if (/^https?:\/\/[^\s"'<>]+$/i.test(trimmed)) {
+    return escapeHtml(trimmed);
+  }
+  return '';
+}
+
 export const DEFAULT_SOLVER_PREFS = Object.freeze({
   stepDelaySec: 1.0, // 0 a 3 s, paso 0.1 s, por defecto 1 s
   turnSpeed: 1.2, // multiplicador tempoScale
@@ -558,17 +576,20 @@ export function initCloudSyncUI({ onDataUpdated, onExportBackup, onImportBackup 
       `;
     } else {
       const u = status.user;
-      const avatarHtml = u.photoURL
-        ? `<img src="${u.photoURL}" alt="" class="account-avatar-img" referrerpolicy="no-referrer" />`
-        : `<span class="account-avatar-fallback">${(u.displayName || u.email || 'U')[0].toUpperCase()}</span>`;
+      const cleanPhoto = sanitizePhotoUrl(u.photoURL);
+      const safeName = escapeHtml(u.displayName || 'Speedcuber');
+      const safeEmail = escapeHtml(u.email || '');
+      const avatarHtml = cleanPhoto
+        ? `<img src="${cleanPhoto}" alt="" class="account-avatar-img" referrerpolicy="no-referrer" />`
+        : `<span class="account-avatar-fallback">${escapeHtml((u.displayName || u.email || 'U')[0].toUpperCase())}</span>`;
 
       accountDialogBody.innerHTML = `
         <div class="account-profile-card">
           ${avatarHtml}
           <div class="account-profile-info">
-            <strong>${u.displayName || 'Speedcuber'}</strong>
-            <span>${u.email || ''}</span>
-            <small class="account-sync-status-line" data-state="${status.state}">${status.label}</small>
+            <strong>${safeName}</strong>
+            <span>${safeEmail}</span>
+            <small class="account-sync-status-line" data-state="${status.state}">${escapeHtml(status.label)}</small>
           </div>
         </div>
         <div class="account-backup-actions">
@@ -586,7 +607,7 @@ export function initCloudSyncUI({ onDataUpdated, onExportBackup, onImportBackup 
           <button type="button" class="data-btn danger" id="account-signout-btn">Cerrar sesión</button>
         </div>
         <p class="setting-help privacy-note">
-          <strong>Privacidad:</strong> Tus tiempos y progreso están protegidos en <code>users/${u.uid}</code> y solo tu cuenta autenticada tiene permiso de lectura y escritura.
+          <strong>Privacidad:</strong> Tus tiempos y progreso están protegidos en <code>users/${escapeHtml(u.uid)}</code> y solo tu cuenta autenticada tiene permiso de lectura y escritura.
         </p>
       `;
     }

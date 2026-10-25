@@ -10,6 +10,24 @@ import { getPlayer, updatePlayerOptions } from './twisty/playerManager.js';
 
 const PUZZLE_ORDER = ['2x2', '3x3', '4x4', '5x5', '7x7', 'pyraminx', 'megaminx'];
 
+function escapeHtml(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function escapeAttr(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 let activePlayer = null;
 let loopTimer = null;
 let isLooping = false;
@@ -161,6 +179,9 @@ export function renderNotation(container, route = {}) {
             .join('')}
         </div>
       </div>
+      <button type="button" class="notation-jump-down-link" id="notation-jump-down-btn">
+        Ver lista de movimientos de ${spec.name} ↓
+      </button>
     </div>
   `;
 
@@ -281,6 +302,40 @@ export function renderNotation(container, route = {}) {
   layout.appendChild(mainCol);
   layout.appendChild(viewerAside);
   page.appendChild(layout);
+
+  // Botón flotante móvil para volver al visor 3D cuando el usuario bajó a la lista
+  const floatingBtn = document.createElement('button');
+  floatingBtn.type = 'button';
+  floatingBtn.className = 'notation-floating-btn';
+  floatingBtn.id = 'notation-floating-btn';
+  floatingBtn.hidden = true;
+  floatingBtn.setAttribute('aria-label', 'Subir al visor 3D');
+  floatingBtn.innerHTML = `<span>🧊 Ver en 3D</span> <strong id="notation-floating-badge">${escapeHtml(activeAlg)}</strong> <span>↑</span>`;
+  page.appendChild(floatingBtn);
+
+  floatingBtn.addEventListener('click', () => {
+    viewerAside.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    floatingBtn.hidden = true;
+  });
+
+  page.querySelector('#notation-jump-down-btn')?.addEventListener('click', () => {
+    page.querySelector('.notation-group-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  if (typeof IntersectionObserver !== 'undefined') {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            floatingBtn.hidden = true;
+          }
+        }
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(viewerAside);
+  }
+
   container.appendChild(page);
 
   // Montar el único <twisty-player> mediante playerManager (destruye el del contenedor anterior si cambió)
@@ -322,6 +377,17 @@ export function renderNotation(container, route = {}) {
     for (const card of page.querySelectorAll('[data-move-card]')) {
       const hasActive = card.querySelector(`[data-move-token="${CSS.escape(token)}"]`);
       card.classList.toggle('is-selected', Boolean(hasActive));
+    }
+
+    const floatingBadge = page.querySelector('#notation-floating-badge');
+    if (floatingBadge) floatingBadge.textContent = token;
+    try {
+      const asideRect = viewerAside.getBoundingClientRect();
+      if (asideRect.bottom < 80) {
+        floatingBtn.hidden = false;
+      }
+    } catch {
+      // Ignorar
     }
 
     playSequenceOnViewer(token, { fromSolved: true, autoPlay: true });
@@ -411,8 +477,8 @@ export function renderNotation(container, route = {}) {
     if (!result.valid) {
       seqFeedback.innerHTML = `
         <div class="notation-seq-error" role="alert">
-          <strong>Secuencia inválida para ${spec.name}:</strong>
-          <ul>${result.errors.map((err) => `<li>${err}</li>`).join('')}</ul>
+          <strong>Secuencia inválida para ${escapeHtml(spec.name)}:</strong>
+          <ul>${result.errors.map((err) => `<li>${escapeHtml(typeof err === 'string' ? err : err?.reason || 'Error')}</li>`).join('')}</ul>
         </div>
       `;
       return;
@@ -422,14 +488,14 @@ export function renderNotation(container, route = {}) {
       <div class="notation-seq-valid">
         <div class="notation-seq-meta">
           <span class="notation-seq-ok">✔ Secuencia válida (${result.tokens.length} ${result.tokens.length === 1 ? 'movimiento' : 'movimientos'})</span>
-          <span class="notation-seq-inv">Secuencia inversa: <code>${result.inverseAlg}</code></span>
+          <span class="notation-seq-inv">Secuencia inversa: <code>${escapeHtml(result.inverseAlg)}</code></span>
         </div>
         <div class="notation-seq-steps">
           ${result.descriptions
             .map(
               (d, idx) =>
-                `<button type="button" class="notation-step-pill" data-step-token="${d.token}" title="${d.description}">
-                  <span class="step-num">${idx + 1}.</span> <code>${d.token}</code>
+                `<button type="button" class="notation-step-pill" data-step-token="${escapeAttr(d.token)}" title="${escapeAttr(d.description)}">
+                  <span class="step-num">${idx + 1}.</span> <code>${escapeHtml(d.token)}</code>
                 </button>`
             )
             .join('')}

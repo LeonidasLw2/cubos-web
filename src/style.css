@@ -4389,17 +4389,80 @@ a.link-card:hover .card-action {
 @media (max-width: 960px) {
   .notation-layout {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 
   .notation-viewer-aside {
     order: -1;
-    position: sticky;
-    top: 62px;
+    position: static;
+    top: auto;
+    z-index: auto;
   }
 
   .notation-stage-box {
-    min-height: 220px;
-    max-height: min(60vh, 240px);
+    min-height: 200px;
+    max-height: min(50vh, 260px);
+  }
+}
+
+/* Botón flotante en móvil para volver rápido al visor 3D al explorar la lista */
+.notation-floating-btn {
+  display: none;
+}
+
+@media (max-width: 960px) {
+  .notation-floating-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    position: fixed;
+    right: 16px;
+    bottom: 74px; /* Sobre la barra inferior móvil */
+    z-index: 90;
+    padding: 10px 16px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(20, 28, 42, 0.96), rgba(11, 15, 23, 0.98));
+    border: 1px solid var(--c-celeste);
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 700;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), 0 0 12px rgba(116, 172, 223, 0.35);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    cursor: pointer;
+    transition: transform 0.2s var(--ease), opacity 0.2s var(--ease);
+    animation: fade-in 0.25s var(--ease);
+  }
+
+  .notation-floating-btn[hidden] {
+    display: none !important;
+  }
+
+  .notation-floating-btn:active {
+    transform: scale(0.94);
+  }
+
+  .notation-jump-down-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 4px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    color: var(--c-celeste);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .notation-jump-down-link:hover {
+    background: rgba(116, 172, 223, 0.12);
+    border-color: var(--c-celeste);
   }
 }
 

@@ -1273,7 +1273,7 @@ function bindSolverEvents(container) {
     if (!parsed.valid) {
       if (feedback) {
         feedback.hidden = false;
-        feedback.textContent = parsed.errors[0]?.reason || 'Secuencia inválida.';
+        feedback.textContent = (typeof parsed.errors[0] === 'string' ? parsed.errors[0] : parsed.errors[0]?.reason) || 'Secuencia inválida.';
       }
       return;
     }
@@ -1326,7 +1326,7 @@ function bindSolverEvents(container) {
       if (fb) {
         fb.hidden = false;
         fb.className = 'solver-validation-box is-invalid';
-        fb.innerHTML = `<div class="solver-val-err"><span class="solver-val-badge">⚠ Mezcla inválida</span><ul class="solver-val-list">${res.errors.map((e) => `<li>${escapeHtml(e.reason)}</li>`).join('')}</ul></div>`;
+        fb.innerHTML = `<div class="solver-val-err"><span class="solver-val-badge">⚠ Mezcla inválida</span><ul class="solver-val-list">${res.errors.map((e) => `<li>${escapeHtml(typeof e === 'string' ? e : e?.reason || 'Movimiento inválido')}</li>`).join('')}</ul></div>`;
       }
       return;
     }
