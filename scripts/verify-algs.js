@@ -835,13 +835,13 @@ await verifyPuzzleCases(
   (id, shown, applied, solvedP) => {
     if (id === '7-p-outer') {
       const sameCorners = JSON.stringify(applied.patternData.CORNERS) === JSON.stringify(solvedP.patternData.CORNERS);
-      const sameMidges = JSON.stringify(applied.patternData.EDGES) === JSON.stringify(solvedP.patternData.EDGES);
-      const outerWingsChanged = JSON.stringify(applied.patternData.EDGES2) !== JSON.stringify(solvedP.patternData.EDGES2);
+      const sameMidges = JSON.stringify(applied.patternData.EDGES2) === JSON.stringify(solvedP.patternData.EDGES2);
+      const outerWingsChanged = JSON.stringify(applied.patternData.EDGES) !== JSON.stringify(solvedP.patternData.EDGES);
       return [['la paridad de alas externas del 7x7 mueve esquinas o midges', sameCorners && sameMidges && outerWingsChanged]];
     }
     if (id === '7-p-inner') {
       const sameCorners = JSON.stringify(applied.patternData.CORNERS) === JSON.stringify(solvedP.patternData.CORNERS);
-      const sameMidges = JSON.stringify(applied.patternData.EDGES) === JSON.stringify(solvedP.patternData.EDGES);
+      const sameMidges = JSON.stringify(applied.patternData.EDGES2) === JSON.stringify(solvedP.patternData.EDGES2);
       const innerWingsChanged = JSON.stringify(applied.patternData.EDGES3) !== JSON.stringify(solvedP.patternData.EDGES3);
       return [['la paridad de alas internas del 7x7 mueve esquinas o midges', sameCorners && sameMidges && innerWingsChanged]];
     }

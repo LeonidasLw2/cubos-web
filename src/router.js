@@ -7,16 +7,19 @@ export const DEFAULT_HASH = '#/timer';
 // Convierte el hash en { view, path, page, sub, crumbs, … }.
 // Un hash desconocido vuelve al timer; una ruta vieja de Métodos trae "redirect".
 export function parseRoute(hash) {
-  const path = (hash ?? '').replace(/^#\/?/, '').replace(/\/+$/, '').toLowerCase();
+  const raw = (hash ?? '').replace(/^#\/?/, '');
+  const [rawPath, rawQuery = ''] = raw.split('?');
+  const path = rawPath.replace(/\/+$/, '').toLowerCase();
+  const params = Object.fromEntries(new URLSearchParams(rawQuery));
   if (path === '' || path === 'timer') return { view: 'timer', path: 'timer' };
   if (path === 'entrenar') return { view: 'trainer', path };
   if (path === 'solver' || path.startsWith('solver/')) {
-    const puzzle = path.slice('solver'.length).replace(/^\//, '') || null;
-    return { view: 'solver', path, puzzle };
+    const puzzle = path.slice('solver'.length).replace(/^\//, '') || params.puzzle || null;
+    return { view: 'solver', path: rawQuery ? `${path}?${rawQuery}` : path, puzzle, params };
   }
   if (path === 'notacion' || path.startsWith('notacion/')) {
-    const puzzle = path.slice('notacion'.length).replace(/^\//, '') || null;
-    return { view: 'notation', path, puzzle };
+    const puzzle = path.slice('notacion'.length).replace(/^\//, '') || params.puzzle || null;
+    return { view: 'notation', path: rawQuery ? `${path}?${rawQuery}` : path, puzzle, params };
   }
   if (path === 'metodos' || path.startsWith('metodos/')) {
     const sub = path.slice('metodos'.length).replace(/^\//, '');
