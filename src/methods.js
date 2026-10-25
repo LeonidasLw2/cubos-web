@@ -23,9 +23,9 @@ const lowerTwo = (color) => [G, G, G, color, color, color, color, color, color];
 
 // Puzzles de la portada de Métodos (el dibujo es el cubo de cada uno).
 const PUZZLES = [
-  { title: '2x2', text: 'El cubo de bolsillo: sin centros fijos. Principiante, Ortega y CLL.', href: linkTo('2x2'), accent: 'orange', art: { n: 2 } },
-  { title: '3x3', text: 'El clásico. Método principiante, CFOP y Roux.', href: linkTo('3x3'), accent: 'blue', art: { n: 3 } },
-  { title: '4x4', text: 'Reducción a 3x3, paridades y método Yau.', href: linkTo('4x4'), accent: 'green', art: { n: 4 } },
+  { title: '2x2', text: 'El cubo de bolsillo: sin centros fijos. Principiante, Ortega y CLL.', href: linkTo('2x2'), accent: 'orange', art: { n: 2 }, tag: '3 métodos · 56 casos' },
+  { title: '3x3', text: 'El clásico. Método principiante, CFOP y Roux.', href: linkTo('3x3'), accent: 'blue', art: { n: 3 }, tag: 'Principiante · CFOP · Roux' },
+  { title: '4x4', text: 'Reducción a 3x3, paridades y método Yau.', href: linkTo('4x4'), accent: 'green', art: { n: 4 }, tag: 'Reducción · Yau · 17 casos' },
 ];
 
 // Métodos de cada puzzle (las páginas que todavía no existen salen como "Próximamente").
@@ -33,25 +33,25 @@ const PUZZLE_METHODS = {
   '3x3': {
     intro: 'Tres métodos para el 3x3: empezá por el principiante y, cuando lo domines, pasá a CFOP (el más usado) o a Roux.',
     methods: [
-      { title: 'Principiante', text: 'Capa por capa. El primer método para aprender a armar el cubo.', href: linkTo('3x3/principiante'), accent: 'green' },
-      { title: 'CFOP', text: 'Cruz, F2L, OLL y PLL. El método más usado en speedcubing.', href: linkTo('3x3/cfop'), accent: 'blue' },
-      { title: 'Roux', text: 'Bloques y la capa del medio al final. Muy eficiente en movimientos.', href: linkTo('3x3/roux'), accent: 'orange' },
+      { title: 'Principiante', text: 'Capa por capa. El primer método para aprender a armar el cubo.', href: linkTo('3x3/principiante'), accent: 'green', tag: '⭐ Ideal para empezar · 7 pasos' },
+      { title: 'CFOP', text: 'Cruz, F2L, OLL y PLL. El método más usado en speedcubing.', href: linkTo('3x3/cfop'), accent: 'blue', tag: '⚡ Más rápido · 119 casos' },
+      { title: 'Roux', text: 'Bloques y la capa del medio al final. Muy eficiente en movimientos.', href: linkTo('3x3/roux'), accent: 'orange', tag: '🧠 Intuitivo · Bloques' },
     ],
   },
   '2x2': {
     intro: CUBE2X2.intro.join(' '),
     methods: [
-      { title: 'Principiante', text: 'Capa por capa, con 3 algoritmos que ya conocés del 3x3.', href: linkTo('2x2/principiante'), accent: 'green', n: 2 },
-      { title: 'Ortega', text: 'Primera cara, OLL (7 casos) y PBL (5 casos). El paso siguiente para ir rápido.', href: linkTo('2x2/ortega'), accent: 'blue', n: 2 },
-      { title: 'CLL', text: 'La última capa en un solo algoritmo: 42 casos. Para los que quieren ir todavía más rápido.', href: linkTo('2x2/cll'), accent: 'red', n: 2 },
+      { title: 'Principiante', text: 'Capa por capa, con 3 algoritmos que ya conocés del 3x3.', href: linkTo('2x2/principiante'), accent: 'green', n: 2, tag: 'Primer método · 3 pasos' },
+      { title: 'Ortega', text: 'Primera cara, OLL (7 casos) y PBL (5 casos). El paso siguiente para ir rápido.', href: linkTo('2x2/ortega'), accent: 'blue', n: 2, tag: '⚡ Rápido · 12 casos' },
+      { title: 'CLL', text: 'La última capa en un solo algoritmo: 42 casos. Para los que quieren ir todavía más rápido.', href: linkTo('2x2/cll'), accent: 'red', n: 2, tag: '🔥 Avanzado · 42 casos' },
     ],
   },
   '4x4': {
     intro: CUBE4X4.intro,
     notation: CUBE4X4.notation,
     methods: [
-      { title: 'Reducción', text: 'Centros, aristas y después como un 3x3. Incluye las dos paridades.', href: linkTo('4x4/reduccion'), accent: 'green', n: 4 },
-      { title: 'Yau', text: 'El método de los más rápidos: parte de la cruz antes de terminar los centros.', href: linkTo('4x4/yau'), accent: 'blue', n: 4 },
+      { title: 'Reducción', text: 'Centros, aristas y después como un 3x3. Incluye las dos paridades.', href: linkTo('4x4/reduccion'), accent: 'green', n: 4, tag: 'Método estándar' },
+      { title: 'Yau', text: 'El método de los más rápidos: parte de la cruz antes de terminar los centros.', href: linkTo('4x4/yau'), accent: 'blue', n: 4, tag: '⚡ Competición' },
     ],
   },
 };
@@ -110,7 +110,16 @@ const artFor = (m) => m.art ?? { n: m.n ?? 3, top: HEX[m.accent], left: G, right
 function linkCards(items, className = '') {
   return `<div class="link-grid ${className}">${items
     .map((m) => {
-      const inner = `<div class="card-art">${cubeSvg({ n: 3, ...artFor(m) })}</div><h3>${escape(m.title)}</h3><p>${escape(m.text)}</p>${m.href ? '' : '<span class="soon-badge">Próximamente</span>'}`;
+      const tagHtml = m.tag ? `<span class="card-tag accent-${m.accent}">${escape(m.tag)}</span>` : '';
+      const actionHtml = m.href ? `<span class="card-action">Ver guía completa →</span>` : '';
+      const inner = `
+        <div class="card-art">${cubeSvg({ n: 3, ...artFor(m) })}</div>
+        ${tagHtml}
+        <h3>${escape(m.title)}</h3>
+        <p>${escape(m.text)}</p>
+        ${actionHtml}
+        ${m.href ? '' : '<span class="soon-badge">Próximamente</span>'}
+      `;
       return m.href
         ? `<a class="link-card accent-${m.accent}" href="${m.href}">${inner}</a>`
         : `<div class="link-card accent-${m.accent} is-soon" aria-disabled="true">${inner}</div>`;
@@ -149,17 +158,201 @@ function caseSection({ id, title, count, text, cases, stickering, puzzle }) {
   return section;
 }
 
+// ---------- Presentaciones y secciones explicativas ----------
+
+function methodsPresentation() {
+  return `
+    <section class="methods-presentation">
+      <div class="presentation-header">
+        <span class="presentation-badge">Ruta Speedcubing</span>
+        <h3>Ruta de Aprendizaje Recomendada</h3>
+        <p>Desde tu primer cubo resuelto hasta competir en torneos oficiales WCA.</p>
+      </div>
+
+      <div class="pathway-grid">
+        <div class="pathway-card stage-1">
+          <div class="pathway-step">Nivel 1 · Principiante</div>
+          <h4>Capa por Capa (LBL)</h4>
+          <p>La forma más intuitiva de empezar. Con solo 3 algoritmos clave aprendés a colocar esquinas y aristas sin desarmar lo que ya construiste.</p>
+          <ul class="pathway-features">
+            <li>🎯 Objetivo: Sub-1 minuto</li>
+            <li>🧠 3 algoritmos básicos</li>
+            <li>💡 Fácil de memorizar en 1 tarde</li>
+          </ul>
+        </div>
+
+        <div class="pathway-card stage-2 highlight">
+          <div class="pathway-step">Nivel 2 · Estándar WCA</div>
+          <h4>CFOP (Fridrich)</h4>
+          <p>El método con el que se rompieron todos los récords mundiales. Resuelve los pares esquina-arista juntos (F2L) y la última capa en 2 pasos.</p>
+          <ul class="pathway-features">
+            <li>🎯 Objetivo: Sub-20 segundos</li>
+            <li>⚡ Cruz + F2L (41) + OLL (57) + PLL (21)</li>
+            <li>🚀 Velocidad y fluidez máxima</li>
+          </ul>
+        </div>
+
+        <div class="pathway-card stage-3">
+          <div class="pathway-step">Nivel 3 · Alta Eficiencia</div>
+          <h4>Roux & Métodos Avanzados</h4>
+          <p>Enfoque en bloques libres y giros de la capa del medio (M). Requiere menos movimientos y no depende de rotaciones continuas del cubo.</p>
+          <ul class="pathway-features">
+            <li>🎯 Objetivo: Menos de 45 giros (STM)</li>
+            <li>🧩 Bloques 1x2x3 + CMLL + LSE</li>
+            <li>✨ Gran libertad intuitiva</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="features-banner">
+        <div class="feature-item">
+          <div class="feature-icon">🎮</div>
+          <div class="feature-text">
+            <strong>Animaciones 3D Interactivas</strong>
+            <span>Girá el cubo con el dedo o mouse, reproducí a distintas velocidades y pausá paso a paso.</span>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🔍</div>
+          <div class="feature-text">
+            <strong>Algoritmos Verificados</strong>
+            <span>Todos los algoritmos están probados con el motor KPuzzle para garantizar que resuelvan cada caso.</span>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">📱</div>
+          <div class="feature-text">
+            <strong>Listo para Celular & App</strong>
+            <span>Consultá tus algoritmos sin conexión y entrená tus casos favoritos estés donde estés.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="notation-cheat">
+        <div class="notation-head">
+          <h4>Notación Universal Rápida (WCA)</h4>
+          <p>Letra sola = 90° horario · Con apóstrofe (') = 90° antihorario · Con 2 = 180°</p>
+        </div>
+        <div class="notation-moves">
+          <div class="move-pill"><strong>R</strong><span>Derecha</span></div>
+          <div class="move-pill"><strong>L</strong><span>Izquierda</span></div>
+          <div class="move-pill"><strong>U</strong><span>Arriba</span></div>
+          <div class="move-pill"><strong>D</strong><span>Abajo</span></div>
+          <div class="move-pill"><strong>F</strong><span>Frente</span></div>
+          <div class="move-pill"><strong>B</strong><span>Atrás</span></div>
+          <div class="move-pill"><strong>M</strong><span>Medio</span></div>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function puzzle3x3Presentation() {
+  return `
+    <section class="methods-presentation">
+      <div class="presentation-header">
+        <span class="presentation-badge">Comparativa 3x3</span>
+        <h3>¿Qué método es mejor para vos?</h3>
+        <p>Compará los tres estilos principales de resolución del cubo clásico.</p>
+      </div>
+
+      <div class="comparison-grid">
+        <div class="comparison-col">
+          <div class="comp-header">
+            <h4>Principiante</h4>
+            <span class="comp-badge">Fácil</span>
+          </div>
+          <div class="comp-row"><span>Dificultad</span><strong>Muy baja</strong></div>
+          <div class="comp-row"><span>Algoritmos</span><strong>3 principales</strong></div>
+          <div class="comp-row"><span>Promedio de giros</span><strong>~100 movimientos</strong></div>
+          <div class="comp-row"><span>Tiempo típico</span><strong>45s – 2 minutos</strong></div>
+          <div class="comp-row"><span>Enfoque</span><strong>Capa por capa</strong></div>
+        </div>
+
+        <div class="comparison-col featured">
+          <div class="comp-header">
+            <h4>CFOP (Fridrich)</h4>
+            <span class="comp-badge popular">★ El más usado</span>
+          </div>
+          <div class="comp-row"><span>Dificultad</span><strong>Media / Alta</strong></div>
+          <div class="comp-row"><span>Algoritmos</span><strong>119 casos (o 16 en 2 pasos)</strong></div>
+          <div class="comp-row"><span>Promedio de giros</span><strong>~55 movimientos</strong></div>
+          <div class="comp-row"><span>Tiempo típico</span><strong>8s – 25 segundos</strong></div>
+          <div class="comp-row"><span>Enfoque</span><strong>Cruz + Pares + 2 pasos LL</strong></div>
+        </div>
+
+        <div class="comparison-col">
+          <div class="comp-header">
+            <h4>Roux</h4>
+            <span class="comp-badge">Eficiente</span>
+          </div>
+          <div class="comp-row"><span>Dificultad</span><strong>Media (intuitivo)</strong></div>
+          <div class="comp-row"><span>Algoritmos</span><strong>42 casos (CMLL)</strong></div>
+          <div class="comp-row"><span>Promedio de giros</span><strong>~48 movimientos</strong></div>
+          <div class="comp-row"><span>Tiempo típico</span><strong>10s – 28 segundos</strong></div>
+          <div class="comp-row"><span>Enfoque</span><strong>Bloques + M + Esquinas</strong></div>
+        </div>
+      </div>
+
+      <div class="cfop-quick-stages">
+        <div class="stages-head">
+          <h4>Etapas de CFOP</h4>
+          <p>Podés saltar directo a la etapa que quieras practicar:</p>
+        </div>
+        <div class="stages-grid">
+          <a class="stage-link" href="#/metodos/3x3/cfop/cruz">
+            <span class="stage-num">1</span>
+            <div><strong>Cruz</strong><small>8 movimientos máx</small></div>
+          </a>
+          <a class="stage-link" href="#/metodos/3x3/cfop/f2l">
+            <span class="stage-num">2</span>
+            <div><strong>F2L</strong><small>41 pares de esquinas y aristas</small></div>
+          </a>
+          <a class="stage-link" href="#/metodos/3x3/cfop/oll">
+            <span class="stage-num">3</span>
+            <div><strong>OLL</strong><small>57 orientaciones (o 2 pasos)</small></div>
+          </a>
+          <a class="stage-link" href="#/metodos/3x3/cfop/pll">
+            <span class="stage-num">4</span>
+            <div><strong>PLL</strong><small>21 permutaciones finales</small></div>
+          </a>
+        </div>
+      </div>
+
+      <div class="pro-tips-card">
+        <h4>💡 Consejos para bajar de 1 minuto a Sub-20</h4>
+        <div class="tips-grid">
+          <div class="tip-item">
+            <strong>1. Inspección activa</strong>
+            <p>No empieces a girar apenas ves el cubo: usá los 15 segundos para planear la cruz completa en la mente.</p>
+          </div>
+          <div class="tip-item">
+            <strong>2. F2L sin pausas (Lookahead)</strong>
+            <p>Es más rápido girar a velocidad constante rastreando el siguiente par que girar a toda velocidad y frenar a buscar piezas.</p>
+          </div>
+          <div class="tip-item">
+            <strong>3. Fingertricks limpios</strong>
+            <p>Usá el dedo índice y anular para los giros U y D; evitá rotar la muñeca entera cada vez que girás una cara.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
 // ---------- Páginas ----------
 
 function indexPage(route) {
-  return el(`<div class="methods-page">
+  const page = el(`<div class="methods-page">
     ${breadcrumb(route.crumbs)}
     <header class="page-head">
       <h2>Métodos</h2>
       <p>Guías paso a paso para armar cada puzzle, con los casos animados. Elegí un puzzle.</p>
     </header>
-    ${linkCards(PUZZLES, 'covers')}
   </div>`);
+  page.append(el(linkCards(PUZZLES, 'covers')));
+  page.append(el(methodsPresentation()));
+  return page;
 }
 
 function puzzlePage(route) {
@@ -177,6 +370,9 @@ function puzzlePage(route) {
   // Tarjeta de notación (4x4): va primero, antes de los métodos.
   if (data.notation) page.append(notationSection(data.notation));
   page.append(el(`<div>${body}</div>`));
+  if (route.puzzle === '3x3') {
+    page.append(el(puzzle3x3Presentation()));
+  }
   return page;
 }
 

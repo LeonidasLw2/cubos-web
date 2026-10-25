@@ -359,16 +359,16 @@ function updateHint(phase = document.body.dataset.phase ?? 'idle') {
       : 'Mantené la barra espaciadora y soltá para arrancar · Esc cancela';
   } else if (settings.inspection) {
     text = isTouch
-      ? 'Tocá el tiempo para empezar la inspección'
+      ? 'Mantené presionado para empezar la inspección'
       : 'Apretá la barra espaciadora para empezar la inspección';
   } else {
     text = isTouch
-      ? 'Mantené el dedo sobre el tiempo y soltá para empezar'
+      ? 'Mantené presionado y soltá para empezar'
       : 'Mantené apretada la barra espaciadora y soltá para empezar';
   }
   els.hint.textContent = text;
   els.emptyHint.textContent = isTouch
-    ? 'Tocá el tiempo de arriba para empezar.'
+    ? 'Mantené presionado para empezar.'
     : 'Apretá la barra espaciadora para empezar.';
 }
 
@@ -463,6 +463,8 @@ function soundAlerts(elapsed) {
 
 let activeKey = null; // tecla que está "apretando" el timer (una sola a la vez)
 let touching = false; // hay un toque nuestro en curso
+let touchHoldTimer = null; // temporizador para requerir mantener antes de inspección en celular
+let touchHoldReady = false; // se cumplió el tiempo de mantener para la inspección
 let timerActive = true; // false cuando se está viendo otra sección (Métodos)
 
 // La navegación avisa si el timer está a la vista. Al salir se cancela la
@@ -511,6 +513,19 @@ function onTouchStart(e) {
   // Inactivo: solo la zona del timer. Inspeccionando o corriendo: toda la pantalla.
   if (timer.state === 'idle' && !els.timerZone.contains(e.target)) return;
   e.preventDefault();
+
+  // En celular, con inspección: requiere mantener pulsado el tiempo configurado (holdMs) para activar
+  if (timer.state === 'idle' && settings.inspection) {
+    touching = true;
+    touchHoldReady = false;
+    els.timer.dataset.state = 'holding';
+    touchHoldTimer = setTimeout(() => {
+      touchHoldReady = true;
+      els.timer.dataset.state = 'ready';
+    }, settings.holdMs);
+    return;
+  }
+
   touching = true;
   timer.press();
 }
@@ -519,12 +534,37 @@ function onTouchEnd(e) {
   if (!touching) return;
   e.preventDefault();
   touching = false;
+
+  if (touchHoldTimer) {
+    clearTimeout(touchHoldTimer);
+    touchHoldTimer = null;
+  }
+
+  // Si estaba en idle con inspección, solo arranca si se mantuvo pulsado el tiempo completo
+  if (timer.state === 'idle' && settings.inspection) {
+    delete els.timer.dataset.state;
+    if (touchHoldReady) {
+      touchHoldReady = false;
+      timer.press();
+      timer.release();
+    }
+    return;
+  }
+
   timer.release();
 }
 
 function forgetInput() {
   activeKey = null;
   touching = false;
+  if (touchHoldTimer) {
+    clearTimeout(touchHoldTimer);
+    touchHoldTimer = null;
+  }
+  touchHoldReady = false;
+  if (timer.state === 'idle') {
+    delete els.timer.dataset.state;
+  }
   timer.blur();
 }
 
