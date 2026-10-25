@@ -6,6 +6,7 @@ import { startRouter } from './router.js';
 import { createNavHistory } from './nav-history.js';
 import { initPWA } from './pwa.js';
 import { destroyScopePlayer } from './twisty/playerManager.js';
+import { initQuickScroll } from './quick-scroll.js';
 
 const views = {
   timer: document.getElementById('view-timer'),
@@ -189,6 +190,7 @@ async function showRoute(route) {
 }
 
 initUI();
+initQuickScroll();
 startRouter(showRoute);
 nav.armGuard();
 initPWA({ canUpdate: () => isTimerIdle() && (trainer?.isTrainerIdle() ?? true) });

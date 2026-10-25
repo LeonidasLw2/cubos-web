@@ -5525,3 +5525,174 @@ a.link-card:hover .card-action {
 .solver-footer-note a {
   color: var(--c-celeste);
 }
+
+/* ---------- Barra lateral de desplazamiento rápido e interactivo (Android y móvil) ---------- */
+.quick-scrollbar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: fixed;
+  right: 3px;
+  top: 70px;
+  bottom: 78px;
+  z-index: 85;
+  width: 32px;
+  padding: 4px 0;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  transition: opacity 0.25s var(--ease), transform 0.2s var(--ease);
+  pointer-events: auto;
+}
+
+.quick-scrollbar[hidden] {
+  display: none !important;
+}
+
+.quick-scrollbar.is-idle {
+  opacity: 0.28;
+}
+
+.quick-scrollbar:hover,
+.quick-scrollbar:focus-within,
+.quick-scrollbar.is-active {
+  opacity: 1;
+}
+
+.quick-scroll-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: rgba(14, 18, 27, 0.88);
+  border: 1px solid var(--border);
+  color: var(--c-celeste);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 0;
+  transition: transform 0.15s ease, background 0.15s ease;
+  flex-shrink: 0;
+}
+
+.quick-scroll-btn:active {
+  transform: scale(0.88);
+  background: rgba(116, 172, 223, 0.25);
+}
+
+.quick-scroll-track {
+  flex: 1;
+  width: 100%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  touch-action: none;
+  cursor: pointer;
+  margin: 4px 0;
+}
+
+.quick-scroll-track::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  transition: background 0.2s ease, width 0.2s ease;
+}
+
+.quick-scrollbar:hover .quick-scroll-track::before,
+.quick-scrollbar.is-active .quick-scroll-track::before {
+  background: rgba(116, 172, 223, 0.28);
+  width: 6px;
+}
+
+.quick-scroll-thumb {
+  position: absolute;
+  top: 0;
+  width: 8px;
+  height: 48px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--c-celeste), #2f6fe0);
+  box-shadow: 0 0 10px rgba(116, 172, 223, 0.65);
+  transition: width 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quick-scrollbar.is-active .quick-scroll-thumb {
+  width: 14px;
+  background: linear-gradient(180deg, #ffffff, var(--c-celeste));
+  box-shadow: 0 0 16px rgba(116, 172, 223, 0.95);
+  cursor: grabbing;
+}
+
+.quick-scroll-grip {
+  width: 4px;
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.quick-scroll-bubble {
+  position: absolute;
+  right: 36px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 5px 11px;
+  border-radius: 10px;
+  background: rgba(10, 13, 19, 0.96);
+  border: 1px solid var(--c-celeste);
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s var(--ease);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.quick-scroll-bubble.is-visible {
+  opacity: 1;
+}
+
+/* En escritorios anchos con mouse, ocultar para no duplicar la barra nativa del navegador */
+@media (min-width: 961px) and (pointer: fine) {
+  .quick-scrollbar {
+    display: none;
+  }
+}
+
+/* Scrollbars globales estilizados para navegadores web */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(116, 172, 223, 0.45) rgba(10, 13, 19, 0.6);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(10, 13, 19, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(116, 172, 223, 0.4);
+  border-radius: 999px;
+  border: 2px solid rgba(10, 13, 19, 0.5);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--c-celeste);
+}
