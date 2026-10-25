@@ -28,7 +28,7 @@ const isPenalty = (p) => p === '+2' || p === 'DNF';
 // Descarta solo lo que no tiene un tiempo válido. Es pura (no toca localStorage).
 export function normalizeSolve(raw, index) {
   if (!raw || typeof raw.time !== 'number' || !Number.isFinite(raw.time) || raw.time < 0) return null;
-  return {
+  const out = {
     id: typeof raw.id === 'string' ? raw.id : `old-${index}-${raw.time}`,
     time: raw.time,
     penalty: isPenalty(raw.penalty) ? raw.penalty : null,
@@ -37,6 +37,10 @@ export function normalizeSolve(raw, index) {
     scramble: typeof raw.scramble === 'string' ? raw.scramble : null,
     date: typeof raw.date === 'number' ? raw.date : null, // sin fecha: se muestra "—"
   };
+  if (typeof raw.updatedAt === 'number' && Number.isFinite(raw.updatedAt)) {
+    out.updatedAt = raw.updatedAt;
+  }
+  return out;
 }
 
 // Tiempos en orden cronológico (el más viejo primero).

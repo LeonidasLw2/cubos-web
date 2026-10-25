@@ -28,6 +28,13 @@ import { buildExport, exportFileName, parseImport, mergeSolves } from './transfe
 import { recentTimes, sparkline } from './sparkline.js';
 import { cubeSvg } from './cube-art.js';
 import { normalizeTrainer, mergeTrainer, countTimes } from './trainer-store.js';
+import {
+  generateSolveUuid,
+  recordSolveDeletions,
+  notifyLocalSolvesChanged,
+  touchLocalSettingsMeta,
+  initCloudSyncUI,
+} from './cloud-sync.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -280,19 +287,22 @@ function renderSession() {
 
 function commit() {
   saveSolves(state.event, state.solves);
+  notifyLocalSolvesChanged();
   renderSession();
 }
 
 // Guarda el resultado que entrega el timer ({ time, penalty, autoPenalty }).
 function addSolve(result) {
   const previousBest = bestTime(state.solves);
+  const now = Date.now();
   const solve = {
-    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    id: generateSolveUuid(),
     time: Math.floor(result.time),
     penalty: result.penalty,
     autoPenalty: result.autoPenalty,
     scramble: state.scramble,
-    date: Date.now(),
+    date: now,
+    updatedAt: now,
   };
   state.solves.push(solve);
   state.newSolveId = solve.id;
@@ -322,12 +332,15 @@ function onSolveAction(e) {
       return;
     case 'plus2':
       solve.penalty = solve.penalty === '+2' ? null : '+2';
+      solve.updatedAt = Date.now();
       break;
     case 'dnf':
       solve.penalty = solve.penalty === 'DNF' ? null : 'DNF';
+      solve.updatedAt = Date.now();
       break;
     case 'delete':
       if (!confirm(`¿Borrar el tiempo ${formatSolve(solve)}?`)) return;
+      recordSolveDeletions(state.event, [solve]);
       state.solves = state.solves.filter((s) => s !== solve);
       break;
   }
@@ -337,6 +350,7 @@ function onSolveAction(e) {
 function clearSession() {
   const name = getEvent(state.event).name;
   if (!confirm(`¿Borrar los ${state.solves.length} tiempos de ${name}? No se puede deshacer.`)) return;
+  recordSolveDeletions(state.event, state.solves);
   state.solves = [];
   state.newSolveId = null;
   commit();
@@ -601,6 +615,8 @@ function onSettingsChange() {
     timerDisplay: f.timerDisplay.value,
   };
   saveSettings(settings);
+  touchLocalSettingsMeta();
+  notifyLocalSolvesChanged();
   els.inspectionOptions.disabled = !settings.inspection;
   applySettings();
 }
@@ -674,6 +690,7 @@ async function importSolves(file) {
   // La categoría que se está viendo puede haber cambiado.
   state.solves = loadSolves(state.event);
   state.newSolveId = null;
+  notifyLocalSolvesChanged();
   renderSession();
 
   if (failed) return showDataStatus('No hay espacio suficiente para guardar todos los tiempos.', 'error');
@@ -785,4 +802,9 @@ export function initUI() {
   renderSession();
   updatePlayer();
   loadScramble();
+  initCloudSyncUI({
+    onDataUpdated: reloadSessionFromStorage,
+    onExportBackup: exportSolves,
+    onImportBackup: () => els.importFile?.click(),
+  });
 }

@@ -4354,3 +4354,168 @@ a.link-card:hover .card-action {
     height: 175px;
   }
 }
+
+
+/* ---------- Modal de Cuenta y Sincronización ---------- */
+.account-status-banner {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(246, 180, 14, 0.1);
+  border: 1px solid rgba(246, 180, 14, 0.3);
+}
+
+.account-status-banner strong {
+  display: block;
+  color: var(--c-sol);
+  margin-bottom: 4px;
+}
+
+.account-status-banner p {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.account-info-box {
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.account-info-box h3 {
+  margin: 0 0 6px;
+  font-size: 0.96rem;
+}
+
+.account-info-box p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.account-feature-list {
+  margin: 10px 0 0;
+  padding-left: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 0.82rem;
+  color: var(--text);
+}
+
+.btn-google-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #fff;
+  color: #111;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s var(--ease), box-shadow 0.15s;
+}
+
+.btn-google-login:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.account-profile-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.account-avatar-img,
+.account-avatar-fallback {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+.account-avatar-fallback {
+  display: grid;
+  place-items: center;
+  background: var(--c-celeste);
+  color: #0b0d12;
+  font-weight: 800;
+  font-size: 1.2rem;
+}
+
+.account-profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.account-profile-info strong {
+  font-size: 0.98rem;
+}
+
+.account-profile-info span {
+  font-size: 0.82rem;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.account-sync-status-line {
+  font-size: 0.78rem;
+  color: var(--c-celeste);
+  font-weight: 600;
+}
+
+.account-backup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.account-signout-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.account-keep-local {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.sync-indicator[data-sync-state='synced'] .sync-dot {
+  background: var(--c-green);
+  box-shadow: 0 0 8px var(--c-green);
+}
+
+.sync-indicator[data-sync-state='syncing'] .sync-dot {
+  background: var(--c-celeste);
+  animation: pulse 1s infinite;
+}
+
+.sync-indicator[data-sync-state='offline'],
+.sync-indicator[data-sync-state='unconfigured'] .sync-dot {
+  background: var(--c-sol);
+}
