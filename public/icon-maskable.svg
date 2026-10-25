@@ -1,55 +1,62 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Ícono "maskable" de Cubos Web (Android le aplica su propia forma). Mismo diseño que icon.svg:
-       fondo a sangre y el cubo achicado para quedar dentro de la zona segura (círculo del 80%).
-       Cubo isométrico con los colores del cubo sobre el fondo oscuro.
-       Cada cara es una grilla de 3×3 deformada con una matriz (eje "derecha", eje "abajo", origen). -->
+  <!-- Ícono maskable de CubeSolver para Android (zona segura del 80%).
+       Cubo 3×3 isométrico con estética de la bandera argentina y Sol de Mayo dorado. -->
   <defs>
     <linearGradient id="fondo" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#1c2230" />
-      <stop offset="1" stop-color="#0e1014" />
+      <stop offset="0" stop-color="#192334" />
+      <stop offset="1" stop-color="#0b0f17" />
     </linearGradient>
-    <radialGradient id="brillo" cx="0.5" cy="0.38" r="0.55">
-      <stop offset="0" stop-color="#3d8bff" stop-opacity="0.22" />
-      <stop offset="1" stop-color="#3d8bff" stop-opacity="0" />
+    <radialGradient id="brillo" cx="0.5" cy="0.38" r="0.58">
+      <stop offset="0" stop-color="#74ACDF" stop-opacity="0.28" />
+      <stop offset="1" stop-color="#74ACDF" stop-opacity="0" />
     </radialGradient>
-    <!-- 9 stickers en coordenadas de la cara (0 a 3) -->
-    <g id="grilla">
-      <rect x="0" y="0" width="3" height="3" rx="0.22" fill="#07090c" />
-      <rect x="0.1" y="0.1" width="0.8" height="0.8" rx="0.16" />
-      <rect x="1.1" y="0.1" width="0.8" height="0.8" rx="0.16" />
-      <rect x="2.1" y="0.1" width="0.8" height="0.8" rx="0.16" />
-      <rect x="0.1" y="1.1" width="0.8" height="0.8" rx="0.16" />
-      <rect x="1.1" y="1.1" width="0.8" height="0.8" rx="0.16" />
-      <rect x="2.1" y="1.1" width="0.8" height="0.8" rx="0.16" />
-      <rect x="0.1" y="2.1" width="0.8" height="0.8" rx="0.16" />
-      <rect x="1.1" y="2.1" width="0.8" height="0.8" rx="0.16" />
-      <rect x="2.1" y="2.1" width="0.8" height="0.8" rx="0.16" />
+    <g id="cara-bandera">
+      <rect x="-0.06" y="-0.06" width="3.12" height="3.12" rx="0.24" fill="#07090c" />
+      <rect x="0.1" y="0.1" width="0.8" height="0.8" rx="0.15" fill="#74ACDF" />
+      <rect x="1.1" y="0.1" width="0.8" height="0.8" rx="0.15" fill="#74ACDF" />
+      <rect x="2.1" y="0.1" width="0.8" height="0.8" rx="0.15" fill="#74ACDF" />
+      <rect x="0.1" y="1.1" width="0.8" height="0.8" rx="0.15" fill="#FFFFFF" />
+      <rect x="1.1" y="1.1" width="0.8" height="0.8" rx="0.15" fill="#FFFFFF" />
+      <rect x="2.1" y="1.1" width="0.8" height="0.8" rx="0.15" fill="#FFFFFF" />
+      <rect x="0.1" y="2.1" width="0.8" height="0.8" rx="0.15" fill="#74ACDF" />
+      <rect x="1.1" y="2.1" width="0.8" height="0.8" rx="0.15" fill="#74ACDF" />
+      <rect x="2.1" y="2.1" width="0.8" height="0.8" rx="0.15" fill="#74ACDF" />
+    </g>
+    <g id="sol-de-mayo">
+      <polygon
+        points="1.5,1.15 1.545,1.33 1.64,1.18 1.59,1.35 1.75,1.25 1.64,1.39 1.82,1.36 1.67,1.455 1.85,1.5 1.67,1.545 1.82,1.64 1.64,1.61 1.75,1.75 1.59,1.65 1.64,1.82 1.545,1.67 1.5,1.85 1.455,1.67 1.36,1.82 1.41,1.65 1.25,1.75 1.36,1.61 1.18,1.64 1.33,1.545 1.15,1.5 1.33,1.455 1.18,1.36 1.36,1.39 1.25,1.25 1.41,1.35 1.36,1.18 1.455,1.33"
+        fill="#F6B40E"
+        stroke="#C88200"
+        stroke-width="0.02"
+        stroke-linejoin="round"
+      />
+      <circle cx="1.5" cy="1.5" r="0.165" fill="#F6B40E" stroke="#B46900" stroke-width="0.03" />
+      <circle cx="1.5" cy="1.5" r="0.09" fill="#FFD147" />
     </g>
   </defs>
 
   <rect width="512" height="512" fill="url(#fondo)" />
   <rect width="512" height="512" fill="url(#brillo)" />
 
-  <g transform="translate(256 256) scale(0.78) translate(-256 -256)">
-  <!-- Cubo centrado en (256, 256): vértices arriba (256,84), costados (405,170)/(107,170), abajo (256,428) -->
-  <g stroke="none">
-    <!-- Cara de arriba: amarilla -->
-    <use href="#grilla" fill="#ffd500" transform="matrix(49.667 -28.667 49.667 28.667 107 170)" />
-    <!-- Cara izquierda (frente): verde -->
-    <use href="#grilla" fill="#2ec27e" transform="matrix(49.667 28.667 0 57.333 107 170)" />
-    <!-- Cara derecha: roja, un poco más oscura para dar volumen -->
-    <use href="#grilla" fill="#ff4d5e" transform="matrix(49.667 -28.667 0 57.333 256 256)" />
-    <use href="#grilla" fill="#000" opacity="0.14" transform="matrix(49.667 -28.667 0 57.333 256 256)" />
-  </g>
-  <!-- Detalle: un sticker de cada uno de los otros colores en las esquinas del frente -->
-  <g transform="matrix(49.667 28.667 0 57.333 107 170)">
-    <rect x="0.1" y="2.1" width="0.8" height="0.8" rx="0.16" fill="#3d8bff" />
-  </g>
-  <g transform="matrix(49.667 -28.667 0 57.333 256 256)">
-    <rect x="2.1" y="2.1" width="0.8" height="0.8" rx="0.16" fill="#ff8a00" />
-  </g>
-  <g transform="matrix(49.667 -28.667 49.667 28.667 107 170)">
-    <rect x="2.1" y="2.1" width="0.8" height="0.8" rx="0.16" fill="#f2f2f2" />
-  </g>
+  <g transform="translate(256 256) scale(0.76) translate(-256 -256)">
+    <polygon
+      points="256,74 414,165 414,347 256,438 98,347 98,165"
+      fill="#05070a"
+      stroke="#25354d"
+      stroke-width="4"
+      stroke-linejoin="round"
+    />
+    <g stroke="none">
+      <use href="#cara-bandera" transform="matrix(49.667 -28.667 49.667 28.667 107 170)" />
+      <rect x="0" y="0" width="3" height="3" fill="#ffffff" opacity="0.08" transform="matrix(49.667 -28.667 49.667 28.667 107 170)" />
+      <g transform="matrix(49.667 28.667 0 57.333 107 170)">
+        <use href="#cara-bandera" />
+        <use href="#sol-de-mayo" />
+      </g>
+      <g transform="matrix(49.667 -28.667 0 57.333 256 256)">
+        <use href="#cara-bandera" />
+        <rect x="-0.06" y="-0.06" width="3.12" height="3.12" rx="0.24" fill="#060b14" opacity="0.22" />
+      </g>
+    </g>
   </g>
 </svg>

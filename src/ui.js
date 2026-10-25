@@ -477,8 +477,12 @@ export function setTimerActive(active) {
   }
 }
 
+function isAnyDialogOpen() {
+  return Boolean(document.querySelector('dialog[open]'));
+}
+
 function onKeyDown(e) {
-  if (!timerActive || els.settings.open) return; // con el panel abierto, el teclado es del panel
+  if (!timerActive || isAnyDialogOpen()) return; // con un panel abierto, el teclado es del panel
   if (e.repeat) {
     if (e.code === 'Space') e.preventDefault();
     return;
@@ -509,7 +513,7 @@ function onKeyUp(e) {
 }
 
 function onTouchStart(e) {
-  if (!timerActive || els.settings.open || e.target.closest('button, dialog, a')) return; // botones y links funcionan normal
+  if (!timerActive || isAnyDialogOpen() || e.target.closest('button, dialog, a')) return; // botones y links funcionan normal
   // Inactivo: solo la zona del timer. Inspeccionando o corriendo: toda la pantalla.
   if (timer.state === 'idle' && !els.timerZone.contains(e.target)) return;
   e.preventDefault();
@@ -680,9 +684,41 @@ async function importSolves(file) {
   showDataStatus(`${parts.join(' · ')}.`, added ? 'ok' : 'info');
 }
 
+export function openSettingsDialog() {
+  openSettings();
+}
+
+export function reloadSessionFromStorage() {
+  settings = loadSettings();
+  applySettings();
+  state.solves = loadSolves(state.event);
+  state.newSolveId = null;
+  renderSession();
+}
+
+export function loadCustomScrambleInTimer(eventId, scrambleText) {
+  const ev = getEvent(eventId);
+  if (ev.id !== state.event) {
+    state.event = ev.id;
+    saveSelectedEvent(state.event);
+    state.solves = loadSolves(state.event);
+    state.newSolveId = null;
+    state.lastResult = '0.00';
+    els.timer.textContent = '0.00';
+    renderEvents();
+    renderSession();
+  }
+  state.requestId++;
+  state.scramble = scrambleText;
+  els.scramble.textContent = scrambleText;
+  els.scramble.classList.remove('loading');
+  els.card.classList.toggle('long', scrambleText.length > 120);
+  updatePlayer();
+}
+
 // La PWA solo puede recargar (para actualizar) si el timer está quieto.
 export function isTimerIdle() {
-  return timer.state === 'idle' && !els.settings.open;
+  return timer.state === 'idle' && !isAnyDialogOpen();
 }
 
 // ---------- Inicio ----------
@@ -723,6 +759,7 @@ export function initUI() {
   });
 
   els.openSettings.addEventListener('click', openSettings);
+  window.addEventListener('cloud-data-changed', reloadSessionFromStorage);
   els.settingsForm.addEventListener('change', onSettingsChange);
   els.exportSolves.addEventListener('click', exportSolves);
   els.importSolves.addEventListener('click', () => els.importFile.click());

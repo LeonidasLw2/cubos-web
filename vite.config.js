@@ -45,9 +45,9 @@ export default defineConfig({
       includeAssets: ['icon.svg', 'apple-touch-icon-180x180.png'],
       manifest: {
         id: BASE,
-        name: 'Cubos Web',
-        short_name: 'Cubos',
-        description: 'Timer de speedcubing con scrambles oficiales, estadísticas y guías de métodos con casos animados.',
+        name: 'CubeSolver',
+        short_name: 'CubeSolver',
+        description: 'Timer de speedcubing, solver interactivo, notación 3D y guías de métodos con casos animados.',
         lang: 'es',
         dir: 'ltr',
         // start_url y scope tienen que coincidir con la subcarpeta, si no Android no la instala bien.

@@ -54,6 +54,16 @@ test('las rutas viejas redirigen a las nuevas', () => {
   }
 });
 
+test('secciones solver, notación y entrenar', () => {
+  assert.equal(parseRoute('#/solver').view, 'solver');
+  assert.equal(parseRoute('#/solver/3x3').view, 'solver');
+  assert.equal(parseRoute('#/solver/3x3').puzzle, '3x3');
+  assert.equal(parseRoute('#/notacion').view, 'notation');
+  assert.equal(parseRoute('#/notacion/4x4').view, 'notation');
+  assert.equal(parseRoute('#/notacion/4x4').puzzle, '4x4');
+  assert.equal(parseRoute('#/entrenar').view, 'trainer');
+});
+
 test('rutas desconocidas vuelven al timer', () => {
   assert.equal(parseRoute('#/nada').view, 'timer');
   assert.equal(parseRoute('#/nada').notFound, true);

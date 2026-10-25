@@ -3,57 +3,116 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#0c0e14" />
+    <meta name="theme-color" content="#0b0d12" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="description" content="CubeSolver · Timer de speedcubing con scrambles oficiales, vista 3D interactiva, estadísticas y solucionador de métodos." />
+    <meta name="description" content="CubeSolver · Timer de speedcubing con scrambles oficiales, métodos animados para los 7 puzzles, notación interactiva y solver 3D." />
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png" />
     <!-- El enlace al manifest lo agrega vite-plugin-pwa al armar la página. -->
-    <title>CubeSolver · Speedcubing & Solver</title>
+    <title>CubeSolver · Timer</title>
   </head>
   <body>
     <header class="topbar fadeable">
-      <div class="brand">
-        <span class="logo" aria-hidden="true">
-          <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-        </span>
-        <div class="brand-text">
+      <div class="top-row">
+        <a href="#/timer" class="brand" aria-label="CubeSolver · Ir al Timer">
+          <svg class="logo" viewBox="82 62 348 388" width="36" height="36" aria-hidden="true">
+            <defs>
+              <g id="hdr-cara-bandera">
+                <rect x="-0.06" y="-0.06" width="3.12" height="3.12" rx="0.24" fill="#07090c" />
+                <rect x="0.1" y="0.1" width="0.8" height="0.8" rx="0.15" fill="#74ACDF" />
+                <rect x="1.1" y="0.1" width="0.8" height="0.8" rx="0.15" fill="#74ACDF" />
+                <rect x="2.1" y="0.1" width="0.8" height="0.8" rx="0.15" fill="#74ACDF" />
+                <rect x="0.1" y="1.1" width="0.8" height="0.8" rx="0.15" fill="#FFFFFF" />
+                <rect x="1.1" y="1.1" width="0.8" height="0.8" rx="0.15" fill="#FFFFFF" />
+                <rect x="2.1" y="1.1" width="0.8" height="0.8" rx="0.15" fill="#FFFFFF" />
+                <rect x="0.1" y="2.1" width="0.8" height="0.8" rx="0.15" fill="#74ACDF" />
+                <rect x="1.1" y="2.1" width="0.8" height="0.8" rx="0.15" fill="#74ACDF" />
+                <rect x="2.1" y="2.1" width="0.8" height="0.8" rx="0.15" fill="#74ACDF" />
+              </g>
+              <g id="hdr-sol-de-mayo">
+                <polygon
+                  points="1.5,1.14 1.548,1.33 1.65,1.17 1.595,1.35 1.76,1.24 1.64,1.39 1.83,1.355 1.67,1.455 1.86,1.5 1.67,1.545 1.83,1.645 1.64,1.61 1.76,1.76 1.595,1.65 1.65,1.83 1.548,1.67 1.5,1.86 1.452,1.67 1.35,1.83 1.405,1.65 1.24,1.76 1.36,1.61 1.17,1.645 1.33,1.545 1.14,1.5 1.33,1.455 1.17,1.355 1.36,1.39 1.24,1.24 1.405,1.35 1.35,1.17 1.452,1.33"
+                  fill="#F6B40E"
+                  stroke="#B46900"
+                  stroke-width="0.025"
+                  stroke-linejoin="round"
+                />
+                <circle cx="1.5" cy="1.5" r="0.17" fill="#F6B40E" stroke="#9A5800" stroke-width="0.03" />
+                <circle cx="1.5" cy="1.5" r="0.09" fill="#FFD147" />
+              </g>
+            </defs>
+            <polygon
+              points="256,74 414,165 414,347 256,438 98,347 98,165"
+              fill="#05070a"
+              stroke="#2a3d59"
+              stroke-width="6"
+              stroke-linejoin="round"
+            />
+            <g stroke="none">
+              <use href="#hdr-cara-bandera" transform="matrix(49.667 -28.667 49.667 28.667 107 170)" />
+              <rect x="0" y="0" width="3" height="3" fill="#ffffff" opacity="0.08" transform="matrix(49.667 -28.667 49.667 28.667 107 170)" />
+              <g transform="matrix(49.667 28.667 0 57.333 107 170)">
+                <use href="#hdr-cara-bandera" />
+                <use href="#hdr-sol-de-mayo" />
+              </g>
+              <g transform="matrix(49.667 -28.667 0 57.333 256 256)">
+                <use href="#hdr-cara-bandera" />
+                <rect x="-0.06" y="-0.06" width="3.12" height="3.12" rx="0.24" fill="#060b14" opacity="0.22" />
+              </g>
+            </g>
+          </svg>
           <h1>CubeSolver</h1>
-          <span class="brand-badge">PRO</span>
-        </div>
-        <!-- Atrás / Adelante: hacen falta sobre todo en la app instalada (no tiene barra del navegador). -->
-        <div class="history-nav" role="group" aria-label="Historial">
-          <button class="icon-btn" id="nav-back" type="button" title="Atrás" aria-label="Atrás" disabled>
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+        </a>
+
+        <nav class="tabs" id="desktop-tabs" aria-label="Secciones principales">
+          <span class="tab-indicator" id="tab-indicator" aria-hidden="true"></span>
+          <a href="#/timer" data-view="timer">
+            <svg class="tab-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>
+            <span>Timer</span>
+          </a>
+          <a href="#/metodos" data-view="methods">
+            <svg class="tab-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <span>Métodos</span>
+          </a>
+          <a href="#/solver" data-view="solver">
+            <svg class="tab-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+            <span>Solver</span>
+          </a>
+          <a href="#/notacion" data-view="notation">
+            <svg class="tab-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            <span>Notación</span>
+          </a>
+          <a href="#/entrenar" data-view="trainer">
+            <svg class="tab-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            <span>Entrenar</span>
+          </a>
+        </nav>
+
+        <div class="topbar-actions">
+          <div class="sync-indicator" id="sync-indicator" data-state="local" title="Tus tiempos se guardan en este dispositivo">
+            <span class="sync-dot" aria-hidden="true"></span>
+            <span class="sync-text" id="sync-text">Local</span>
+          </div>
+
+          <button class="account-btn" id="account-btn" type="button" aria-label="Cuenta y sincronización">
+            <span class="account-avatar" id="account-avatar" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </span>
+            <span class="account-label" id="account-label">Iniciar sesión</span>
           </button>
-          <button class="icon-btn" id="nav-forward" type="button" title="Adelante" aria-label="Adelante" disabled>
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6" /></svg>
+
+          <button class="icon-btn settings-btn" id="open-settings" type="button" title="Ajustes" aria-label="Ajustes">
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
           </button>
         </div>
       </div>
-      <nav class="tabs" aria-label="Secciones">
-        <a href="#/timer" data-view="timer">
-          <svg class="tab-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          <span>Timer</span>
-        </a>
-        <a href="#/metodos" data-view="methods">
-          <svg class="tab-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-          <span>Métodos & Solver</span>
-        </a>
-        <a href="#/entrenar" data-view="trainer">
-          <svg class="tab-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-          <span>Entrenar</span>
-        </a>
-      </nav>
+
       <nav class="events timer-only" id="events" aria-label="Categoría"></nav>
-      <button class="icon-btn settings-btn timer-only" id="open-settings" type="button" title="Ajustes" aria-label="Ajustes">
-        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3" />
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-        </svg>
-      </button>
     </header>
 
     <main class="layout" id="view-timer">
@@ -131,6 +190,8 @@
     </main>
 
     <main class="methods" id="view-methods" hidden></main>
+    <main class="methods solver-main" id="view-solver" hidden></main>
+    <main class="methods notation-main" id="view-notation" hidden></main>
     <main class="methods" id="view-trainer" hidden></main>
 
     <dialog class="settings" id="settings" aria-labelledby="settings-title">
@@ -207,7 +268,61 @@
         </div>
         <p class="data-status" id="data-status" role="status" aria-live="polite"></p>
         <p class="data-help" id="storage-status"></p>
+        <p class="data-help privacy-note" id="privacy-note">
+          <strong>Privacidad:</strong> Tus tiempos, ajustes y casos aprendidos se guardan siempre en el almacenamiento local de tu navegador (<code>localStorage</code>). Si iniciás sesión con Google, se sincroniza una copia privada en tu cuenta de Cloud Firestore y podés eliminarla cuando quieras desde el menú de Cuenta.
+        </p>
       </section>
+    </dialog>
+
+    <!-- Diálogo de Cuenta y Sincronización en la nube -->
+    <dialog class="settings account-dialog" id="account-dialog" aria-labelledby="account-dialog-title">
+      <div class="account-dialog-inner">
+        <div class="settings-head">
+          <h2 id="account-dialog-title">Cuenta y sincronización</h2>
+          <button class="icon-btn" id="close-account-dialog" type="button" aria-label="Cerrar">✕</button>
+        </div>
+        <div id="account-dialog-body" class="account-dialog-body">
+          <p class="data-help">Tus tiempos funcionan 100% sin conexión en este dispositivo. Iniciá sesión con Google para sincronizarlos en la nube entre tu celular y tu computadora.</p>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Bottom sheet móvil para "Más" (Notación, Ajustes y Cuenta) -->
+    <dialog class="bottom-sheet" id="more-sheet" aria-labelledby="more-sheet-title">
+      <div class="sheet-handle" aria-hidden="true"></div>
+      <div class="sheet-head">
+        <h2 id="more-sheet-title">Más opciones</h2>
+        <button class="icon-btn" id="close-more-sheet" type="button" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="sheet-list">
+        <a href="#/notacion" class="sheet-item" id="sheet-link-notation">
+          <span class="sheet-icon accent-celeste" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          </span>
+          <span class="sheet-item-text">
+            <strong>Notación interactiva</strong>
+            <small>Giros, capas y animaciones de los 7 puzzles</small>
+          </span>
+        </a>
+        <button type="button" class="sheet-item" id="sheet-open-settings">
+          <span class="sheet-icon accent-yellow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </span>
+          <span class="sheet-item-text">
+            <strong>Ajustes</strong>
+            <small>Inspección de 15 s, retardo, exportar e importar</small>
+          </span>
+        </button>
+        <button type="button" class="sheet-item" id="sheet-open-account">
+          <span class="sheet-icon accent-green" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </span>
+          <span class="sheet-item-text">
+            <strong>Cuenta y nube</strong>
+            <small id="sheet-account-sub">Sincronizar tiempos entre dispositivos</small>
+          </span>
+        </button>
+      </div>
     </dialog>
 
     <!-- Aviso de versión nueva: nunca recarga sola; se oculta durante una inspección o resolución. -->
@@ -219,26 +334,27 @@
     <div class="offline-toast" id="offline-toast" role="status" hidden>Lista para usar sin conexión</div>
     <div class="offline-toast" id="exit-toast" role="status" hidden>Tocá atrás otra vez para salir</div>
 
-    <!-- Barra de navegación inferior móvil (estilo Android App) -->
+    <!-- Barra de navegación inferior móvil (5 ítems: Timer, Métodos, Solver, Entrenar y Más) -->
     <nav class="bottom-nav fadeable" aria-label="Navegación móvil">
       <a href="#/timer" data-view="timer" class="bottom-nav-item">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>
         <span>Timer</span>
       </a>
       <a href="#/metodos" data-view="methods" class="bottom-nav-item">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>Métodos</span>
+      </a>
+      <a href="#/solver" data-view="solver" class="bottom-nav-item">
+        <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
         <span>Solver</span>
       </a>
       <a href="#/entrenar" data-view="trainer" class="bottom-nav-item">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
         <span>Entrenar</span>
       </a>
-      <button type="button" id="open-settings-bottom" class="bottom-nav-item" aria-label="Ajustes">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3" />
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-        </svg>
-        <span>Ajustes</span>
+      <button type="button" id="open-more-sheet" class="bottom-nav-item" aria-label="Más opciones" aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/><circle cx="5" cy="12" r="1.5"/></svg>
+        <span>Más</span>
       </button>
     </nav>
 

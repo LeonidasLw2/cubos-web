@@ -1,4 +1,4 @@
-// Router simple con hash: #/timer, #/entrenar, #/metodos, #/metodos/3x3/cfop/pll…
+// Router simple con hash: #/timer, #/metodos, #/solver, #/notacion, #/entrenar…
 // parseRoute() es pura (se puede probar sin navegador); startRouter() escucha los cambios.
 import { METHOD_PAGES, LEGACY_METHOD_PATHS, methodHref, crumbsFor } from './data/method-pages.js';
 
@@ -10,6 +10,14 @@ export function parseRoute(hash) {
   const path = (hash ?? '').replace(/^#\/?/, '').replace(/\/+$/, '').toLowerCase();
   if (path === '' || path === 'timer') return { view: 'timer', path: 'timer' };
   if (path === 'entrenar') return { view: 'trainer', path };
+  if (path === 'solver' || path.startsWith('solver/')) {
+    const puzzle = path.slice('solver'.length).replace(/^\//, '') || null;
+    return { view: 'solver', path, puzzle };
+  }
+  if (path === 'notacion' || path.startsWith('notacion/')) {
+    const puzzle = path.slice('notacion'.length).replace(/^\//, '') || null;
+    return { view: 'notation', path, puzzle };
+  }
   if (path === 'metodos' || path.startsWith('metodos/')) {
     const sub = path.slice('metodos'.length).replace(/^\//, '');
     const found = METHOD_PAGES[sub];
