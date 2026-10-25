@@ -17,13 +17,11 @@ function loadScrambleLib() {
 
 // id: ID WCA de cubing.js · puzzle y view: configuración de <twisty-player>
 export const EVENTS = [
-  { id: '222', name: '2x2', puzzle: '2x2x2', view: '2D' },
-  { id: '333', name: '3x3', puzzle: '3x3x3', view: '2D' },
-  { id: '444', name: '4x4', puzzle: '4x4x4', view: '2D' },
-  { id: '555', name: '5x5', puzzle: '5x5x5', view: '2D' },
-  { id: '777', name: '7x7', puzzle: '7x7x7', view: '2D' },
-  { id: 'minx', name: 'Megaminx', puzzle: 'megaminx', view: '2D' },
-  { id: 'pyram', name: 'Pyraminx', puzzle: 'pyraminx', view: '2D' },
+  { id: '222', name: '2x2', puzzle: '2x2x2', view: '3D' },
+  { id: '333', name: '3x3', puzzle: '3x3x3', view: '3D' },
+  { id: '444', name: '4x4', puzzle: '4x4x4', view: '3D' },
+  { id: '555', name: '5x5', puzzle: '5x5x5', view: '3D' },
+  { id: 'pyram', name: 'Pyraminx', puzzle: 'pyraminx', view: '3D' },
 ];
 
 export const DEFAULT_EVENT = '333';

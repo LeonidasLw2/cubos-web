@@ -3,18 +3,26 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#0e1014" />
-    <meta name="description" content="Timer de speedcubing con scrambles oficiales, estadísticas y guías de métodos." />
+    <meta name="theme-color" content="#0c0e14" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="description" content="CubeSolver · Timer de speedcubing con scrambles oficiales, vista 3D interactiva, estadísticas y solucionador de métodos." />
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png" />
     <!-- El enlace al manifest lo agrega vite-plugin-pwa al armar la página. -->
-    <title>Cubos · Timer</title>
+    <title>CubeSolver · Speedcubing & Solver</title>
   </head>
   <body>
     <header class="topbar fadeable">
       <div class="brand">
-        <img class="logo" src="/icon.svg" alt="" width="34" height="34" />
-        <h1>Cubos</h1>
+        <span class="logo" aria-hidden="true">
+          <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        </span>
+        <div class="brand-text">
+          <h1>CubeSolver</h1>
+          <span class="brand-badge">PRO</span>
+        </div>
         <!-- Atrás / Adelante: hacen falta sobre todo en la app instalada (no tiene barra del navegador). -->
         <div class="history-nav" role="group" aria-label="Historial">
           <button class="icon-btn" id="nav-back" type="button" title="Atrás" aria-label="Atrás" disabled>
@@ -26,9 +34,18 @@
         </div>
       </div>
       <nav class="tabs" aria-label="Secciones">
-        <a href="#/timer" data-view="timer">Timer</a>
-        <a href="#/metodos" data-view="methods">Métodos</a>
-        <a href="#/entrenar" data-view="trainer">Entrenar</a>
+        <a href="#/timer" data-view="timer">
+          <svg class="tab-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>Timer</span>
+        </a>
+        <a href="#/metodos" data-view="methods">
+          <svg class="tab-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span>Métodos & Solver</span>
+        </a>
+        <a href="#/entrenar" data-view="trainer">
+          <svg class="tab-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          <span>Entrenar</span>
+        </a>
       </nav>
       <nav class="events timer-only" id="events" aria-label="Categoría"></nav>
       <button class="icon-btn settings-btn timer-only" id="open-settings" type="button" title="Ajustes" aria-label="Ajustes">
@@ -44,11 +61,16 @@
         <div class="scramble-card fadeable" id="scramble-card">
           <div class="scramble-main">
             <p class="scramble" id="scramble" aria-live="polite">Generando scramble...</p>
-            <button class="icon-btn" id="new-scramble" type="button" title="Nuevo scramble" aria-label="Nuevo scramble">
-              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-                <path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-            </button>
+            <div class="scramble-actions">
+              <button class="icon-btn toggle-view-btn" id="toggle-view" type="button" title="Alternar vista 3D / 2D" aria-label="Alternar vista 3D / 2D">
+                <span id="view-mode-badge" class="view-badge">3D</span>
+              </button>
+              <button class="icon-btn" id="new-scramble" type="button" title="Nuevo scramble" aria-label="Nuevo scramble">
+                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                  <path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+            </div>
           </div>
           <div class="scramble-view" id="scramble-view"></div>
         </div>
@@ -159,8 +181,8 @@
 
         <label class="setting">
           <span>
-            Vista 2D del cubo
-            <small>Muestra cómo queda el cubo mezclado</small>
+            Visualizador del cubo
+            <small>Muestra el cubo en 3D / 2D con la mezcla</small>
           </span>
           <input type="checkbox" name="showCube" role="switch" />
         </label>
@@ -196,6 +218,29 @@
     </div>
     <div class="offline-toast" id="offline-toast" role="status" hidden>Lista para usar sin conexión</div>
     <div class="offline-toast" id="exit-toast" role="status" hidden>Tocá atrás otra vez para salir</div>
+
+    <!-- Barra de navegación inferior móvil (estilo Android App) -->
+    <nav class="bottom-nav fadeable" aria-label="Navegación móvil">
+      <a href="#/timer" data-view="timer" class="bottom-nav-item">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span>Timer</span>
+      </a>
+      <a href="#/metodos" data-view="methods" class="bottom-nav-item">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>Solver</span>
+      </a>
+      <a href="#/entrenar" data-view="trainer" class="bottom-nav-item">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <span>Entrenar</span>
+      </a>
+      <button type="button" id="open-settings-bottom" class="bottom-nav-item" aria-label="Ajustes">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3" />
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+        </svg>
+        <span>Ajustes</span>
+      </button>
+    </nav>
 
     <script type="module" src="/src/main.js"></script>
   </body>

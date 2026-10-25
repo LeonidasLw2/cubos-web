@@ -36,6 +36,8 @@ const els = {
   card: $('scramble-card'),
   scramble: $('scramble'),
   newScramble: $('new-scramble'),
+  toggleView: $('toggle-view'),
+  viewModeBadge: $('view-mode-badge'),
   view: $('scramble-view'),
   timerZone: $('timer-zone'),
   timer: $('timer'),
@@ -51,6 +53,7 @@ const els = {
   emptyArt: $('empty-art'),
   emptyHint: $('empty-hint'),
   openSettings: $('open-settings'),
+  openSettingsBottom: $('open-settings-bottom'),
   settings: $('settings'),
   settingsForm: $('settings-form'),
   inspectionOptions: $('inspection-options'),
@@ -95,6 +98,7 @@ const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches
 // ahí, cargaría también la interfaz. El player se crea recién cuando está definido
 // (si se le ponen propiedades antes, no se aplican).
 let playerPromise = null;
+let currentViewMode = '3D';
 
 function getPlayer() {
   playerPromise ??= import('cubing/twisty').then(() => {
@@ -102,7 +106,7 @@ function getPlayer() {
     player.controlPanel = 'none';
     player.background = 'none';
     player.hintFacelets = 'none';
-    player.experimentalDragInput = 'none';
+    player.experimentalDragInput = 'auto'; // Permite rotar el cubo interactivamente
     els.view.append(player);
     return player;
   });
@@ -112,12 +116,13 @@ function getPlayer() {
 async function updatePlayer() {
   const ev = getEvent(state.event);
   const scramble = state.scramble ?? '';
-  els.view.dataset.view = ev.view;
+  els.view.dataset.view = currentViewMode;
   const player = await getPlayer();
   player.puzzle = ev.puzzle;
-  player.visualization = ev.view;
+  player.visualization = currentViewMode;
   player.experimentalSetupAlg = scramble;
   player.alg = '';
+  if (els.viewModeBadge) els.viewModeBadge.textContent = currentViewMode;
 }
 
 // Reinicia una animación CSS (quitar la clase, forzar reflow y volver a ponerla).
@@ -653,6 +658,15 @@ export function initUI() {
     if (btn) selectEvent(btn.dataset.event);
   });
   els.newScramble.addEventListener('click', loadScramble);
+  if (els.toggleView) {
+    els.toggleView.addEventListener('click', () => {
+      currentViewMode = currentViewMode === '3D' ? '2D' : '3D';
+      updatePlayer();
+    });
+  }
+  if (els.openSettingsBottom) {
+    els.openSettingsBottom.addEventListener('click', openSettings);
+  }
   els.solves.addEventListener('click', onSolveAction);
   els.clearSession.addEventListener('click', clearSession);
   els.cancelInspection.addEventListener('click', () => timer.cancel());

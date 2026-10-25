@@ -130,6 +130,24 @@ button:focus-visible {
   flex-shrink: 0;
 }
 
+.brand-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-badge {
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--c-yellow), var(--c-orange));
+  color: #0b0c10;
+  box-shadow: 0 2px 8px rgba(255, 234, 0, 0.35);
+  text-transform: uppercase;
+}
+
 .brand h1 {
   margin: 0;
   font-size: 1.3rem;
@@ -238,6 +256,33 @@ button:focus-visible {
   align-items: flex-start;
   gap: 12px;
   min-width: 0;
+}
+
+.scramble-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.toggle-view-btn {
+  font-family: var(--mono);
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--c-blue);
+  border-color: rgba(61, 139, 255, 0.4);
+  background: rgba(61, 139, 255, 0.1);
+}
+
+.toggle-view-btn:hover {
+  color: #fff;
+  border-color: var(--c-blue);
+  box-shadow: 0 0 12px rgba(61, 139, 255, 0.4);
+}
+
+.view-badge {
+  line-height: 1;
 }
 
 .scramble {
@@ -2223,4 +2268,101 @@ a.link-card:hover .card-art {
     padding: 8px 4px;
     font-size: 0.9rem;
   }
+}
+
+/* ---------- Barra inferior móvil (Android App style) ---------- */
+.bottom-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .topbar .tabs {
+    display: none;
+  }
+
+  .layout {
+    padding-bottom: 95px;
+  }
+
+  .methods {
+    padding-bottom: 110px;
+  }
+
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    align-items: center;
+    justify-content: space-around;
+    padding: 8px 12px max(12px, env(safe-area-inset-bottom));
+    background: rgba(10, 13, 19, 0.94);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.45);
+  }
+
+  .bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px 14px;
+    border-radius: 16px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.72rem;
+    font-weight: 600;
+    background: none;
+    border: none;
+    transition: all 0.2s var(--ease);
+    min-width: 58px;
+  }
+
+  .bottom-nav-item svg {
+    transition: transform 0.2s var(--ease), stroke 0.2s var(--ease);
+  }
+
+  .bottom-nav-item:active {
+    transform: scale(0.92);
+  }
+
+  .bottom-nav-item[aria-current='page'] {
+    color: #fff;
+    background: rgba(61, 139, 255, 0.15);
+  }
+
+  .bottom-nav-item[aria-current='page'] svg {
+    stroke: var(--c-blue);
+    transform: translateY(-1px);
+    filter: drop-shadow(0 0 8px rgba(61, 139, 255, 0.6));
+  }
+}
+
+@media (max-width: 640px) {
+  dialog.settings {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    border-radius: 24px 24px 0 0;
+    border-bottom: none;
+    max-height: 85vh;
+    animation: slide-up 0.28s var(--ease);
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+    box-shadow: 0 -12px 36px rgba(0, 0, 0, 0.7);
+  }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(100%); }
+  to { opacity: 1; transform: translateY(0); }
 }

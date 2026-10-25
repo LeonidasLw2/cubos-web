@@ -12,13 +12,13 @@ const views = {
   trainer: document.getElementById('view-trainer'),
 };
 let trainer = null; // módulo del entrenador, se carga la primera vez que se abre
-const tabs = document.querySelectorAll('.tabs a');
+const tabs = () => document.querySelectorAll('.tabs a, .bottom-nav a');
 const backBtn = document.getElementById('nav-back');
 const forwardBtn = document.getElementById('nav-forward');
 const exitToast = document.getElementById('exit-toast');
 let shownPath = null; // página de métodos que está dibujada
 
-const TITLES = { timer: 'Cubos · Timer', methods: 'Cubos · Métodos', trainer: 'Cubos · Entrenar' };
+const TITLES = { timer: 'CubeSolver · Timer', methods: 'CubeSolver · Métodos & Solver', trainer: 'CubeSolver · Entrenar' };
 
 // ---------- Historial: botones Atrás / Adelante y scroll de cada página ----------
 
@@ -32,18 +32,20 @@ const standalone =
 const nav = createNavHistory({
   standalone,
   onUpdate({ canBack, canForward }) {
-    backBtn.disabled = !canBack;
-    forwardBtn.disabled = !canForward;
+    if (backBtn) backBtn.disabled = !canBack;
+    if (forwardBtn) forwardBtn.disabled = !canForward;
   },
   // App instalada, primer "atrás" en la entrada de guardia: avisar antes de salir.
   onExitWarning() {
-    exitToast.hidden = false;
-    setTimeout(() => (exitToast.hidden = true), 2500);
+    if (exitToast) {
+      exitToast.hidden = false;
+      setTimeout(() => (exitToast.hidden = true), 2500);
+    }
   },
 });
 
-backBtn.addEventListener('click', () => nav.back());
-forwardBtn.addEventListener('click', () => nav.forward());
+backBtn?.addEventListener('click', () => nav.back());
+forwardBtn?.addEventListener('click', () => nav.forward());
 // El scroll también se guarda en el momento de navegar (el evento "scroll" llega
 // en el próximo cuadro y podría no haber llegado todavía).
 window.addEventListener('popstate', () => nav.onPopState(window.scrollY));
@@ -57,7 +59,7 @@ async function showRoute(route) {
   const scrollTarget = nav.sync(window.scrollY);
   document.body.dataset.view = route.view;
   for (const [name, view] of Object.entries(views)) view.hidden = name !== route.view;
-  for (const tab of tabs) {
+  for (const tab of tabs()) {
     if (tab.dataset.view === route.view) tab.setAttribute('aria-current', 'page');
     else tab.removeAttribute('aria-current');
   }
