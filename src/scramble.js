@@ -24,6 +24,7 @@ export const EVENTS = [
   { id: '777', name: '7x7', puzzle: '7x7x7', view: '2D' },
   { id: 'minx', name: 'Megaminx', puzzle: 'megaminx', view: '2D' },
   { id: 'pyram', name: 'Pyraminx', puzzle: 'pyraminx', view: '2D' },
+  { id: 'mirror', name: 'Mirror', puzzle: 'mirror', view: '2D', scrambleEvent: '333' },
 ];
 
 export const DEFAULT_EVENT = '333';
@@ -37,7 +38,9 @@ const prefetched = new Map();
 
 async function generate(eventId) {
   const { randomScrambleForEvent } = await loadScrambleLib();
-  return (await randomScrambleForEvent(eventId)).toString();
+  const ev = getEvent(eventId);
+  const targetEvent = ev?.scrambleEvent || eventId;
+  return (await randomScrambleForEvent(targetEvent)).toString();
 }
 
 // Devuelve un scramble (el pre-generado si existe) y deja el siguiente en camino.

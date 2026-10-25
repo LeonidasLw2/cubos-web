@@ -101,7 +101,7 @@ const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches
 
 // ---------- Vista del scramble ----------
 
-let currentViewMode = '3D';
+let currentViewMode = state.event === 'mirror' && isTouch ? '2D' : '3D';
 
 function updatePlayer() {
   if (els.viewModeBadge) els.viewModeBadge.textContent = currentViewMode;
@@ -173,6 +173,9 @@ function selectEvent(eventId) {
   saveSelectedEvent(eventId);
   state.solves = loadSolves(eventId);
   state.newSolveId = null;
+  if (eventId === 'mirror' && isTouch) {
+    currentViewMode = '2D';
+  }
   for (const btn of els.events.children) {
     btn.setAttribute('aria-pressed', String(btn.dataset.event === eventId));
   }

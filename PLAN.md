@@ -23,7 +23,10 @@ Este documento registra el plan de trabajo en fases (A–G) y su estado actual.
   - *Integración en `playerManager.js`:* Enlace transparente para `puzzle: 'mirror'`, reutilización in-place, destrucción limpia al salir o cambiar de vista, y opción `"showColors: true"` ("Ver con colores") para alternar al 3x3 normal de ayuda.
   - *Ajustes:* Opción de color plateado o dorado agregada en `src/settings.js`, `index.html` y `src/ui.js`.
   - *Tests:* `tests/mirror-viewer.test.js` pasa con 6 pruebas verificando montaje 3D/2D, controles de reproducción, reutilización 10 veces sin acumulación de canvas ni fugas, y alternancia con `showColors`.
-- [ ] **Fase 3 (Mirror):** Timer (categoría `"mirror"`, scrambles de 333, vista previa Mirror, exportar/importar y sincronización en la nube).
+- [x] **Fase 3 (Mirror):** Timer (categoría `"mirror"`, scrambles de 333, vista previa Mirror, exportar/importar y sincronización en la nube).
+  - *Categoría Timer:* Agregado `{ id: 'mirror', name: 'Mirror', puzzle: 'mirror', view: '2D', scrambleEvent: '333' }` a `EVENTS` en `src/scramble.js`. Utiliza scrambles reales de `randomScrambleForEvent('333')`.
+  - *Vista previa:* Monta el visor Mirror 3D/2D para previsualizar la mezcla antes de resolver; en celular selecciona vista 2D por defecto y permite alternar a 3D.
+  - *Persistencia, importación y nube:* Historial y estadísticas independientes en `cubos-web:solves:mirror`, exportación e importación probadas en `tests/transfer.test.js` con compatibilidad hacia atrás total y sincronización Firestore automática por mapeo de `EVENTS`.
 - [ ] **Fase 4 (Mirror):** Métodos (`#/metodos/mirror`, reconocimiento por forma, principiante adaptado, portada y `method-pages.js`).
 - [ ] **Fase 5 (Mirror):** Notación (Mirror en `#/notacion`, animación en visor 3D y probador de secuencias).
 - [ ] **Fase 6 (Mirror):** Solver (modo "Deshacer mezcla" animado en visor Mirror).

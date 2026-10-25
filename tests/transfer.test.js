@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildExport, exportFileName, parseImport, mergeSolves, EXPORT_FORMAT } from '../src/transfer.js';
 
-const EVENTS = ['222', '333', '444', '555', '777', 'minx', 'pyram'];
+const EVENTS = ['222', '333', '444', '555', '777', 'minx', 'pyram', 'mirror'];
 const solve = (id, time, date, extra = {}) => ({ id, time, penalty: null, autoPenalty: null, scramble: 'R U', date, ...extra });
 
 test('exportar: formato, solo categorías con tiempos y nombre de archivo', () => {
@@ -67,4 +67,36 @@ test('combinar dos veces el mismo archivo no agrega nada', () => {
   const second = mergeSolves(first.merged, incoming);
   assert.equal(second.added, 0);
   assert.equal(second.duplicates, 2);
+});
+
+test('categoría mirror: exportar, importar y compatibilidad hacia atrás', () => {
+  // Exportar con tiempos de Mirror Cube
+  const original = {
+    333: [solve('3a', 12500, 1000)],
+    mirror: [solve('m1', 28450, 1100), solve('m2', 24120, 1200, { penalty: '+2' })],
+  };
+  const exportedJson = JSON.stringify(buildExport(original));
+
+  // 1. Importar en la app actual (que reconoce 'mirror')
+  const imported = parseImport(exportedJson, EVENTS);
+  assert.deepEqual(imported.events.mirror, original.mirror);
+  assert.deepEqual(imported.unknownEvents, []);
+
+  // 2. Compatibilidad: versión anterior (sin 'mirror') ignora 'mirror' sin fallar
+  const legacyEvents = ['222', '333', '444', '555', '777', 'minx', 'pyram'];
+  const legacyImported = parseImport(exportedJson, legacyEvents);
+  assert.deepEqual(legacyImported.events[333], original[333]);
+  assert.equal(legacyImported.events.mirror, undefined);
+  assert.deepEqual(legacyImported.unknownEvents, ['mirror']);
+
+  // 3. Importar archivo viejo sin 'mirror' en la app actual
+  const legacyExport = JSON.stringify({
+    format: EXPORT_FORMAT,
+    version: 1,
+    events: { 333: [solve('old-333', 15000, 500)] },
+  });
+  const modernImported = parseImport(legacyExport, EVENTS);
+  assert.equal(modernImported.events[333].length, 1);
+  assert.equal(modernImported.events.mirror, undefined);
+  assert.deepEqual(modernImported.unknownEvents, []);
 });
