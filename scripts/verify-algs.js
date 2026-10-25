@@ -15,7 +15,7 @@
 //     descripción (dónde está la pieza y hacia dónde mira el blanco) y que el
 //     algoritmo no rompe lo armado en los pasos anteriores.
 import { Alg } from 'cubing/alg';
-import { cube2x2x2, cube3x3x3 } from 'cubing/puzzles';
+import { cube2x2x2, cube3x3x3, puzzles } from 'cubing/puzzles';
 import { BEGINNER } from '../src/data/beginner.js';
 import { PLL } from '../src/data/pll.js';
 import { OLL, OLL_2LOOK } from '../src/data/oll.js';
@@ -24,6 +24,10 @@ import { CROSS as CROSS_PAGE } from '../src/data/cross.js';
 import { ROUX } from '../src/data/roux.js';
 import { BEGINNER_2X2, ORTEGA, CLL } from '../src/data/cube2x2.js';
 import { CUBE4X4, REDUCTION, YAU } from '../src/data/cube4x4.js';
+import { CUBE5X5, REDUCTION_5X5, YAU5 } from '../src/data/cube5x5.js';
+import { CUBE7X7, REDUCTION_7X7 } from '../src/data/cube7x7.js';
+import { MEGAMINX, MEGAMINX_STANDARD } from '../src/data/megaminx.js';
+import { PYRAMINX, PYRAMINX_BEGINNER, PYRAMINX_ADVANCED } from '../src/data/pyraminx.js';
 import { PLL_REFERENCE } from './pll-reference.js';
 import { OLL_REFERENCE } from './oll-reference.js';
 import { createCrossSolver } from './lib/cross-solver.js';
@@ -764,6 +768,97 @@ for (const [method, data] of [['Reducción', REDUCTION], ['Yau', YAU]]) {
     }
   }
 }
+
+// ---------- 5x5, 7x7, Megaminx y Pyraminx (KPuzzle) ----------
+
+async function verifyPuzzleCases(puzzleId, labelPrefix, sectionsList, extraCheck = null) {
+  const kp = await puzzles[puzzleId].kpuzzle();
+  const solvedP = kp.defaultPattern();
+  for (const { section, cases } of sectionsList) {
+    for (const c of cases) {
+      const fullSection = `${labelPrefix} · ${section}`;
+      const algs = [c.alg, ...(c.alts ?? [])];
+      let ok = true;
+      for (const [i, alg] of algs.entries()) {
+        const label = `${fullSection} › ${c.name}${i ? ` (alternativa ${i})` : ''}`;
+        let shown = null;
+        let after = null;
+        try {
+          const parsed = new Alg(alg);
+          shown = solvedP.applyAlg(parsed.invert());
+          after = shown.applyAlg(parsed);
+        } catch (err) {
+          ok = check(label, false, `no es válido en ${puzzleId}: "${alg}" (${err.message})`) && ok;
+          continue;
+        }
+        ok = check(label, !shown.isIdentical(solvedP), 'el caso ya está resuelto (identidad)') && ok;
+        ok = check(label, after.isIdentical(solvedP), 'al aplicar el algoritmo al caso inverso no queda resuelto') && ok;
+        if (extraCheck) {
+          for (const [problem, good] of extraCheck(c.id, shown, solvedP.applyAlg(alg), solvedP, i) ?? []) {
+            ok = check(label, good, problem) && ok;
+          }
+        }
+      }
+      results.push({ section: fullSection, name: c.name, algs: algs.length, ok });
+    }
+  }
+}
+
+await verifyPuzzleCases(
+  '5x5x5',
+  '5x5',
+  [
+    { section: 'Notación', cases: CUBE5X5.notation.cases },
+    ...REDUCTION_5X5.steps.filter((s) => s.cases.length).map((s) => ({ section: `Reducción · ${s.title}`, cases: s.cases })),
+    ...YAU5.steps.filter((s) => s.cases.length).map((s) => ({ section: `Yau5 · ${s.title}`, cases: s.cases })),
+  ],
+  (id, shown, applied, solvedP, i) => {
+    if (id === '5-edge-parity' && i === 0) {
+      const sameCorners = JSON.stringify(applied.patternData.CORNERS) === JSON.stringify(solvedP.patternData.CORNERS);
+      const sameMidges = JSON.stringify(applied.patternData.EDGES2) === JSON.stringify(solvedP.patternData.EDGES2);
+      const wingsChanged = JSON.stringify(applied.patternData.EDGES) !== JSON.stringify(solvedP.patternData.EDGES);
+      return [
+        ['el algoritmo principal de paridad de alas toca esquinas o midges', sameCorners && sameMidges && wingsChanged],
+      ];
+    }
+    return [];
+  },
+);
+
+await verifyPuzzleCases(
+  '7x7x7',
+  '7x7',
+  [
+    { section: 'Notación', cases: CUBE7X7.notation.cases },
+    ...REDUCTION_7X7.steps.filter((s) => s.cases.length).map((s) => ({ section: `Reducción · ${s.title}`, cases: s.cases })),
+  ],
+  (id, shown, applied, solvedP) => {
+    if (id === '7-p-outer') {
+      const sameCorners = JSON.stringify(applied.patternData.CORNERS) === JSON.stringify(solvedP.patternData.CORNERS);
+      const sameMidges = JSON.stringify(applied.patternData.EDGES) === JSON.stringify(solvedP.patternData.EDGES);
+      const outerWingsChanged = JSON.stringify(applied.patternData.EDGES2) !== JSON.stringify(solvedP.patternData.EDGES2);
+      return [['la paridad de alas externas del 7x7 mueve esquinas o midges', sameCorners && sameMidges && outerWingsChanged]];
+    }
+    if (id === '7-p-inner') {
+      const sameCorners = JSON.stringify(applied.patternData.CORNERS) === JSON.stringify(solvedP.patternData.CORNERS);
+      const sameMidges = JSON.stringify(applied.patternData.EDGES) === JSON.stringify(solvedP.patternData.EDGES);
+      const innerWingsChanged = JSON.stringify(applied.patternData.EDGES3) !== JSON.stringify(solvedP.patternData.EDGES3);
+      return [['la paridad de alas internas del 7x7 mueve esquinas o midges', sameCorners && sameMidges && innerWingsChanged]];
+    }
+    return [];
+  },
+);
+
+await verifyPuzzleCases('megaminx', 'Megaminx', [
+  { section: 'Notación', cases: MEGAMINX.notation.cases },
+  ...MEGAMINX_STANDARD.steps.filter((s) => s.cases.length).map((s) => ({ section: `Estándar · ${s.title}`, cases: s.cases })),
+]);
+
+await verifyPuzzleCases('pyraminx', 'Pyraminx', [
+  { section: 'Notación', cases: PYRAMINX.notation.cases },
+  ...PYRAMINX_BEGINNER.steps.filter((s) => s.cases.length).map((s) => ({ section: `Principiante · ${s.title}`, cases: s.cases })),
+  ...PYRAMINX_ADVANCED.steps.filter((s) => s.cases.length).map((s) => ({ section: `Avanzados · ${s.title}`, cases: s.cases })),
+]);
 
 // ---------- CFOP: PLL ----------
 

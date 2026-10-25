@@ -374,4 +374,158 @@ export const PAGE_METADATA = {
     prev: { label: '4x4 · Reducción', href: '#/metodos/4x4/reduccion' },
     next: { label: '5x5 · Métodos', href: '#/metodos/5x5' },
   },
+
+  reduction5: {
+    puzzle: '5x5x5',
+    stickering: '5x5-full',
+    setupAlg: "Uw' R U R' F R' F' R Uw",
+    accent: 'green',
+    chips: ['Centros fijos · Sin paridad PLL', '1 paridad de alas', 'Barras 1×3 + Freeslice'],
+    stats: [
+      { icon: 'layers', label: 'Centros', value: '6 bloques de 3×3' },
+      { icon: 'layers', label: 'Aristas', value: '12 triples (Freeslice)' },
+      { icon: 'book', label: 'Paridad posible', value: 'Solo alas de última arista' },
+      { icon: 'clock', label: 'Tiempo típico', value: '~1:15 – 2:30 min' },
+    ],
+    prerequisites: [
+      'Saber resolver el 3x3 y conocer la mecánica de reducción del 4x4.',
+      'Comprender que el centro central de cada cara es fijo y define el color de esa cara.',
+    ],
+    tips: [
+      { title: 'Freeslice en las primeras 8 aristas', text: 'Desplazá Uw libremente para armar aristas de 3 piezas y guardalas en U y D antes de restaurar los centros.' },
+      { title: 'Revisá la orientación de las alas antes de subir', text: 'Si un ala tiene los colores invertidos respecto de la pieza central (midge), aplicá R U R\' F R\' F\' R antes de juntar.' },
+    ],
+    mistakes: [
+      { title: 'Intentar armar las últimas 4 aristas rompiendo centros sin volver', text: 'Con 8 aristas ya guardadas en U y D, cada giro Uw debe deshacerse con Uw\' después de voltear la arista.' },
+    ],
+    prev: { label: '5x5 · Comparativa', href: '#/metodos/5x5' },
+    next: { label: '5x5 · Método Yau5', href: '#/metodos/5x5/yau5' },
+  },
+
+  yau5: {
+    puzzle: '5x5x5',
+    stickering: '5x5-full',
+    setupAlg: "Rw U2 Rw'",
+    accent: 'blue',
+    chips: ['Dificultad: Avanzada', 'Cruz + 2 pares F2L anticipados', 'Transición directa a 3x3'],
+    stats: [
+      { icon: 'layers', label: 'Etapas', value: '4 etapas integradas' },
+      { icon: 'book', label: 'Ventaja clave', value: 'Cruz + 2 F2L listos' },
+      { icon: 'moves', label: 'Movimientos prom.', value: '~145–170 giros' },
+      { icon: 'clock', label: 'Tiempo típico', value: '~50 s – 1:40 min' },
+    ],
+    prerequisites: [
+      'Dominar Reducción 5x5 y el método Yau en 4x4.',
+    ],
+    tips: [
+      { title: 'Asegurá dos pares de F2L antes de las últimas 4 aristas', text: 'Al dejar dos ranuras de F2L ya resueltas, las últimas aristas quedan todas a la vista en la mitad superior.' },
+    ],
+    mistakes: [
+      { title: 'Cortar las 3 aristas de la cruz al hacer centros laterales', text: 'Mantené las 3 aristas blancas en la cara izquierda (L) y usá únicamente giros Rw, 2R, 3R y U.' },
+    ],
+    prev: { label: '5x5 · Reducción', href: '#/metodos/5x5/reduccion' },
+    next: { label: '7x7 · Métodos', href: '#/metodos/7x7' },
+  },
+
+  reduction7: {
+    puzzle: '7x7x7',
+    stickering: '7x7-full',
+    setupAlg: "3Uw' R U R' F R' F' R 3Uw",
+    accent: 'orange',
+    chips: ['Centros de 5×5 (barras 1×5)', 'Aristas de 5 piezas', 'Conmutadores + Freeslice'],
+    stats: [
+      { icon: 'layers', label: 'Piezas por centro', value: '25 (5 barras de 1×5)' },
+      { icon: 'layers', label: 'Piezas por arista', value: '5 (midge + 4 alas)' },
+      { icon: 'book', label: 'Paridad posible', value: 'Alas internas / externas' },
+      { icon: 'clock', label: 'Tiempo típico', value: '~3:00 – 6:00 min' },
+    ],
+    prerequisites: [
+      'Dominar la reducción del 5x5, el emparejado Freeslice y el algoritmo de paridad de alas.',
+    ],
+    tips: [
+      { title: 'Construí siempre de adentro hacia afuera', text: 'Tanto en los centros de 5×5 como en las aristas de 5 piezas, empezá por el centro fijo / midge, sumá las capas internas (3R/3U) y cerrá con las externas (2R/2U).' },
+      { title: 'Usá conmutadores para las últimas piezas del sexto centro', text: 'Con 2R U\' 3L\' U 2R\' U\' 3L cambiás una sola pieza puntual entre dos centros sin desarmar ninguna barra.' },
+    ],
+    mistakes: [
+      { title: 'Forzar giros con capas desalineadas', text: 'En un 7x7 es clave mantener los dedos medios alineando el bloque central para evitar trabas mecánicas.' },
+    ],
+    prev: { label: '7x7 · Resumen', href: '#/metodos/7x7' },
+    next: { label: 'Megaminx · Métodos', href: '#/metodos/megaminx' },
+  },
+
+  megaminxStandard: {
+    puzzle: 'megaminx',
+    stickering: 'full',
+    setupAlg: "F R U R' U' F'",
+    accent: 'celeste',
+    chips: ['12 caras pentagonales', '6 etapas progresivas', 'Última capa en 4 pasos'],
+    stats: [
+      { icon: 'layers', label: 'Estructura', value: 'Estrella + F2L + S2L + LL' },
+      { icon: 'book', label: 'Última capa base', value: '4 pasos (EO·CO·EP·CP)' },
+      { icon: 'moves', label: 'Sin paridades', value: 'Piezas equivalentes a 3x3' },
+      { icon: 'clock', label: 'Tiempo típico', value: '~1:10 – 2:45 min' },
+    ],
+    prerequisites: [
+      'Saber armar el 3x3 con F2L y conocer los algoritmos básicos de última capa (F R U R\' U\' F\' y Sune).',
+    ],
+    tips: [
+      { title: 'Aprovechá el espacio libre durante F2L y S2L', text: 'Con 12 caras tenés muchas caras vecinas desocupadas para emparejar esquina y arista sin usar algoritmos largos.' },
+      { title: 'Seguí un orden fijo de colores en S2L', text: 'Recorrer las caras laterales siempre en el mismo sentido evita perder tiempo buscando piezas por detrás del dodecaedro.' },
+    ],
+    mistakes: [
+      { title: 'Girar U de más al recordar el 3x3', text: 'En Megaminx cada cara tiene 5 lados: el giro opuesto a U es U\' (4/5 de vuelta en horario), y dos lugares es U2 o U2\'.' },
+    ],
+    prev: { label: 'Megaminx · Resumen', href: '#/metodos/megaminx' },
+    next: { label: 'Pyraminx · Métodos', href: '#/metodos/pyraminx' },
+  },
+
+  pyraminxBeginner: {
+    puzzle: 'pyraminx',
+    stickering: 'full',
+    setupAlg: "R' L R L' U L' U' L",
+    accent: 'yellow',
+    chips: ['Dificultad: Muy baja', '5 casos de última capa', 'Aprendizaje: ~20 min'],
+    stats: [
+      { icon: 'layers', label: 'Etapas', value: '3 (Centros · Capa · LL)' },
+      { icon: 'book', label: 'Casos última capa', value: '5 casos verificados' },
+      { icon: 'moves', label: 'Movimientos prom.', value: '~16–22 giros' },
+      { icon: 'clock', label: 'Tiempo típico', value: '~6 s – 14 s' },
+    ],
+    prerequisites: [
+      'Distinguir las 4 puntas triviales (u, l, r, b), los 4 bloques axiales (U, L, R, B) y las 6 aristas.',
+    ],
+    tips: [
+      { title: 'Identificá la punta que NO tiene tu color base', text: 'La única punta que no tiene el color elegido para la base va arriba (U); las otras tres forman tu cara inferior.' },
+    ],
+    mistakes: [
+      { title: 'Insertar aristas de la base sin alinear su color lateral', text: 'Igual que en el 3x3, cada arista inferior tiene dos colores: ambos deben coincidir con sus centros antes de bajarla.' },
+    ],
+    prev: { label: 'Pyraminx · Comparativa', href: '#/metodos/pyraminx' },
+    next: { label: 'Pyraminx · Keyhole y L4E', href: '#/metodos/pyraminx/avanzados' },
+  },
+
+  pyraminxAdvanced: {
+    puzzle: 'pyraminx',
+    stickering: 'full',
+    setupAlg: "R' L R L'",
+    accent: 'red',
+    chips: ['Keyhole · L4E · Top-First · 1-Flip', 'Enfoque en V + últimas 4 aristas', 'Objetivo: Sub-5 s'],
+    stats: [
+      { icon: 'layers', label: 'Base L4E', value: 'V inferior (2 aristas)' },
+      { icon: 'book', label: 'Familias', value: 'Keyhole, L4E y Top-First' },
+      { icon: 'moves', label: 'Movimientos prom.', value: '~11–15 giros' },
+      { icon: 'clock', label: 'Tiempo típico', value: '~2,5 s – 6 s' },
+    ],
+    prerequisites: [
+      'Resolver el Pyraminx con el método principiante en menos de ~10 segundos.',
+    ],
+    tips: [
+      { title: 'Planeá la V completa en la inspección', text: 'Armar los 3 centros y 2 aristas inferiores toma entre 3 y 5 movimientos: se puede prever entero durante los 15 s de inspección.' },
+    ],
+    mistakes: [
+      { title: 'Casarse con un único color de V', text: 'En Pyraminx hay 4 caras y en cada cara podés dejar libre cualquiera de las 3 aristas: elegí siempre la V más corta de la mezcla.' },
+    ],
+    prev: { label: 'Pyraminx · Principiante', href: '#/metodos/pyraminx/principiante' },
+    next: { label: 'Portada de Métodos', href: '#/metodos' },
+  },
 };

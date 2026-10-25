@@ -29,6 +29,16 @@ test('páginas de métodos ordenadas por puzzle', () => {
   assert.equal(parseRoute('#/metodos/2x2/ortega').page, 'ortega');
   assert.equal(parseRoute('#/metodos/4x4/reduccion').page, 'reduction4');
   assert.equal(parseRoute('#/metodos/4x4/yau').page, 'yau');
+  assert.equal(parseRoute('#/metodos/5x5').puzzle, '5x5');
+  assert.equal(parseRoute('#/metodos/5x5/reduccion').page, 'reduction5');
+  assert.equal(parseRoute('#/metodos/5x5/yau5').page, 'yau5');
+  assert.equal(parseRoute('#/metodos/7x7').puzzle, '7x7');
+  assert.equal(parseRoute('#/metodos/7x7/reduccion').page, 'reduction7');
+  assert.equal(parseRoute('#/metodos/megaminx').puzzle, 'megaminx');
+  assert.equal(parseRoute('#/metodos/megaminx/estandar').page, 'megaminxStandard');
+  assert.equal(parseRoute('#/metodos/pyraminx').puzzle, 'pyraminx');
+  assert.equal(parseRoute('#/metodos/pyraminx/principiante').page, 'pyraminxBeginner');
+  assert.equal(parseRoute('#/metodos/pyraminx/avanzados').page, 'pyraminxAdvanced');
 });
 
 test('migas de pan', () => {

@@ -19,9 +19,24 @@ export const METHOD_PAGES = {
   '2x2/principiante': { title: 'Principiante', page: 'beginner2' },
   '2x2/ortega': { title: 'Ortega', page: 'ortega' },
   '2x2/cll': { title: 'CLL', page: 'cll' },
+
   '4x4': { title: '4x4', page: 'puzzle', puzzle: '4x4' },
   '4x4/reduccion': { title: 'Reducción', page: 'reduction4' },
   '4x4/yau': { title: 'Yau', page: 'yau' },
+
+  '5x5': { title: '5x5', page: 'puzzle', puzzle: '5x5' },
+  '5x5/reduccion': { title: 'Reducción', page: 'reduction5' },
+  '5x5/yau5': { title: 'Yau5', page: 'yau5' },
+
+  '7x7': { title: '7x7', page: 'puzzle', puzzle: '7x7' },
+  '7x7/reduccion': { title: 'Reducción', page: 'reduction7' },
+
+  megaminx: { title: 'Megaminx', page: 'puzzle', puzzle: 'megaminx' },
+  'megaminx/estandar': { title: 'Método estándar', page: 'megaminxStandard' },
+
+  pyraminx: { title: 'Pyraminx', page: 'puzzle', puzzle: 'pyraminx' },
+  'pyraminx/principiante': { title: 'Principiante', page: 'pyraminxBeginner' },
+  'pyraminx/avanzados': { title: 'Keyhole y L4E', page: 'pyraminxAdvanced' },
 };
 
 // Rutas de antes de ordenar los métodos por puzzle: se redirigen a las nuevas,

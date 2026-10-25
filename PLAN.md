@@ -5,7 +5,7 @@ Este documento registra el plan de trabajo en fases (A–G) y su estado actual.
 ## Estado de Fases
 - [x] **Fase A:** Barra superior, logo con estética argentina y sistema de diseño.
 - [x] **Fase B:** Rediseño de las páginas existentes de Métodos (2x2, 3x3, 4x4).
-- [ ] **Fase C:** Métodos nuevos por puzzle (5x5, 7x7, Megaminx, Pyraminx + EG y ZZ).
+- [x] **Fase C:** Métodos nuevos por puzzle (5x5, 7x7, Megaminx, Pyraminx + EG y ZZ).
 - [ ] **Fase D:** Nueva sección de Notación (`#/notacion`) con parser verificable y animaciones.
 - [ ] **Fase E:** Inicio de sesión (Google / Firebase Auth) y sincronización en la nube (Firestore local-first).
 - [ ] **Fase F:** Nueva sección Solver (`#/solver`) para 2x2, 3x3, 4x4, 5x5 y Pyraminx con verificación KPuzzle.

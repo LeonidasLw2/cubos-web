@@ -14,6 +14,10 @@ import { CROSS } from './data/cross.js';
 import { ROUX } from './data/roux.js';
 import { CUBE2X2, BEGINNER_2X2, ORTEGA, CLL } from './data/cube2x2.js';
 import { CUBE4X4, REDUCTION, YAU } from './data/cube4x4.js';
+import { CUBE5X5, REDUCTION_5X5, YAU5 } from './data/cube5x5.js';
+import { CUBE7X7, REDUCTION_7X7 } from './data/cube7x7.js';
+import { MEGAMINX, MEGAMINX_STANDARD } from './data/megaminx.js';
+import { PYRAMINX, PYRAMINX_BEGINNER, PYRAMINX_ADVANCED } from './data/pyraminx.js';
 import { PAGE_METADATA, UNIFIED_COUNTS, CFOP_BADGE } from './data/methods-metadata.js';
 import { createCaseCard, mountHeroPlayer, openSharedCaseModal } from './case-card.js';
 import { cubeSvg } from './cube-art.js';
@@ -45,7 +49,7 @@ const STAT_ICONS = {
 const statIconSvg = (name) =>
   `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${STAT_ICONS[name] ?? STAT_ICONS.layers}</svg>`;
 
-// Portada de Métodos: los puzzles de la app
+// Portada de Métodos: los 7 puzzles de la app
 const PUZZLES = [
   {
     title: '2x2',
@@ -70,6 +74,38 @@ const PUZZLES = [
     accent: 'green',
     art: { n: 4 },
     tag: 'Reducción · Yau · Paridades',
+  },
+  {
+    title: '5x5',
+    text: 'Centros fijos de 3×3, aristas triples con Freeslice, paridad de alas y método Yau5.',
+    href: linkTo('5x5'),
+    accent: 'yellow',
+    art: { n: 5, top: HEX.yellow, left: HEX.green, right: HEX.orange },
+    tag: 'Reducción · Yau5',
+  },
+  {
+    title: '7x7',
+    text: 'Reducción para cubos grandes: centros de 5×5 por barras, aristas por grupos y conmutadores.',
+    href: linkTo('7x7'),
+    accent: 'red',
+    art: { n: 7, top: HEX.red, left: HEX.blue, right: HEX.yellow },
+    tag: 'Cubos grandes · Barras 1×5',
+  },
+  {
+    title: 'Megaminx',
+    text: 'Dodecaedro de 12 caras: Estrella, primera cara, F2L, S2L y última capa en 4 pasos.',
+    href: linkTo('megaminx'),
+    accent: 'celeste',
+    customSvg: megaminxSvg({ accent: HEX.celeste }),
+    tag: '6 etapas · 12 caras',
+  },
+  {
+    title: 'Pyraminx',
+    text: 'Tetraedro de giros de 120°: método Principiante (LBL), Keyhole, L4E, Top-First y 1-Flip.',
+    href: linkTo('pyraminx'),
+    accent: 'green',
+    customSvg: pyraminxSvg(),
+    tag: 'Principiante · Keyhole · L4E',
   },
 ];
 
@@ -166,6 +202,102 @@ const PUZZLE_METHODS = {
         accent: 'blue',
         n: 4,
         tag: 'Competición · 5 etapas',
+      },
+    ],
+  },
+  '5x5': {
+    intro: CUBE5X5.intro,
+    notation: CUBE5X5.notation,
+    hero: {
+      puzzle: '5x5x5',
+      stickering: '5x5-full',
+      setupAlg: "Uw' R U R' F R' F' R Uw",
+      chips: ['150 stickers · Centros fijos', 'Sin paridad PLL del 4x4', 'Reducción + Yau5'],
+    },
+    methods: [
+      {
+        title: 'Reducción 5x5',
+        text: 'Centros de 3×3 por barras, aristas triples con Freeslice, paridad de la última arista y etapa 3x3.',
+        href: linkTo('5x5/reduccion'),
+        accent: 'green',
+        n: 5,
+        tag: 'Método estándar · 5 etapas',
+      },
+      {
+        title: 'Yau5',
+        text: 'Tres aristas de la cruz antes de los centros laterales y dos pares de F2L adelantados.',
+        href: linkTo('5x5/yau5'),
+        accent: 'blue',
+        n: 5,
+        tag: 'Avanzado · Transición fluida',
+      },
+    ],
+  },
+  '7x7': {
+    intro: CUBE7X7.intro,
+    notation: CUBE7X7.notation,
+    hero: {
+      puzzle: '7x7x7',
+      stickering: '7x7-full',
+      setupAlg: "3Uw' R U R' F R' F' R 3Uw",
+      chips: ['294 stickers · Cubo grande WCA', 'Centros de 5×5 por barras', 'Conmutadores + Freeslice'],
+    },
+    methods: [
+      {
+        title: 'Reducción para Cubos Grandes',
+        text: 'Centros por barras de 1×5, aristas de 5 piezas por grupos, paridad de alas y consejos de cubos grandes.',
+        href: linkTo('7x7/reduccion'),
+        accent: 'orange',
+        n: 7,
+        tag: 'Guía completa · 4 etapas',
+      },
+    ],
+  },
+  megaminx: {
+    intro: MEGAMINX.intro,
+    notation: MEGAMINX.notation,
+    hero: {
+      puzzle: 'megaminx',
+      stickering: 'full',
+      setupAlg: "F R U R' U' F'",
+      chips: ['12 caras · 50 piezas móviles', 'Estrella + F2L + S2L', 'Última capa en 4 pasos'],
+    },
+    methods: [
+      {
+        title: 'Método Estándar (6 etapas)',
+        text: 'Estrella, primera cara, F2L, S2L, cierre de caras laterales y última capa en 4 pasos (EO, CO, EP, CP).',
+        href: linkTo('megaminx/estandar'),
+        accent: 'celeste',
+        customSvg: megaminxSvg({ accent: HEX.celeste }),
+        tag: 'Estándar WCA · 6 etapas',
+      },
+    ],
+  },
+  pyraminx: {
+    intro: PYRAMINX.intro,
+    notation: PYRAMINX.notation,
+    hero: {
+      puzzle: 'pyraminx',
+      stickering: 'full',
+      setupAlg: "R' L R L' U L' U' L",
+      chips: ['4 caras · Giros de 120°', 'Principiante (LBL) + L4E', 'Objetivo: Sub-5 s'],
+    },
+    methods: [
+      {
+        title: 'Principiante (Capa por Capa)',
+        text: 'Puntas, los 3 centros de la base, las 3 aristas inferiores y los 5 casos de la última capa.',
+        href: linkTo('pyraminx/principiante'),
+        accent: 'yellow',
+        customSvg: pyraminxSvg(),
+        tag: 'Ideal para empezar · 5 casos LL',
+      },
+      {
+        title: 'Keyhole, L4E, Top-First y 1-Flip',
+        text: 'Métodos intermedios y avanzados: cerradura (Keyhole), últimas 4 aristas (L4E) y métodos de punta.',
+        href: linkTo('pyraminx/avanzados'),
+        accent: 'red',
+        customSvg: pyraminxSvg({ colors: ['#ff4d5e', '#3d8bff', '#2ec27e', '#ffd500'] }),
+        tag: 'Intermedio / Avanzado',
       },
     ],
   },
@@ -832,6 +964,140 @@ function puzzle4x4Presentation() {
   `;
 }
 
+function puzzle5x5Presentation() {
+  return `
+    <section class="methods-presentation">
+      <div class="presentation-header">
+        <span class="presentation-badge">Comparativa 5x5</span>
+        <h3>Reducción Freeslice vs Yau5</h3>
+        <p>En 5x5 los centros son fijos: no existe la paridad de permutación del 4x4, pero sí la paridad de alas en la última arista.</p>
+      </div>
+      <div class="comparison-grid">
+        <div class="comparison-col">
+          <div class="comp-header">
+            <h4>Reducción (Freeslice)</h4>
+            <span class="comp-badge">Estándar</span>
+          </div>
+          <div class="comp-row"><span>Orden</span><strong>6 centros (3×3) → 8 aristas → 4 aristas → 3x3</strong></div>
+          <div class="comp-row"><span>Paridades</span><strong>Solo paridad de alas (última arista)</strong></div>
+          <div class="comp-row"><span>Tiempo típico</span><strong>~1:15 – 2:30 min</strong></div>
+        </div>
+        <div class="comparison-col featured">
+          <div class="comp-header">
+            <h4>Yau5</h4>
+            <span class="comp-badge popular">★ Avanzado</span>
+          </div>
+          <div class="comp-row"><span>Orden</span><strong>2 centros → 3 cruz → 4 centros → cruz + 2 F2L → últimas aristas</strong></div>
+          <div class="comp-row"><span>Ventaja</span><strong>Entra al 3x3 con la cruz y 2 pares de F2L listos</strong></div>
+          <div class="comp-row"><span>Tiempo típico</span><strong>~50 s – 1:40 min</strong></div>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function puzzle7x7Presentation() {
+  return `
+    <section class="methods-presentation">
+      <div class="presentation-header">
+        <span class="presentation-badge">Claves del 7x7</span>
+        <h3>Estrategia para cubos grandes</h3>
+        <p>Cada centro tiene 25 piezas (5×5) y cada arista tiene 5 piezas (1 central + 2 alas internas + 2 externas).</p>
+      </div>
+      <div class="pathway-grid">
+        <div class="pathway-card stage-1">
+          <div class="pathway-step">Paso 1 · Centros</div>
+          <h4>Barras de 1×5 de adentro hacia afuera</h4>
+          <p>Armá siempre primero la barra central que contiene el centro fijo, luego las dos barras de capa 3 (3R/3L) y cerrá con las barras de borde (2R/2L).</p>
+        </div>
+        <div class="pathway-card stage-2 highlight">
+          <div class="pathway-step">Paso 2 · Aristas</div>
+          <h4>Freeslice por grupos (8 + 4)</h4>
+          <p>En la banda ecuatorial reuní el bloque interno de 3 piezas (midge + alas internas), sumale las 2 alas externas y guardá 8 aristas en U y D antes de cerrar las últimas 4.</p>
+        </div>
+        <div class="pathway-card stage-3">
+          <div class="pathway-step">Paso 3 · Cierre</div>
+          <h4>Paridad de alas + Etapa 3x3</h4>
+          <p>Si en la última arista quedan invertidas las alas internas (3R) o externas (2R), aplicá el algoritmo de paridad de alas sobre esa capa antes de resolver como 3x3.</p>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function puzzleMegaminxPresentation() {
+  return `
+    <section class="methods-presentation">
+      <div class="presentation-header">
+        <span class="presentation-badge">Ruta Megaminx</span>
+        <h3>Del método estándar a OLL / PLL avanzado</h3>
+        <p>Cómo organizar las 12 caras sin perderte buscando piezas.</p>
+      </div>
+      <div class="pathway-grid">
+        <div class="pathway-card stage-1">
+          <div class="pathway-step">Etapas 1–3 · Mitad inferior</div>
+          <h4>Estrella + Primera Cara + F2L</h4>
+          <p>Igual que en el 3x3 pero con 5 lados: armás la estrella blanca en la base y completás los 5 pares esquina-arista inferiores.</p>
+        </div>
+        <div class="pathway-card stage-2 highlight">
+          <div class="pathway-step">Etapas 4–5 · Mitad superior</div>
+          <h4>S2L (Second Two Layers) en orden fijo</h4>
+          <p>Recorré las caras laterales en círculo: en cada cara poné sus 2 aristas inferiores y sus 2 pares laterales hasta dejar solo la cara superior U.</p>
+        </div>
+        <div class="pathway-card stage-3">
+          <div class="pathway-step">Etapa 6 · Última Capa</div>
+          <h4>4 pasos (2-Look) → OLL / PLL completo</h4>
+          <p>Empezá con la última capa en 4 pasos (orientar aristas, orientar esquinas, permutar aristas y permutar esquinas). En nivel avanzado se agrupan en OLL y PLL directo de Megaminx.</p>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function puzzlePyraminxPresentation() {
+  return `
+    <section class="methods-presentation">
+      <div class="presentation-header">
+        <span class="presentation-badge">Comparativa Pyraminx</span>
+        <h3>Capa por Capa vs Keyhole, L4E y Top-First</h3>
+        <p>Elegí tu método según tu etapa de aprendizaje en Pyraminx.</p>
+      </div>
+      <div class="comparison-grid">
+        <div class="comparison-col">
+          <div class="comp-header">
+            <h4>Principiante (LBL)</h4>
+            <span class="comp-badge">Para empezar</span>
+          </div>
+          <div class="comp-row"><span>Base</span><strong>3 centros + 3 aristas abajo</strong></div>
+          <div class="comp-row"><span>Última capa</span><strong>5 casos verificados</strong></div>
+          <div class="comp-row"><span>Movimientos prom.</span><strong>~16–22 giros</strong></div>
+          <div class="comp-row"><span>Tiempo típico</span><strong>~6 s – 14 s</strong></div>
+        </div>
+        <div class="comparison-col featured">
+          <div class="comp-header">
+            <h4>L4E (Last 4 Edges)</h4>
+            <span class="comp-badge popular">★ El más usado</span>
+          </div>
+          <div class="comp-row"><span>Base</span><strong>"V" en la base (3 centros + 2 aristas)</strong></div>
+          <div class="comp-row"><span>Cierre</span><strong>Las últimas 4 aristas en 1 paso</strong></div>
+          <div class="comp-row"><span>Movimientos prom.</span><strong>~11–14 giros</strong></div>
+          <div class="comp-row"><span>Tiempo típico</span><strong>~2,5 s – 5,5 s</strong></div>
+        </div>
+        <div class="comparison-col">
+          <div class="comp-header">
+            <h4>Keyhole y Top-First (1-Flip)</h4>
+            <span class="comp-badge">Métodos de punta</span>
+          </div>
+          <div class="comp-row"><span>Base</span><strong>Bloque alrededor de la punta U</strong></div>
+          <div class="comp-row"><span>Ventaja</span><strong>Planeamiento muy rápido en inspección</strong></div>
+          <div class="comp-row"><span>Movimientos prom.</span><strong>~12–16 giros</strong></div>
+          <div class="comp-row"><span>Tiempo típico</span><strong>~3 s – 6 s</strong></div>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
 // ---------- Páginas ----------
 
 function indexPage(route) {
@@ -888,6 +1154,10 @@ function puzzlePage(route) {
   if (route.puzzle === '3x3') page.append(el(puzzle3x3Presentation()));
   if (route.puzzle === '2x2') page.append(el(puzzle2x2Presentation()));
   if (route.puzzle === '4x4') page.append(el(puzzle4x4Presentation()));
+  if (route.puzzle === '5x5') page.append(el(puzzle5x5Presentation()));
+  if (route.puzzle === '7x7') page.append(el(puzzle7x7Presentation()));
+  if (route.puzzle === 'megaminx') page.append(el(puzzleMegaminxPresentation()));
+  if (route.puzzle === 'pyraminx') page.append(el(puzzlePyraminxPresentation()));
 
   return page;
 }
@@ -1099,6 +1369,43 @@ function reduction4Page(route) {
 
 function yauPage(route) {
   return stepsPage(YAU, route, '4x4x4', 'yau');
+}
+
+function reduction5Page(route) {
+  return stepsPage(REDUCTION_5X5, route, '5x5x5', 'reduction5');
+}
+
+function yau5Page(route) {
+  return stepsPage(YAU5, route, '5x5x5', 'yau5');
+}
+
+function reduction7Page(route) {
+  return stepsPage(REDUCTION_7X7, route, '7x7x7', 'reduction7');
+}
+
+function megaminxStandardPage(route) {
+  const page = stepsPage(MEGAMINX_STANDARD, route, 'megaminx', 'megaminxStandard');
+  page.insertAdjacentHTML(
+    'beforeend',
+    `<section class="other-methods-card" style="margin-top: 20px;">
+      <div class="other-methods-head">
+        <span class="presentation-badge">Nivel Avanzado</span>
+        <h4>OLL y PLL completos en Megaminx</h4>
+      </div>
+      <p>
+        Una vez dominada la última capa en 4 pasos (orientar aristas → orientar esquinas → permutar aristas → permutar esquinas), los competidores avanzados agrupan la orientación superior en un solo paso (<strong>OLL de Megaminx</strong>) y la permutación final en un solo paso (<strong>PLL de Megaminx</strong>), incorporando los casos de forma progresiva a partir de los bloques y ciclos que más aparecen en resolución.
+      </p>
+    </section>`,
+  );
+  return page;
+}
+
+function pyraminxBeginnerPage(route) {
+  return stepsPage(PYRAMINX_BEGINNER, route, 'pyraminx', 'pyraminxBeginner');
+}
+
+function pyraminxAdvancedPage(route) {
+  return stepsPage(PYRAMINX_ADVANCED, route, 'pyraminx', 'pyraminxAdvanced');
 }
 
 function groupedStagePage(data, route, metaKey, mapCase = (c) => c, extraBeforeCases = null) {
@@ -1571,6 +1878,12 @@ const RENDERERS = {
   cll: cllPage,
   reduction4: reduction4Page,
   yau: yauPage,
+  reduction5: reduction5Page,
+  yau5: yau5Page,
+  reduction7: reduction7Page,
+  megaminxStandard: megaminxStandardPage,
+  pyraminxBeginner: pyraminxBeginnerPage,
+  pyraminxAdvanced: pyraminxAdvancedPage,
   pll: pllPage,
   oll: ollPage,
   f2l: f2lPage,
