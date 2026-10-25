@@ -8,12 +8,12 @@
 // funciona 100 % en modo local y muestra "Sincronización no configurada".
 
 export const FIREBASE_CONFIG = {
-  apiKey: '',
-  authDomain: '',
-  projectId: '',
-  storageBucket: '',
-  messagingSenderId: '',
-  appId: '',
+  apiKey: 'AIzaSyDoXwFHpplPcWxwqCkhDWG2G7c0C1Crlqc',
+  authDomain: 'cubos-wen.firebaseapp.com',
+  projectId: 'cubos-wen',
+  storageBucket: 'cubos-wen.firebasestorage.app',
+  messagingSenderId: '399548573690',
+  appId: '1:399548573690:web:bc1503bc50e974ca7b6643',
 };
 
 const PLACEHOLDER_VALUES = new Set([

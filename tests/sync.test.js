@@ -11,10 +11,10 @@ import {
   DEFAULT_SOLVER_PREFS,
 } from '../src/cloud-sync.js';
 
-test('firebase-config vacío por defecto devuelve Sincronización no configurada sin romper', () => {
-  assert.equal(isFirebaseConfigured(FIREBASE_CONFIG), false);
+test('isFirebaseConfigured detecta configuración vacía vs real', () => {
   assert.equal(isFirebaseConfigured({ apiKey: '', projectId: '', authDomain: '' }), false);
   assert.equal(isFirebaseConfigured({ apiKey: 'TU_API_KEY', projectId: 'TU_PROJECT_ID', authDomain: 'x.firebaseapp.com' }), false);
+  assert.equal(isFirebaseConfigured(FIREBASE_CONFIG), true);
   assert.equal(
     isFirebaseConfigured({
       apiKey: 'AIzaSyD1234567890abcdef',
