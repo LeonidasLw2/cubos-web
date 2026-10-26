@@ -9,8 +9,8 @@ Página web de speedcubing: timer, scrambles y guías de métodos para cubos de 
 - Publicada en GitHub Pages: https://leonidaslw2.github.io/cubos-web/ (repo público https://github.com/LeonidasLw2/cubos-web).
   - En local también vive en la subcarpeta: http://localhost:5173/cubos-web/ (dev) y http://localhost:4173/cubos-web/ (`npm run preview`, sirve el build).
 
-## Categorías del timer (IDs WCA de cubing.js)
-2x2 `222` · 3x3 `333` · 4x4 `444` · 5x5 `555` · 7x7 `777` · Megaminx `minx` · Pyraminx `pyram`
+## Categorías del timer (IDs WCA de cubing.js + eventos adicionales)
+2x2 `222` · 3x3 `333` · 4x4 `444` · 5x5 `555` · 7x7 `777` · Megaminx `minx` · Pyraminx `pyram` · Mirror Cube `mirror` (no oficial WCA, genera mezclas con scrambler de 3x3)
 
 ## Etapas
 1. ✅ Timer: categorías, scrambles, barra espaciadora / toque, historial, mejor, ao5, ao12 (regla WCA), +2/DNF, localStorage.
@@ -27,6 +27,7 @@ Página web de speedcubing: timer, scrambles y guías de métodos para cubos de 
 5. ✅ Publicar en GitHub Pages (repo público `cubos-web`, deploy automático con GitHub Actions).
 6. ✅ PWA: instalable en Android, funciona sin conexión, aviso de versión nueva, almacenamiento persistente y exportar/importar tiempos.
 - ✅ Navegación: botones Atrás/Adelante propios (`nav-history.js`, con número de entrada en `history.state`), scroll restaurado y, en la app instalada, "atrás dos veces para salir". Migas de pan en Métodos; las rutas viejas (`#/metodos/cfop/...`) redirigen.
+7. ✅ Mirror Cube 3x3 (Mirror Blocks): modelo geométrico sin DOM con grosores asimétricos por capa (`src/data/mirror.js`), visor Three.js (`src/twisty/mirrorViewer.js`) con materiales metálicos plateado y dorado + red desplegada 2D en SVG, categoría independiente `mirror` en Timer, guía de principiante adaptada por alturas y rasantes en `#/metodos/mirror` con botón "Ver con colores", catálogo interactivo de notación en `#/notacion/mirror` y modo exclusivo "Deshacer mezcla" en `#/solver/mirror` con historial del Timer.
 
 Todas las etapas pedidas están hechas. Trabajar una etapa a la vez; no adelantar etapas sin que se pida.
 

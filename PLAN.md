@@ -199,4 +199,23 @@ Este documento registra el plan de trabajo en fases (A–G) y su estado actual.
 - Reproducción paso a paso sobre el visor 3D del Mirror con descripciones de movimiento en español y controles de reproducción.
 - Tests en `tests/solver.test.js`.
 
+### Fase 7 — Entrenador (`#/entrenar`)
+- Evaluación: El entrenador actual de `cubos-web` está diseñado exclusivamente para sub-conjuntos aislados de última capa o pares de CFOP/Roux/Ortega (PLL, OLL, F2L, CMLL, OLL 2x2, PBL), utilizando solvers de búsqueda inversa (`realCaseScramble` con `experimentalSolve3x3x3IgnoringCenters`) y máscaras de stickers (`STICKERING`) que atenúan piezas irrelevantes.
+- En el Mirror Cube principiante, los casos abarcan 7 pasos progresivos capa por capa (desde cruz hasta aristas finales) donde cada etapa requiere que las anteriores ya estén resueltas. Además, al ser monocolor, las máscaras de stickers 3D no aplican.
+- Siguiendo la pauta explícita del usuario (*"Si no es simple, dejalo fuera y explicalo"*), se decidió dejarlo fuera de `#/entrenar` para no desvirtuar la arquitectura de `case-scramble` ni romper las metas de `verify-algs`. En su lugar, todos los casos del método principiante de Mirror cuentan con práctica interactiva 3D completa en `#/metodos/mirror`.
+
+### Fase 8 — Revisión final y verificación en navegador
+- `npm test`: 116/116 tests pasando sin errores.
+- `npm run verify-algs`: 357 casos, 428 algoritmos y 3152 comprobaciones aprobadas con KPuzzle.
+- `npm run build`: compilación limpia en 974 ms, bundle PWA de 72 entradas y chunk dinámico optimizado para Three.js.
+- Verificación en Chrome headless (1440 px y 390 px):
+  - Timer: categoría Mirror funcional, visor único, 2D responsive en móvil.
+  - Métodos: tarjeta en portada, guía completa en `#/metodos/mirror` con 7 pasos, modal interactivo y alternancia de colores ("Ver con colores").
+  - Notación: catálogo completo en `#/notacion/mirror`, probador de secuencias animado en visor Mirror y cálculo de inversa.
+  - Solver: modo "Deshacer mezcla" exclusivo para Mirror, selector de mezclas del historial del Timer y reproducción paso a paso.
+  - Sin errores de consola (0 errores).
+  - Capturas generadas: `mirror-solved.png` (cubo resuelto perfecto), `mirror-scrambled.png` (figura irregular mezclada) y `mirror-midturn.png` (giro de capa en progreso).
+
+
+
 
