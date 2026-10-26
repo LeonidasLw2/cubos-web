@@ -13,6 +13,7 @@ export const SOLVER_PUZZLES = [
   { id: '4x4', puzzleId: '4x4x4', timerEventId: '444', name: '4x4', size: 4 },
   { id: '5x5', puzzleId: '5x5x5', timerEventId: '555', name: '5x5', size: 5 },
   { id: 'pyraminx', puzzleId: 'pyraminx', timerEventId: 'pyram', name: 'Pyraminx', size: 3 },
+  { id: 'mirror', puzzleId: 'mirror', timerEventId: 'mirror', name: 'Mirror', size: 3 },
 ];
 
 let engineCachePromise = null;
@@ -1014,8 +1015,8 @@ export async function getSolverEngine() {
     }
 
     return {
-      kpuzzles: { '2x2': kp2, '3x3': kp3, '4x4': kp4, '5x5': kp5, pyraminx: kpPyr },
-      solvedPatterns: { '2x2': SOLVED2, '3x3': SOLVED3, '4x4': SOLVED4, '5x5': SOLVED5, pyraminx: SOLVED_PYR },
+      kpuzzles: { '2x2': kp2, '3x3': kp3, '4x4': kp4, '5x5': kp5, pyraminx: kpPyr, mirror: kp3 },
+      solvedPatterns: { '2x2': SOLVED2, '3x3': SOLVED3, '4x4': SOLVED4, '5x5': SOLVED5, pyraminx: SOLVED_PYR, mirror: SOLVED3 },
       ROTATIONS,
       solve2x2Pattern,
       solve3x3Pattern,

@@ -57,6 +57,9 @@ export function getOrientationGuide(puzzleKey) {
   if (key === 'pyraminx') {
     return 'Orientación estándar WCA: Verde al frente (F) · Amarillo abajo (D) · Rojo a la izquierda (L) · Azul a la derecha (R)';
   }
+  if (key === 'mirror') {
+    return 'Orientación del Mirror Cube: Todas las piezas son metálicas; cada eje tiene grosores distintos. Resuelto forma un cubo perfecto.';
+  }
   return 'Orientación estándar WCA: Blanco arriba (U) · Verde al frente (F) · Rojo a la derecha (R)';
 }
 

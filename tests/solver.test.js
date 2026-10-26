@@ -205,7 +205,7 @@ test('detecta y rechaza estados imposibles con mensajes específicos en español
   assert.match(rPyrSwap.errors[0], /Paridad de permutación inválida en Pyraminx/i);
 });
 
-test('invierte mezclas paso a paso en el modo "Deshacer mezcla"', () => {
+test('invierte mezclas paso a paso en el modo "Deshacer mezcla"', async () => {
   const res = solveByInvertingScramble('4x4', "R U R' Uw2 F'");
   assert.equal(res.valid, true);
   assert.equal(res.alg, "F Uw2 R U' R'");
@@ -214,4 +214,18 @@ test('invierte mezclas paso a paso en el modo "Deshacer mezcla"', () => {
   const bad = solveByInvertingScramble('2x2', 'R U 3Rw');
   assert.equal(bad.valid, false);
   assert.ok(bad.errors.length > 0);
+
+  // Mirror Cube: invierte la mezcla y restaura el estado resuelto
+  const resMirror = solveByInvertingScramble('mirror', "R U R' U' F' U2 R");
+  assert.equal(resMirror.valid, true);
+  assert.equal(resMirror.alg, "R' U2 F U R U' R'");
+  assert.equal(resMirror.moveDescriptions.length, 7);
+  assert.equal(resMirror.moveDescriptions[0].token, "R'");
+  assert.match(resMirror.moveDescriptions[0].title, /R'/);
+
+  const eng = await getSolverEngine();
+  const solved = eng.solvedPatterns.mirror;
+  const scrambled = solved.applyAlg("R U R' U' F' U2 R");
+  const restored = scrambled.applyAlg(resMirror.alg);
+  assert.equal(restored.isIdentical(solved), true);
 });

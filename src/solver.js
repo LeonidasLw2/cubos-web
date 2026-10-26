@@ -25,6 +25,7 @@ import { parseNotationSequence, normalizePuzzleKey } from './notation-parser.js'
 import { loadSolverPrefs, saveSolverPrefs } from './cloud-sync.js';
 import { loadCustomScrambleInTimer } from './ui.js';
 import { nextScramble } from './scramble.js';
+import { loadSolves } from './storage.js';
 import { getPlayer, updatePlayerOptions } from './twisty/playerManager.js';
 
 const FACE_TITLES_CUBE = {
@@ -175,6 +176,10 @@ export async function renderSolver(container, route) {
     solverState.currentStep = 0;
   }
 
+  if (solverState.puzzleKey === 'mirror') {
+    solverState.mode = 'undo-scramble';
+  }
+
   solverState.validation = await validateAndBuildPattern(
     solverState.puzzleKey,
     solverState.stickers
@@ -183,8 +188,40 @@ export async function renderSolver(container, route) {
   renderSolverDOM(container);
 }
 
+function renderHistoryScrambleSelect(eventId) {
+  try {
+    const rawSolves = loadSolves(eventId) || [];
+    const withScramble = rawSolves
+      .filter((s) => s && s.scramble && s.scramble.trim())
+      .reverse()
+      .slice(0, 15);
+    if (!withScramble.length) return '';
+    return `
+      <div class="solver-history-picker" style="margin-bottom: 0.75rem;">
+        <label for="solver-history-select" class="solver-label" style="display:block; margin-bottom: 0.25rem;">
+          📜 Elegir del historial del Timer:
+        </label>
+        <select id="solver-history-select" class="solver-history-select" style="width: 100%; padding: 0.5rem; border-radius: 6px; background: rgba(30, 41, 59, 0.75); color: #f8fafc; border: 1px solid #475569;">
+          <option value="">-- Seleccionar una mezcla reciente (${withScramble.length}) --</option>
+          ${withScramble
+            .map(
+              (s, idx) =>
+                `<option value="${escapeAttr(s.scramble)}">#${withScramble.length - idx} ${s.time ? `(${(s.time / 1000).toFixed(2)}s)` : ''}: ${escapeAttr(s.scramble)}</option>`
+            )
+            .join('')}
+        </select>
+      </div>
+    `;
+  } catch {
+    return '';
+  }
+}
+
 function renderSolverDOM(container) {
   const puzzleKey = solverState.puzzleKey;
+  if (puzzleKey === 'mirror') {
+    solverState.mode = 'undo-scramble';
+  }
   const meta = getPuzzleMeta(puzzleKey);
   const palette = getPuzzlePalette(puzzleKey);
   const colorMap = Object.fromEntries(palette.map((c) => [c.id, c]));
@@ -207,17 +244,21 @@ function renderSolverDOM(container) {
         <div class="solver-hero-text">
           <div class="method-chips">
             <span class="chip chip-accent">Solver verificado con KPuzzle</span>
-            <span class="chip">2x2 · 3x3 · 4x4 · 5x5 · Pyraminx</span>
+            <span class="chip">2x2 · 3x3 · 4x4 · 5x5 · Pyraminx · Mirror</span>
             <span class="chip">Ejecución en Web Worker</span>
           </div>
           <h1>Solver paso a paso · ${meta.name}</h1>
           <p class="solver-lead">
-            Pintá las caras de tu ${meta.name} tal como lo tenés en la mano o pegá una mezcla para obtener una solución verificada matemáticamente y reproducirla movimiento por movimiento en 3D.
+            ${
+              puzzleKey === 'mirror'
+                ? 'El Mirror Cube se resuelve identificando piezas por relieve y grosor. Elegí una mezcla del historial del Timer o pegá una secuencia para deshacerla paso a paso en 3D.'
+                : `Pintá las caras de tu ${meta.name} tal como lo tenés en la mano o pegá una mezcla para obtener una solución verificada matemáticamente y reproducirla movimiento por movimiento en 3D.`
+            }
           </p>
         </div>
       </header>
 
-      <!-- Selector de puzzle (solo los 5 puzzles con solver real) -->
+      <!-- Selector de puzzle -->
       <div class="solver-puzzle-bar" role="tablist" aria-label="Seleccionar puzzle del Solver">
         ${SOLVER_PUZZLES.map(
           (p) => `
@@ -235,24 +276,40 @@ function renderSolverDOM(container) {
 
       <!-- Selector de modo: Pintar estado vs Deshacer mezcla -->
       <div class="solver-mode-tabs" role="tablist" aria-label="Modo de entrada del Solver">
-        <button
-          type="button"
-          role="tab"
-          class="solver-mode-btn ${solverState.mode === 'paint' ? 'is-active' : ''}"
-          data-mode="paint"
-          aria-selected="${solverState.mode === 'paint' ? 'true' : 'false'}"
-        >
-          🎨 Pintar estado (Editor 2D + 3D)
-        </button>
-        <button
-          type="button"
-          role="tab"
-          class="solver-mode-btn ${solverState.mode === 'undo-scramble' ? 'is-active' : ''}"
-          data-mode="undo-scramble"
-          aria-selected="${solverState.mode === 'undo-scramble' ? 'true' : 'false'}"
-        >
-          ⏪ Deshacer mezcla paso a paso
-        </button>
+        ${
+          puzzleKey === 'mirror'
+            ? `
+          <button
+            type="button"
+            role="tab"
+            class="solver-mode-btn is-active"
+            data-mode="undo-scramble"
+            aria-selected="true"
+          >
+            ⏪ Deshacer mezcla paso a paso (Mirror)
+          </button>
+        `
+            : `
+          <button
+            type="button"
+            role="tab"
+            class="solver-mode-btn ${solverState.mode === 'paint' ? 'is-active' : ''}"
+            data-mode="paint"
+            aria-selected="${solverState.mode === 'paint' ? 'true' : 'false'}"
+          >
+            🎨 Pintar estado (Editor 2D + 3D)
+          </button>
+          <button
+            type="button"
+            role="tab"
+            class="solver-mode-btn ${solverState.mode === 'undo-scramble' ? 'is-active' : ''}"
+            data-mode="undo-scramble"
+            aria-selected="${solverState.mode === 'undo-scramble' ? 'true' : 'false'}"
+          >
+            ⏪ Deshacer mezcla paso a paso
+          </button>
+        `
+        }
       </div>
 
       <div class="solver-orientation-banner" role="note">
@@ -447,14 +504,19 @@ function renderSolverDOM(container) {
             <!-- Modo 2: Deshacer mezcla -->
             <div class="solver-card-head">
               <div>
-                <h2>1. Pegá la mezcla a deshacer (${meta.name})</h2>
+                <h2>1. Deshacer mezcla (${meta.name})</h2>
                 <p class="solver-sub">
-                  Si aplicaste una mezcla desde el estado resuelto y querés volver a resolver el cubo paso a paso, escribí o pegá la mezcla acá.
+                  ${
+                    puzzleKey === 'mirror'
+                      ? 'Elegí una mezcla del historial del Timer de Mirror o pegá una secuencia para invertirla y animarla paso a paso en el visor 3D.'
+                      : 'Si aplicaste una mezcla desde el estado resuelto y querés volver a resolver el cubo paso a paso, escribí o pegá la mezcla acá.'
+                  }
                 </p>
               </div>
             </div>
 
             <div class="solver-undo-scramble-form">
+              ${renderHistoryScrambleSelect(meta.timerEventId)}
               <label for="solver-undo-input" class="solver-label">Secuencia de mezcla (${meta.name})</label>
               <textarea
                 id="solver-undo-input"
@@ -1080,7 +1142,7 @@ function stepForward(container, animateMove = true) {
   renderSolverDOM(container);
 
   if (animateMove) {
-    const player = container.querySelector('#solver-3d-stage twisty-player');
+    const player = activeSolverPlayer || container.querySelector('#solver-3d-stage twisty-player');
     if (player) {
       const baseSetup = sol.baseSetupAlg || invertAlgStr(sol.alg);
       const prevMoves = sol.moves.slice(0, solverState.currentStep - 1).join(' ');
@@ -1339,6 +1401,25 @@ function bindSolverEvents(container) {
     renderSolverDOM(container);
   });
 
+  // Selección de mezcla desde el historial del Timer
+  container.querySelector('#solver-history-select')?.addEventListener('change', (e) => {
+    const raw = e.target.value || '';
+    if (!raw) return;
+    const textarea = container.querySelector('#solver-undo-input');
+    if (textarea) textarea.value = raw;
+    solverState.scrambleInput = raw;
+    const res = solveByInvertingScramble(solverState.puzzleKey, raw);
+    if (res.valid) {
+      solverState.previewAlg = res.scramble;
+      solverState.solution = {
+        ...res,
+        baseSetupAlg: res.scramble,
+      };
+      solverState.currentStep = 0;
+      renderSolverDOM(container);
+    }
+  });
+
   // Controles de reproducción
   container.querySelector('#solver-step-start')?.addEventListener('click', () => {
     stopPlayback();
@@ -1418,7 +1499,7 @@ function bindSolverEvents(container) {
     const val = Number(speedSlider.value);
     if (speedOut) speedOut.textContent = `${val.toFixed(2)}×`;
     solverState.prefs = saveSolverPrefs({ turnSpeed: val });
-    const player = container.querySelector('#solver-3d-stage twisty-player');
+    const player = activeSolverPlayer || container.querySelector('#solver-3d-stage twisty-player');
     if (player) player.tempoScale = val;
   });
 

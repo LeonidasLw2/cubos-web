@@ -192,3 +192,11 @@ Este documento registra el plan de trabajo en fases (A–G) y su estado actual.
 - "Probá una secuencia" soporta validación, reproducción en visor Mirror y cálculo de inversa.
 - Tests completos en `tests/notation.test.js`.
 
+### Fase 6 — Solver (`#/solver/mirror`)
+- Registrado Mirror en `SOLVER_PUZZLES` de `src/solver-engine.js` y `src/solver.js`.
+- Modo exclusivo "Deshacer mezcla" para Mirror, evitando editores de stickers de colores incongruentes con la naturaleza monocolor del cubo.
+- Integrado selector de mezclas recientes desde el historial del Timer (`loadSolves('mirror')`) y generación aleatoria.
+- Reproducción paso a paso sobre el visor 3D del Mirror con descripciones de movimiento en español y controles de reproducción.
+- Tests en `tests/solver.test.js`.
+
+
