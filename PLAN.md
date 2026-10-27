@@ -161,7 +161,9 @@ Este documento registra el plan de trabajo en fases (A–G) y su estado actual.
 
 ---
 
-## Integración de Mirror Cube 3x3 (Mirror Blocks)
+## Tareas Pendientes Registradas
+- **Solver — Optimización de TBT en móvil**: Durante la auditoría de Lighthouse de la Fase 1 del rediseño visual se detectó un Total Blocking Time (TBT) de ~10 s en `#/solver` en móvil, originado por la ejecución e inicialización matemática del motor del solver en el hilo principal (`solver-worker.js` / tablas de pruning). Queda registrado como tarea pendiente de arquitectura/lógica para aislar completamente el cómputo y no trabar la carga inicial. En el rediseño visual nos aseguramos de no empeorar el rendimiento respecto al "antes".
+
 
 ### Fase 1 — Investigación y modelo geométrico (`src/data/mirror.js`)
 - Verificado en `node_modules/cubing`: `cubing.js` no cuenta con soporte nativo para Mirror Cube (Mirror Blocks).

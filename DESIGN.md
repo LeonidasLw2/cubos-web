@@ -49,7 +49,7 @@ Para esta investigación se utilizó el navegador integrado (`puppeteer-core` so
 
 | Elemento | Qué tomamos y por qué | Qué descartamos y por qué |
 | :--- | :--- | :--- |
-| **Navegación Móvil** | **Barra inferior Material 3 Expressive**: Altura cómoda de 80px, indicador activo en forma de píldora celeste suave, etiquetas legibles de 11–12px, área táctil de 48×48px y respeto de `env(safe-area-inset-bottom)`. | Descartamos barras inferiores comprimidas de menos de 56px o con íconos flotantes sin texto, porque en Android dificultan el toque con el pulgar. |
+| **Navegación Móvil** | **Barra inferior flexible Material 3 Expressive**: Altura compacta de ~64 px (+ `env(safe-area-inset-bottom)`), indicador activo en forma de píldora celeste suave, etiquetas legibles de 11–12 px, área táctil mínima de 48×48 px centrada en el pulgar. | Descartamos barras inferiores excesivamente altas (80 px resta espacio útil al contenido en pantallas de 800 px de alto) o barras comprimidas sin etiqueta que complican el toque. |
 | **Superficies y Bordes** | **Bordes sutiles de 1px (`rgba(255, 255, 255, 0.08)` a `0.14`)** combinados con elevación tonal progresiva (`#090b10` → `#121620` → `#1b202c`) inspirados en Linear y Raycast. | Descartamos sombras difusas oscuras gigantes (skeuomorfismo viejo) que empastan el diseño y no aportan contraste real. |
 | **Rendimiento (`backdrop-filter`)** | **Restricción estricta de blur a solo 3 elementos estructurales fijos**: el header sticky superior, la barra de navegación inferior móvil y los Bottom Sheets modales. | **Descartamos por completo el blur en tarjetas, listas, scrollbars o previsualizaciones** (se auditaron 20 usos en el CSS actual). En celulares Android de gama media, el blur repetido destruye los FPS y calienta el equipo. |
 | **Diálogos y Modales** | **Bottom Sheets nativos en celular (≤640px)**: Se abren desde abajo, con radio superior de 28px (M3 Extra-Large), *drag handle* visual de 32×4px y cierre natural al deslizar o tocar fuera. | Descartamos ventanas modales centradas que ocupan el centro en móvil y obligan a estirar el dedo a la esquina superior para cerrar con una cruz chica. |
@@ -78,11 +78,11 @@ La identidad mantiene el modo oscuro de alto contraste y los acentos patrios del
   --border-strong: rgba(255, 255, 255, 0.22);
   --border-focus: #74acdf;
 
-  /* Texto verificado WCAG AA / AAA (contraste medido con script) */
-  --text-primary: #f1f5f9;       /* Contraste 17.9:1 contra bg (Supera AAA) */
-  --text-secondary: #94a3b8;     /* Contraste 7.6:1 contra bg (Supera AAA) */
-  --text-tertiary: #64748b;      /* Contraste 4.6:1 (Apto etiquetas secundarias AA) */
-  --text-disabled: #475569;
+  /* Texto verificado WCAG AA / AAA (contraste calculado con script y test unitario) */
+  --text-primary: #f1f5f9;       /* Contraste 17.97:1 contra bg (Supera AAA) */
+  --text-secondary: #94a3b8;     /* Contraste 7.68:1 contra bg (Supera AAA) */
+  --text-tertiary: #8e9cb2;      /* Contraste >= 5.09:1 en TODAS las superficies (7.08:1 en bg, 5.86:1 en surface-2, 5.09:1 en surface-3) */
+  --text-disabled: #64748b;
 
   /* Identidad y Acentos (Argentina + Cubo) */
   --c-celeste: #74acdf;          /* Acento primario de marca, tabs activas, foco */
@@ -90,13 +90,13 @@ La identidad mantiene el modo oscuro de alto contraste y los acentos patrios del
   --c-sol: #f6b40e;              /* Acento secundario, medallas PB, avisos */
   --c-sol-subtle: rgba(246, 180, 14, 0.15);
 
-  /* 6 Colores del Cubo (ajustados para brillo armonioso en fondo oscuro) */
+  /* 6 Colores del Cubo (UI y acentos). Los stickers del Solver y visores mantienen su paleta distinguible */
   --c-cube-white: #f8fafc;
   --c-cube-yellow: #fbbf24;
   --c-cube-green: #34d399;
-  --c-cube-blue: #38bdf8;
-  --c-cube-red: #f87171;
-  --c-cube-orange: #fb923c;
+  --c-cube-blue: #2563eb;        /* Azul real saturado, claramente distinguible del celeste patrio (#74acdf) */
+  --c-cube-red: #ef4444;
+  --c-cube-orange: #f97316;
 }
 ```
 
@@ -108,8 +108,8 @@ Conservamos las fuentes locales empaquetadas en caché PWA:
 
 ```css
 :root {
-  /* Escala Fluida con clamp() */
-  --font-timer: clamp(4.25rem, 18vw, 8rem);
+  /* Escala Fluida con clamp() - Verificado a 360 px para tiempos largos como "10:23.45" y "DNF (10:23.45)" */
+  --font-timer: clamp(2.5rem, 11vw, 8rem);
   --font-display: clamp(1.75rem, 4vw, 2.75rem);
   --font-h1: clamp(1.4rem, 3vw, 2.25rem);
   --font-h2: clamp(1.2rem, 2.2vw, 1.65rem);

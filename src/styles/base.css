@@ -1,0 +1,130 @@
+/* ==========================================================================
+   Base y Reset Global — CubeSolver
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(116, 172, 223, 0.4) var(--surface-1);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: var(--bg-canvas);
+  background-image:
+    radial-gradient(1000px 500px at 0% -5%, rgba(61, 139, 255, 0.1), transparent 60%),
+    radial-gradient(800px 450px at 100% 0%, rgba(46, 194, 126, 0.07), transparent 60%),
+    radial-gradient(800px 600px at 50% 120%, rgba(246, 180, 14, 0.05), transparent 60%);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--font-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
+}
+
+/* Trama sutil de cubo en el fondo sin repaints pesados */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 34px 34px;
+  -webkit-mask-image: radial-gradient(ellipse 90% 65% at 50% 0%, #000 25%, transparent 80%);
+  mask-image: radial-gradient(ellipse 90% 65% at 50% 0%, #000 25%, transparent 80%);
+}
+
+/* Encabezados con Space Grotesk y escala fluida */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  letter-spacing: -0.015em;
+  margin: 0;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+h1 { font-size: var(--font-h1); line-height: 1.2; }
+h2 { font-size: var(--font-h2); line-height: 1.25; }
+h3 { font-size: var(--font-h3); line-height: 1.3; }
+
+p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+/* Entrada fluida de vistas */
+.layout,
+.methods,
+.solver-page,
+.notation-page,
+.trainer-page {
+  animation: view-in var(--duration-enter) var(--ease-m3);
+}
+
+@keyframes view-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Scrollbars personalizados para Chrome / Safari / Edge */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-canvas);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(116, 172, 223, 0.35);
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--bg-canvas);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--c-celeste);
+}

@@ -1,6 +1,15 @@
 // Punto de entrada: estilos, timer, navegación entre las 5 secciones, bottom sheet móvil y cuenta.
 import './fonts.css';
-import './style.css';
+import './styles/tokens.css';
+import './styles/base.css';
+import './styles/components.css';
+import './styles/topbar-nav.css';
+import './styles/timer.css';
+import './styles/methods.css';
+import './styles/solver.css';
+import './styles/notation.css';
+import './styles/trainer.css';
+import './styles/dialogs.css';
 import { initUI, setTimerActive, isTimerIdle, openSettingsDialog } from './ui.js';
 import { startRouter } from './router.js';
 import { createNavHistory } from './nav-history.js';

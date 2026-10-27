@@ -1,0 +1,406 @@
+/* ==========================================================================
+   Componentes Base Unificados — CubeSolver
+   ========================================================================== */
+
+/* ---------- 1. Botones ---------- */
+.btn,
+.data-btn,
+.text-btn,
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 10px 16px;
+  min-height: 44px;
+  font-family: var(--font-sans);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: background var(--duration-quick) var(--ease-standard),
+              border-color var(--duration-quick) var(--ease-standard),
+              color var(--duration-quick) var(--ease-standard),
+              transform var(--duration-quick) var(--ease-standard);
+}
+
+/* Efecto de toque reactivo unificado para todos los botones interactivos */
+.btn:active,
+.data-btn:active,
+.text-btn:active,
+.action-btn:active,
+.icon-btn:active,
+.event-btn:active,
+.chip:active,
+.case-controls button:active,
+.case-alg:active,
+.sheet-item:active {
+  transform: scale(0.96);
+}
+
+/* Botón primario (celeste patrio con alto contraste) */
+.btn-primary,
+.cta-btn,
+.btn-save {
+  background: var(--c-celeste);
+  color: #05080e;
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 8px rgba(116, 172, 223, 0.35);
+}
+
+@media (hover: hover) {
+  .btn-primary:hover,
+  .cta-btn:hover,
+  .btn-save:hover {
+    background: #8fc0eb;
+    box-shadow: 0 4px 14px rgba(116, 172, 223, 0.45);
+  }
+}
+
+/* Botón secundario */
+.btn-secondary,
+.data-btn {
+  background: var(--surface-2);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+}
+
+@media (hover: hover) {
+  .btn-secondary:hover,
+  .data-btn:hover {
+    background: var(--surface-3);
+    border-color: var(--border-medium);
+  }
+}
+
+/* Botón fantasma / texto */
+.btn-ghost,
+.text-btn {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+@media (hover: hover) {
+  .btn-ghost:hover,
+  .text-btn:hover {
+    color: var(--text-primary);
+    background: var(--surface-2);
+  }
+}
+
+/* Botón de icono circular / cuadrado redondeado */
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  transition: all var(--duration-quick) var(--ease-standard);
+}
+
+@media (hover: hover) {
+  .icon-btn:hover {
+    color: var(--text-primary);
+    background: var(--surface-3);
+    border-color: var(--border-medium);
+  }
+}
+
+/* ---------- 2. Chips y Badges ---------- */
+.chip,
+.badge,
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: var(--font-xs);
+  font-weight: 500;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.chip-active,
+.chip[aria-pressed='true'] {
+  background: var(--c-celeste-subtle);
+  color: var(--c-celeste);
+  border-color: var(--c-celeste-border);
+}
+
+/* Categorías del timer (chips de puzzles) */
+.event-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  min-height: 38px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  font-weight: 500;
+  transition: all var(--duration-quick) var(--ease-standard);
+  flex-shrink: 0;
+}
+
+@media (hover: hover) {
+  .event-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--border-medium);
+    background: var(--surface-3);
+  }
+}
+
+.event-btn[aria-pressed='true'] {
+  background: var(--c-celeste-subtle);
+  color: #ffffff;
+  border-color: var(--c-celeste);
+  box-shadow: 0 0 12px rgba(116, 172, 223, 0.25);
+  font-weight: 600;
+}
+
+/* ---------- 3. Tarjetas Base ---------- */
+.card,
+.stat-card,
+.scramble-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--duration-quick) var(--ease-standard),
+              box-shadow var(--duration-quick) var(--ease-standard);
+}
+
+/* ---------- 4. Inputs, Toggles y Controles ---------- */
+input[type='text'],
+input[type='search'],
+select {
+  width: 100%;
+  padding: 10px 14px;
+  min-height: 44px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--font-body);
+  transition: border-color var(--duration-quick) var(--ease-standard),
+              box-shadow var(--duration-quick) var(--ease-standard);
+}
+
+input[type='text']:focus,
+input[type='search']:focus,
+select:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(116, 172, 223, 0.2);
+}
+
+/* Switch / Interruptor moderno estilo M3 / iOS */
+.switch,
+.setting input[type='checkbox'] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex-shrink: 0;
+  position: relative;
+  width: 48px;
+  height: 28px;
+  margin: 0;
+  border-radius: var(--radius-pill);
+  background: var(--surface-3);
+  border: 1px solid var(--border-medium);
+  cursor: pointer;
+  transition: background var(--duration-quick) var(--ease-standard),
+              border-color var(--duration-quick) var(--ease-standard);
+}
+
+.switch::after,
+.setting input[type='checkbox']::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+  transition: transform var(--duration-quick) var(--ease-m3),
+              background var(--duration-quick) var(--ease-standard);
+}
+
+.switch:checked,
+.setting input[type='checkbox']:checked {
+  background: var(--c-celeste);
+  border-color: var(--c-celeste);
+}
+
+.switch:checked::after,
+.setting input[type='checkbox']:checked::after {
+  transform: translateX(20px);
+  background: #090b10;
+}
+
+/* Controles segmentados (radio pills) */
+.segmented {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  gap: 2px;
+}
+
+.segmented label {
+  position: relative;
+  cursor: pointer;
+  margin: 0;
+}
+
+.segmented input[type='radio'] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.segmented span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  min-height: 36px;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all var(--duration-quick) var(--ease-standard);
+}
+
+.segmented input[type='radio']:checked + span {
+  background: var(--surface-3);
+  color: var(--text-primary);
+  font-weight: 600;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ---------- 5. Diálogos y Modales ---------- */
+dialog {
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xl);
+  background: var(--surface-sheet);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-lg);
+  padding: 0;
+  max-width: 540px;
+  width: calc(100% - 32px);
+  margin: auto;
+}
+
+dialog::backdrop {
+  background: rgba(5, 7, 12, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+dialog[open] {
+  animation: modal-enter var(--duration-medium) var(--ease-m3);
+}
+
+@keyframes modal-enter {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ---------- 6. Bottom Sheet Móvil (Android M3 Expressive) ---------- */
+.bottom-sheet {
+  position: fixed;
+  top: auto;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 8px 18px max(20px, env(safe-area-inset-bottom));
+  border: 1px solid var(--border-strong);
+  border-bottom: none;
+  border-radius: var(--radius-sheet);
+  background: var(--surface-sheet);
+  box-shadow: var(--shadow-sheet);
+}
+
+.sheet-handle {
+  width: 32px;
+  height: 4px;
+  margin: 4px auto 14px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.bottom-sheet[open] {
+  animation: sheet-enter var(--duration-medium) var(--ease-m3);
+}
+
+@keyframes sheet-enter {
+  from { opacity: 0; transform: translateY(100%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- 7. Toasts de Notificación ---------- */
+.toast,
+#exit-toast,
+.pwa-toast {
+  position: fixed;
+  bottom: calc(var(--bottom-nav-height) + 16px + env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 10px 18px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-3);
+  border: 1px solid var(--border-medium);
+  box-shadow: var(--shadow-lg);
+  color: var(--text-primary);
+  font-size: var(--font-sm);
+  font-weight: 500;
+  pointer-events: none;
+  animation: toast-in var(--duration-quick) var(--ease-m3);
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translate(-50%, 12px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* ---------- 8. Skeletons de Carga ---------- */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface-2) 25%,
+    var(--surface-3) 50%,
+    var(--surface-2) 75%
+  );
+  background-size: 200% 100%;
+  border-radius: var(--radius-sm);
+  animation: shimmer 1.6s infinite linear;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
