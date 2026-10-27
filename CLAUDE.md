@@ -65,6 +65,18 @@ Todas las etapas pedidas están hechas. Trabajar una etapa a la vez; no adelanta
 - Inspección y avisos (`inspection.js`): el momento de cada aviso sale del tiempo real transcurrido (performance.now() en el bucle del timer), nunca del número en pantalla. Regresivo: a los 8 s muestra 7; progresivo: muestra 8 (ajuste "Contador"). Avisos: voz / pitidos / ninguno.
   - La voz tarda en arrancar (en Android, mucho): se elige una voz local en español al abrir la app, se "calienta" con una frase muda al empezar la inspección, las frases son cortas ("ocho", "doce"), y se llama antes lo que tarda en este dispositivo (mediana de las últimas mediciones de onstart, guardadas en `cubos-web:voice-latency`, tope 1,5 s). El aviso visual sigue a los 8,0 y 12,0 s exactos.
 - Diseño: fuentes propias en `src/fonts.css` (Space Grotesk para títulos, JetBrains Mono para tiempos, solo "latin"; la PWA las guarda en caché). `cube-art.js` dibuja cubos isométricos en SVG (portadas, estado vacío, "Resolviendo"). `sparkline.js` (puro) arma la mini gráfica. Las animaciones son solo CSS (el anillo de la inspección también): nada que trabe el hilo principal mientras corre el timer.
+- CSS (rediseño visual, rama `rediseno-visual`; criterios en `DESIGN.md`): `src/style.css` ya no existe, se divide en `src/styles/` (tokens, base, components, topbar-nav, timer, methods, solver, notation, trainer, dialogs y `overrides.css`). El orden de los imports en `main.js` importa: `overrides.css` va al final (pantalla táctil de 48 px, `prefers-reduced-motion`, espacio de la barra inferior y modo horizontal) para ganarle a los demás.
+  - `node scripts/check-css-migration.js` compara contra el `style.css` original (commit 25a2087) y falla si falta algún selector, `@keyframes` o `@media`. Lo que se borre a propósito va en `BORRADOS` dentro del script, con su motivo.
+  - Celular: barra inferior de 64 px + área segura (`--bottom-nav-height`), áreas táctiles de 48 px, sheets con handle de 32×4 px y 28 px de esquina, `100dvh`. En ≤600 px el cubo de la mezcla va plegado (`#toggle-preview`); en horizontal (`orientation: landscape` + `max-height: 500px`) el timer va a la izquierda y se oculta la vista 2D.
+  - El tamaño del tiempo grande lo decide `showTimerText()` en `ui.js` (clase `.is-long` para más de 7 caracteres o DNF) al cambiar de estado, nunca en el bucle del timer.
+  - Solo animar `transform` y `opacity` (los skeletons usan opacidad); `backdrop-filter` solo en header, barra inferior y sheets.
 - Comentarios breves en español.
 - Diseño oscuro, moderno, con acentos en los 6 colores del cubo. Debe funcionar bien en celular.
 - Explicar los cambios en español; el usuario está aprendiendo.
+
+## Uso eficiente del agente (ahorrar cupo)
+- No leer `node_modules/`, `dist/`, `package-lock.json` ni imágenes, salvo que se pida.
+- Buscar con grep antes de abrir archivos; leer solo las partes necesarias, sobre todo en los archivos largos (`style.css`, `methods.js`, `solver.js`).
+- No sacar capturas del navegador salvo en la revisión final o si se pide.
+- Si un comando o test falla 2 veces seguidas por lo mismo, frenar y explicar el problema en vez de reintentar.
+- Respuestas finales breves: qué cambió y qué tiene que probar el usuario.

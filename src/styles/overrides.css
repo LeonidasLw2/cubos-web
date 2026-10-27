@@ -1,0 +1,217 @@
+/* Se importa al final: estas reglas tienen que ganar a las de los demás archivos (como en style.css original). */
+
+@media (pointer: coarse) {
+  .tabs a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 16px;
+  }
+
+  .events {
+    min-height: 52px;
+  }
+
+  .event-btn {
+    min-height: 48px;
+    padding: 0 16px;
+  }
+
+  .icon-btn,
+  .history-nav .icon-btn {
+    width: 48px;
+    height: 48px;
+  }
+
+  .text-btn {
+    min-height: 48px;
+    padding: 0 12px;
+  }
+
+  /* Lista de tiempos: +2, DNF y borrar */
+  .solve-actions {
+    gap: 6px;
+  }
+
+  .solve-actions button {
+    min-width: 48px;
+    min-height: 48px;
+    font-size: 0.8rem;
+  }
+
+  .solve-time {
+    min-height: 48px;
+  }
+
+  /* Tarjetas de casos */
+  .case-controls {
+    gap: 8px;
+  }
+
+  .case-controls button {
+    width: 48px;
+    height: 48px;
+  }
+
+  .case-controls .play {
+    width: 60px;
+  }
+
+  .case-alg {
+    min-height: 48px;
+  }
+
+  .case-alts summary {
+    padding: 12px 0;
+  }
+
+  .step-index a {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 14px;
+  }
+
+  .breadcrumbs a,
+  .breadcrumb a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+  }
+}
+
+/* ---------- Movimiento reducido ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *:not(.pb-badge, .ring-progress),
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .timer[data-state] {
+    transform: none;
+  }
+
+  .pb-burst {
+    display: none;
+  }
+
+  /* El aviso de PB se muestra igual, pero sin movimiento */
+  .pb-badge.show {
+    animation-name: badge-still;
+  }
+}
+
+/* ---------- Celular: espacio para la barra inferior ---------- */
+/* Va al final porque el padding de .layout/.methods/... de otros archivos lo pisaba. */
+@media (max-width: 860px) {
+  .layout {
+    padding-bottom: calc(var(--bottom-nav-height) + 16px + env(safe-area-inset-bottom));
+  }
+
+  .methods,
+  .solver-page,
+  .notation-page,
+  .trainer-page {
+    padding-bottom: calc(var(--bottom-nav-height) + 24px + env(safe-area-inset-bottom));
+  }
+}
+
+/* ---------- Celular en horizontal (poca altura) ---------- */
+@media (orientation: landscape) and (max-height: 500px) {
+  :root {
+    --bottom-nav-height: 48px;
+    --font-timer: clamp(3rem, 18vh, 8rem);
+  }
+
+  /* La barra inferior pasa a ser una fila de ícono + texto para ocupar menos alto */
+  .bottom-nav-item {
+    flex-direction: row;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  /* Timer a la izquierda (completo, sobre la barra inferior); mezcla y tiempos a la derecha */
+  .layout {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    align-items: start;
+    gap: 12px;
+  }
+
+  .practice {
+    display: contents;
+  }
+
+  .timer-zone {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    flex: 0 0 auto;
+    min-height: 0;
+    /* alto libre = pantalla - barra superior (~113) - barra inferior (~61) - márgenes */
+    height: clamp(150px, calc(100dvh - 190px), 260px);
+  }
+
+  /* Sin la vista 2D: en la columna angosta la mezcla se partiría en muchísimas líneas */
+  .timer-zone .hint,
+  .timer-zone .cancel-inspection {
+    margin-top: 6px;
+  }
+
+  .scramble-card {
+    grid-column: 2;
+    grid-row: 1;
+    grid-template-columns: minmax(0, 1fr);
+    padding: 8px 12px;
+  }
+
+  .scramble-view,
+  .preview-toggle {
+    display: none;
+  }
+
+  .scramble {
+    font-size: 0.9rem;
+  }
+
+  .session {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  /* Inspección y resolución: pantalla completa (la altura fija de arriba no vale) y tamaños según la altura */
+  body[data-phase='inspection'] .timer-zone,
+  body[data-phase='running'] .timer-zone {
+    height: auto;
+  }
+
+  body[data-phase='inspection'] .timer-stage {
+    width: min(60vh, 260px);
+    height: min(60vh, 260px);
+  }
+
+  .insp-ring {
+    --ring-size: min(60vh, 260px);
+  }
+
+  .timer[data-inspecting] {
+    font-size: clamp(3rem, 26vh, 8rem);
+  }
+
+  body[data-phase='running'] .timer:not(.solving) {
+    font-size: clamp(3rem, 34vh, 9rem);
+  }
+
+  /* La barra superior no se queda fija: sobra poco alto */
+  .topbar {
+    position: static;
+  }
+
+  .solver-single-face-wrap .solver-sticker-btn {
+    width: 44px;
+    height: 44px;
+  }
+}

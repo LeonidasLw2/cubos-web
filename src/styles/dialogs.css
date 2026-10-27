@@ -1,0 +1,603 @@
+/* ==========================================================================
+   Diálogos, Paneles y Bottom Sheets — CubeSolver
+   ========================================================================== */
+
+/* ---------- 1. Panel de Ajustes ---------- */
+/* ---------- Panel de ajustes ---------- */
+.settings-btn {
+  flex-shrink: 0;
+}
+
+.settings {
+  width: min(460px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 20px;
+  background: var(--sheen), rgba(22, 26, 34, 0.92);
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.8);
+  color: var(--text);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.settings[open] {
+  animation: fade-in 0.2s var(--ease);
+}
+
+.settings::backdrop {
+  background: rgba(5, 6, 9, 0.7);
+  backdrop-filter: blur(3px);
+}
+
+.settings form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 20px 22px;
+}
+
+.settings-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.settings-head h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.setting small,
+.setting-group legend {
+  color: var(--muted);
+}
+
+.setting small {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.78rem;
+}
+
+.setting:has(input:disabled) {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* Interruptor (checkbox con estilo) */
+.setting input[type='checkbox'] {
+  appearance: none;
+  flex-shrink: 0;
+  position: relative;
+  width: 42px;
+  height: 24px;
+  margin: 0;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  cursor: inherit;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.setting input[type='checkbox']::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: transform 0.2s var(--ease), background 0.15s;
+}
+
+.setting input[type='checkbox']:checked {
+  background: var(--c-green);
+  border-color: var(--c-green);
+}
+
+.setting input[type='checkbox']:checked::after {
+  transform: translateX(18px);
+  background: #fff;
+}
+
+.setting input:focus-visible,
+.segmented input:focus-visible + span {
+  outline: 2px solid var(--c-blue);
+  outline-offset: 2px;
+}
+
+.setting-group {
+  margin: 0;
+  padding: 10px 0;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.setting-group legend {
+  padding: 0 0 8px;
+  color: var(--text);
+}
+
+/* Opciones de la inspección: un grupo que se apaga entero */
+.inspection-options {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.inspection-options:disabled {
+  opacity: 0.45;
+}
+
+.setting-help {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+/* Botones segmentados (radio con estilo) */
+.segmented {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--surface-2);
+}
+
+.segmented label {
+  flex: 1;
+}
+
+.segmented input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.segmented span {
+  display: block;
+  padding: 7px 8px;
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.segmented input:checked + span {
+  background: linear-gradient(135deg, #2f6fe0, #1d4fb8);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 4px 12px -4px rgba(61, 139, 255, 0.6);
+}
+
+/* Ajustes · tus tiempos (exportar / importar) */
+.settings-data {
+  padding: 4px 20px 22px;
+}
+
+.settings-data h3 {
+  margin: 0 0 4px;
+  font-size: 1rem;
+}
+
+.data-help {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.data-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.data-btn {
+  flex: 1 1 140px;
+  min-height: 44px; /* tamaño cómodo para el dedo */
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+  font-weight: 600;
+  transition: border-color 0.15s;
+}
+
+.data-btn:hover {
+  border-color: var(--c-blue);
+}
+
+.data-status {
+  margin: 10px 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.data-status:empty {
+  display: none;
+}
+
+.data-status[data-kind='ok'] {
+  color: var(--c-green);
+}
+
+.data-status[data-kind='error'] {
+  color: var(--c-red);
+}
+
+/* ---------- PWA: aviso de versión nueva y "lista sin conexión" ---------- */
+.update-banner,
+.offline-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 50;
+  transform: translateX(-50%);
+  max-width: calc(100vw - 32px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-solid);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  animation: toast-in 0.3s var(--ease);
+}
+
+.update-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 8px 8px 16px;
+  border-left: 3px solid var(--c-yellow);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.update-btn {
+  min-height: 40px;
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--c-yellow);
+  color: #111;
+  font-weight: 700;
+}
+
+.update-btn:disabled {
+  opacity: 0.6;
+}
+
+.update-dismiss {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--muted);
+}
+
+.offline-toast {
+  padding: 10px 16px;
+  border-left: 3px solid var(--c-green);
+  font-size: 0.88rem;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translate(-50%, 12px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+
+/* ---------- 2. Bottom Sheet Móvil ("Más") ---------- */
+/* ---------- Diálogo de Cuenta y Bottom Sheet ("Más") ---------- */
+.account-dialog-inner {
+  padding: 18px 20px 22px;
+}
+
+.account-dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.privacy-note {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.bottom-sheet::backdrop {
+  background: rgba(5, 6, 9, 0.7);
+  backdrop-filter: blur(3px);
+}
+
+.sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.sheet-head h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.sheet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sheet-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface-2);
+  color: var(--text);
+  text-decoration: none;
+  text-align: left;
+  transition: border-color 0.2s, background 0.2s, transform 0.15s var(--ease);
+}
+
+.sheet-item:hover {
+  border-color: var(--c-celeste);
+  background: rgba(116, 172, 223, 0.1);
+}
+
+.sheet-item:active {
+  transform: scale(0.98);
+}
+
+.sheet-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent, var(--c-celeste)) 16%, transparent);
+  color: var(--accent, var(--c-celeste));
+  border: 1px solid color-mix(in srgb, var(--accent, var(--c-celeste)) 30%, transparent);
+  flex-shrink: 0;
+}
+
+.sheet-item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sheet-item-text strong {
+  font-size: 0.95rem;
+}
+
+.sheet-item-text small {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+
+/* ---------- 3. Diálogo de Cuenta y Sincronización ---------- */
+/* ---------- Modal de Cuenta y Sincronización ---------- */
+.account-status-banner {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(246, 180, 14, 0.1);
+  border: 1px solid rgba(246, 180, 14, 0.3);
+}
+
+.account-status-banner strong {
+  display: block;
+  color: var(--c-sol);
+  margin-bottom: 4px;
+}
+
+.account-status-banner p {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.account-info-box {
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.account-info-box h3 {
+  margin: 0 0 6px;
+  font-size: 0.96rem;
+}
+
+.account-info-box p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.account-feature-list {
+  margin: 10px 0 0;
+  padding-left: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 0.82rem;
+  color: var(--text);
+}
+
+.btn-google-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #fff;
+  color: #111;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s var(--ease), box-shadow 0.15s;
+}
+
+.btn-google-login:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.account-profile-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.account-avatar-img,
+.account-avatar-fallback {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+.account-avatar-fallback {
+  display: grid;
+  place-items: center;
+  background: var(--c-celeste);
+  color: #0b0d12;
+  font-weight: 800;
+  font-size: 1.2rem;
+}
+
+.account-profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.account-profile-info strong {
+  font-size: 0.98rem;
+}
+
+.account-profile-info span {
+  font-size: 0.82rem;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.account-sync-status-line {
+  font-size: 0.78rem;
+  color: var(--c-celeste);
+  font-weight: 600;
+}
+
+.account-backup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.account-signout-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.account-keep-local {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.sync-indicator[data-sync-state='synced'] .sync-dot {
+  background: var(--c-green);
+  box-shadow: 0 0 8px var(--c-green);
+}
+
+.sync-indicator[data-sync-state='syncing'] .sync-dot {
+  background: var(--c-celeste);
+  animation: pulse 1s infinite;
+}
+
+.sync-indicator[data-sync-state='offline'],
+.sync-indicator[data-sync-state='unconfigured'] .sync-dot {
+  background: var(--c-sol);
+}
+
+
+/* ---------- Adaptación a Bottom Sheet en Celular (<= 640px) ---------- */
+@media (max-width: 640px) {
+  dialog.settings,
+  dialog.account-dialog {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    border-radius: var(--radius-sheet);
+    border-bottom: none;
+    max-height: 85dvh;
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+    box-shadow: var(--shadow-sheet);
+  }
+
+  /* `.settings[open]` (fade-in) le ganaba a la entrada del sheet: por eso había que subir la especificidad */
+  dialog.settings[open],
+  dialog.account-dialog[open] {
+    animation: sheet-enter var(--duration-medium) var(--ease-m3);
+  }
+
+  /* Barra de arrastre decorativa (igual a la del menú "Más") */
+  dialog.settings::before,
+  dialog.account-dialog::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 4px;
+    margin: 0 auto 12px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.28);
+  }
+}
