@@ -1010,6 +1010,11 @@ body[data-phase='inspection'] .cancel-inspection {
     padding: 12px;
   }
 
+  /* Reserva el alto de ~5 líneas: sin esto, al llegar la mezcla todo el timer salta hacia abajo (CLS) */
+  .scramble-card:not(.preview-open) .scramble {
+    min-height: 7.5em;
+  }
+
   .timer-zone {
     min-height: 220px;
   }

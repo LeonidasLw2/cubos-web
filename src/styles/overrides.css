@@ -8,6 +8,10 @@
     padding: 0 16px;
   }
 
+  .events {
+    min-height: 52px;
+  }
+
   .event-btn {
     min-height: 48px;
     padding: 0 16px;

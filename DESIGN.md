@@ -248,3 +248,29 @@ Se capturaron y auditaron todas las rutas a **390 px (móvil)** y **1440 px (esc
 
 ## 6. Alertas de Seguridad en Investigación
 Durante el escaneo automatizado de las referencias web no se encontró ninguna instrucción maliciosa ni inyección de prompt dirigida a asistentes IA. Las coincidencias de palabras clave correspondieron únicamente a textos comerciales de productos (asistente de Raycast y enlaces de soporte de Apple).
+
+---
+
+## 7. Resultados de la Fase 5 (verificación)
+
+**Lighthouse móvil** (build servido con un servidor estático simple, sin compresión; el rendimiento oscila ±10 puntos entre corridas, así que se comparan ANTES = commit 25a2087 y DESPUÉS = rama actual con el mismo método):
+
+| Ruta | Performance | Accessibility | Best Practices | SEO |
+|---|---|---|---|---|
+| Timer antes | 68 / 80 | 100 | 100 | 100 |
+| Timer después | 77 / 70 / 70 | 100 | 100 | 100 |
+| Métodos antes → después | 69 → 69 | 96 → 96 | 100 → 100 | 100 → 100 |
+| Solver antes → después | 39 → 38 | 100 → 100 | 100 → 100 | 100 → 100 |
+| Notación antes → después | 67 → 68 | 95 → 95 | 100 → 100 | 100 → 100 |
+| Entrenar antes → después | 70 → 70 | 96 → 96 | 100 → 100 | 100 → 100 |
+
+- CLS del Timer: 0,018 (antes) → 0,000 (después). Se arregló reservando el alto de las categorías (`.events`) y de la mezcla (5 líneas) antes de que carguen.
+- Solver: TBT de ~10 s igual que antes (pendiente anotado en PLAN.md, fuera de este trabajo).
+- `prefers-reduced-motion` verificado con `emulateMedia({ reducedMotion: 'reduce' })` de Playwright (no inyectando la regla): duraciones de 0,01 ms y sheets de Ajustes y Cuenta pegados al borde inferior (hueco 0 px) con y sin la preferencia. El anillo de la inspección sigue animando a propósito (es información, no decoración).
+- Consola sin errores en las 8 pantallas a 390×844.
+
+**Diferencias visuales conocidas respecto al diseño original que no fueron decididas a propósito** (pendientes de revisar):
+1. El estado activo de chips y selectores (categorías del Timer, grupos del Entrenador, opciones de Ajustes) pasó de relleno azul sólido a contorno celeste suave: se distingue menos.
+2. Las portadas de Métodos y Notación perdieron el degradado/vidrio de la tarjeta y su título es más chico.
+3. Las migas de pan del Solver ya no tienen color ni subrayado de enlace.
+4. Los textos secundarios son algo más tenues (menos blancos) que antes.

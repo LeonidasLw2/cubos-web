@@ -256,6 +256,7 @@
   max-width: 1280px;
   margin: 0 auto;
   padding: 2px 0;
+  min-height: 42px; /* reserva el alto de los botones: sin esto la página salta al llegar las categorías */
 }
 
 .events::-webkit-scrollbar {
