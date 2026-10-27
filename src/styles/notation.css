@@ -544,7 +544,7 @@
     gap: 8px;
     position: fixed;
     right: 16px;
-    bottom: 74px; /* Sobre la barra inferior móvil */
+    bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
     z-index: 90;
     padding: 10px 16px;
     border-radius: 999px;
@@ -593,3 +593,10 @@
   }
 }
 
+
+/* Con la barra inferior móvil, el botón flotante queda encima de ella */
+@media (max-width: 860px) {
+  .notation-floating-btn {
+    bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom) + var(--space-4));
+  }
+}

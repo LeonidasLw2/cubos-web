@@ -128,6 +128,10 @@
   }
 
   /* La barra inferior pasa a ser una fila de ícono + texto para ocupar menos alto */
+  .bottom-nav {
+    padding-block: 0 env(safe-area-inset-bottom);
+  }
+
   .bottom-nav-item {
     flex-direction: row;
     gap: 6px;
