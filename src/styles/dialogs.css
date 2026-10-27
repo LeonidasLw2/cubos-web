@@ -323,41 +323,9 @@
   border-top: 1px solid var(--border);
 }
 
-.bottom-sheet {
-  position: fixed;
-  top: auto;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  max-width: 520px;
-  margin: 0 auto;
-  padding: 10px 18px max(22px, env(safe-area-inset-bottom));
-  border: 1px solid var(--border-strong);
-  border-bottom: none;
-  border-radius: 24px 24px 0 0;
-  background: var(--sheen), rgba(18, 22, 31, 0.96);
-  color: var(--text);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 -16px 42px rgba(0, 0, 0, 0.75);
-}
-
-.bottom-sheet[open] {
-  animation: slide-up 0.26s var(--ease);
-}
-
 .bottom-sheet::backdrop {
   background: rgba(5, 6, 9, 0.7);
   backdrop-filter: blur(3px);
-}
-
-.sheet-handle {
-  width: 42px;
-  height: 4px;
-  margin: 2px auto 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.22);
 }
 
 .sheet-head {
@@ -614,5 +582,17 @@
     animation: sheet-enter var(--duration-medium) var(--ease-m3);
     padding-bottom: max(20px, env(safe-area-inset-bottom));
     box-shadow: var(--shadow-sheet);
+  }
+
+  /* Barra de arrastre decorativa (igual a la del menú "Más") */
+  dialog.settings::before,
+  dialog.account-dialog::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 4px;
+    margin: 0 auto 12px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.28);
   }
 }

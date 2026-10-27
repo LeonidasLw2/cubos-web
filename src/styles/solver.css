@@ -72,6 +72,11 @@
   box-shadow: 0 4px 14px -4px rgba(116, 172, 223, 0.45);
 }
 
+.method-chips .chip {
+  max-width: 100%;
+  white-space: normal;
+}
+
 .solver-mode-tabs {
   display: flex;
   flex-wrap: wrap;
@@ -88,7 +93,7 @@
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
-  white-space: nowrap;
+  overflow-wrap: anywhere; /* el texto largo del Mirror baja de línea en vez de ensanchar */
   transition: all 0.18s var(--ease);
 }
 

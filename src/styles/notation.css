@@ -317,7 +317,9 @@
   color: var(--text);
   font-size: 0.76rem;
   cursor: pointer;
-  white-space: nowrap;
+  max-width: 100%;
+  overflow-wrap: anywhere; /* las secuencias largas del Mirror no deben ensanchar la página */
+  text-align: left;
   transition: border-color 0.15s;
 }
 

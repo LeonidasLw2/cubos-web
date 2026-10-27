@@ -354,6 +354,9 @@ dialog[open] {
   border-bottom: none;
   border-radius: var(--radius-sheet);
   background: var(--surface-sheet);
+  color: var(--text-primary);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   box-shadow: var(--shadow-sheet);
 }
 

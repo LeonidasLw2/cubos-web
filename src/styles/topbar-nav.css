@@ -277,17 +277,6 @@ body:not([data-view='timer']) .timer-only {
     display: none;
   }
 
-  .layout {
-    padding-bottom: calc(var(--bottom-nav-height) + 16px + env(safe-area-inset-bottom));
-  }
-
-  .methods,
-  .solver-page,
-  .notation-page,
-  .trainer-page {
-    padding-bottom: calc(var(--bottom-nav-height) + 24px + env(safe-area-inset-bottom));
-  }
-
   /* Barra inferior flexible M3 Expressive: altura ~64px + safe area */
   .bottom-nav {
     display: flex;
