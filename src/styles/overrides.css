@@ -119,7 +119,7 @@
 @media (orientation: landscape) and (max-height: 500px) {
   :root {
     --bottom-nav-height: 48px;
-    --font-timer: clamp(3.5rem, 26vh, 8rem);
+    --font-timer: clamp(3rem, 18vh, 8rem);
   }
 
   /* La barra inferior pasa a ser una fila de ícono + texto para ocupar menos alto */
@@ -129,29 +129,54 @@
     min-width: 0;
   }
 
-  /* Timer a la izquierda y estadísticas a la derecha, para ver el tiempo sin bajar */
+  /* Timer a la izquierda (completo, sobre la barra inferior); mezcla y tiempos a la derecha */
   .layout {
     grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    align-items: start;
     gap: 12px;
   }
 
+  .practice {
+    display: contents;
+  }
+
+  .timer-zone {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    flex: 0 0 auto;
+    min-height: 0;
+    /* alto libre = pantalla - barra superior (~113) - barra inferior (~61) - márgenes */
+    height: clamp(150px, calc(100dvh - 190px), 260px);
+  }
+
+  /* Sin la vista 2D: en la columna angosta la mezcla se partiría en muchísimas líneas */
+  .timer-zone .hint,
+  .timer-zone .cancel-inspection {
+    margin-top: 6px;
+  }
+
   .scramble-card {
-    grid-template-columns: minmax(0, 1fr) 110px;
+    grid-column: 2;
+    grid-row: 1;
+    grid-template-columns: minmax(0, 1fr);
     padding: 8px 12px;
   }
 
   .scramble-view {
-    min-height: 0;
-    max-height: 90px;
+    display: none;
   }
 
-  .timer-zone {
-    flex: 0 0 auto;
-    min-height: 120px;
-    height: min(40dvh, 170px);
+  .scramble {
+    font-size: 0.9rem;
   }
 
-  /* La barra superior (113 px con las categorías) no se queda fija: sobra poco alto */
+  .session {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  /* La barra superior no se queda fija: sobra poco alto */
   .topbar {
     position: static;
   }
