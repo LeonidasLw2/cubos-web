@@ -163,7 +163,8 @@
     padding: 8px 12px;
   }
 
-  .scramble-view {
+  .scramble-view,
+  .preview-toggle {
     display: none;
   }
 
@@ -174,6 +175,29 @@
   .session {
     grid-column: 2;
     grid-row: 2;
+  }
+
+  /* Inspección y resolución: pantalla completa (la altura fija de arriba no vale) y tamaños según la altura */
+  body[data-phase='inspection'] .timer-zone,
+  body[data-phase='running'] .timer-zone {
+    height: auto;
+  }
+
+  body[data-phase='inspection'] .timer-stage {
+    width: min(60vh, 260px);
+    height: min(60vh, 260px);
+  }
+
+  .insp-ring {
+    --ring-size: min(60vh, 260px);
+  }
+
+  .timer[data-inspecting] {
+    font-size: clamp(3rem, 26vh, 8rem);
+  }
+
+  body[data-phase='running'] .timer:not(.solving) {
+    font-size: clamp(3rem, 34vh, 9rem);
   }
 
   /* La barra superior no se queda fija: sobra poco alto */

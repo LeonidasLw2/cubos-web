@@ -45,6 +45,7 @@ const els = {
   scramble: $('scramble'),
   newScramble: $('new-scramble'),
   toggleView: $('toggle-view'),
+  togglePreview: $('toggle-preview'),
   viewModeBadge: $('view-mode-badge'),
   view: $('scramble-view'),
   timerZone: $('timer-zone'),
@@ -132,6 +133,7 @@ async function loadScramble() {
   state.scramble = null;
   els.scramble.textContent = 'Generando scramble...';
   els.scramble.classList.add('loading');
+  els.scramble.classList.remove('is-error');
   els.card.classList.remove('long');
   try {
     const scramble = await nextScramble(state.event);
@@ -144,6 +146,7 @@ async function loadScramble() {
     if (id !== state.requestId) return;
     console.error(err);
     els.scramble.textContent = 'No se pudo generar el scramble. Tocá ↻ para reintentar.';
+    els.scramble.classList.add('is-error');
   }
   els.scramble.classList.remove('loading');
   updatePlayer();
@@ -762,6 +765,12 @@ export function initUI() {
     els.toggleView.addEventListener('click', () => {
       currentViewMode = currentViewMode === '3D' ? '2D' : '3D';
       updatePlayer();
+    });
+  }
+  if (els.togglePreview) {
+    els.togglePreview.addEventListener('click', () => {
+      const open = els.card.classList.toggle('preview-open');
+      els.togglePreview.setAttribute('aria-expanded', String(open));
     });
   }
   if (els.openSettingsBottom) {

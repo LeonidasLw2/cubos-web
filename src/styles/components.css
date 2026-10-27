@@ -408,20 +408,9 @@ dialog[open] {
 
 /* ---------- 8. Skeletons de Carga ---------- */
 .skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--surface-2) 25%,
-    var(--surface-3) 50%,
-    var(--surface-2) 75%
-  );
-  background-size: 200% 100%;
+  background: var(--surface-3);
   border-radius: var(--radius-sm);
-  animation: shimmer 1.6s infinite linear;
-}
-
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  animation: pulse 1.4s ease-in-out infinite; /* solo opacidad: no pesa en el hilo principal */
 }
 
 /* ---------- Animaciones (restauradas de style.css original) ---------- */

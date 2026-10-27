@@ -97,6 +97,11 @@
   display: none;
 }
 
+.scramble.is-error {
+  color: var(--c-cube-red);
+  font-size: var(--font-sm);
+}
+
 .scramble.loading {
   color: var(--text-secondary);
   animation: pulse 1.2s ease-in-out infinite;
@@ -978,5 +983,34 @@ body[data-phase='inspection'] .cancel-inspection {
   .scramble-card {
     grid-template-columns: 1fr;
     padding: 14px 16px;
+  }
+}
+
+/* ---------- Celular vertical: el timer cabe sin scroll ---------- */
+.preview-toggle {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .preview-toggle {
+    display: inline-flex;
+  }
+
+  .preview-toggle[aria-expanded='true'] {
+    color: var(--c-celeste);
+    background: var(--c-celeste-subtle);
+  }
+
+  /* Por defecto el cubo va plegado; el texto de la mezcla siempre se ve */
+  .scramble-card:not(.preview-open) .scramble-view {
+    display: none;
+  }
+
+  .scramble-card {
+    padding: 12px;
+  }
+
+  .timer-zone {
+    min-height: 220px;
   }
 }

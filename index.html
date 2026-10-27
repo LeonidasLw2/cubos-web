@@ -124,6 +124,12 @@
               <button class="icon-btn toggle-view-btn" id="toggle-view" type="button" title="Alternar vista 3D / 2D" aria-label="Alternar vista 3D / 2D">
                 <span id="view-mode-badge" class="view-badge">3D</span>
               </button>
+              <!-- Solo en celular: pliega o muestra el cubo de la mezcla para que el timer quepa sin scroll -->
+              <button class="icon-btn preview-toggle" id="toggle-preview" type="button" aria-expanded="false" aria-controls="scramble-view" title="Mostrar u ocultar el cubo" aria-label="Mostrar u ocultar el cubo">
+                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                  <path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Zm0 9 8-4.5M12 12 4 7.5M12 12v9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                </svg>
+              </button>
               <button class="icon-btn" id="new-scramble" type="button" title="Nuevo scramble" aria-label="Nuevo scramble">
                 <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
                   <path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
