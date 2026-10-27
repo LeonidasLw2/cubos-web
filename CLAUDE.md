@@ -68,3 +68,10 @@ Todas las etapas pedidas están hechas. Trabajar una etapa a la vez; no adelanta
 - Comentarios breves en español.
 - Diseño oscuro, moderno, con acentos en los 6 colores del cubo. Debe funcionar bien en celular.
 - Explicar los cambios en español; el usuario está aprendiendo.
+
+## Uso eficiente del agente (ahorrar cupo)
+- No leer `node_modules/`, `dist/`, `package-lock.json` ni imágenes, salvo que se pida.
+- Buscar con grep antes de abrir archivos; leer solo las partes necesarias, sobre todo en los archivos largos (`style.css`, `methods.js`, `solver.js`).
+- No sacar capturas del navegador salvo en la revisión final o si se pide.
+- Si un comando o test falla 2 veces seguidas por lo mismo, frenar y explicar el problema en vez de reintentar.
+- Respuestas finales breves: qué cambió y qué tiene que probar el usuario.
