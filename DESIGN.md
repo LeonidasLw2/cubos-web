@@ -81,7 +81,7 @@ La identidad mantiene el modo oscuro de alto contraste y los acentos patrios del
   /* Texto verificado WCAG AA / AAA (contraste calculado con script y test unitario) */
   --text-primary: #f1f5f9;       /* Contraste 17.97:1 contra bg (Supera AAA) */
   --text-secondary: #94a3b8;     /* Contraste 7.68:1 contra bg (Supera AAA) */
-  --text-tertiary: #8e9cb2;      /* Contraste >= 5.09:1 en TODAS las superficies (7.08:1 en bg, 5.86:1 en surface-2, 5.09:1 en surface-3) */
+  --text-tertiary: #8e9cb2;      /* Contraste >= 5.09:1 en TODAS las superficies: 7.08:1 en bg (AAA), 5.86:1 en surface-2 y 5.09:1 en surface-3 (solo AA; AAA exige 7:1) */
   --text-disabled: #64748b;
 
   /* Identidad y Acentos (Argentina + Cubo) */

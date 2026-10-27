@@ -135,6 +135,15 @@
   color: var(--text-primary);
 }
 
+.tabs a:focus-visible,
+.methods a:focus-visible,
+.bottom-nav-item:focus-visible,
+.account-btn:focus-visible,
+.sheet-item:focus-visible {
+  outline: 2px solid var(--c-celeste);
+  outline-offset: 2px;
+}
+
 .tabs a[aria-current='page'] .tab-icon {
   stroke: var(--c-celeste);
 }
@@ -327,6 +336,10 @@ body:not([data-view='timer']) .timer-only {
     border-radius: var(--radius-pill);
     box-sizing: content-box;
     transition: all var(--duration-quick) var(--ease-m3);
+  }
+
+  .bottom-nav-item:active {
+    transform: scale(0.92);
   }
 
   .bottom-nav-item[aria-current='page'] {

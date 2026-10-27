@@ -1773,3 +1773,40 @@ a.link-card:hover .card-action {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: none; }
 }
+
+@media (max-width: 640px) {
+  .link-grid.covers .link-card {
+    padding-right: 112px;
+  }
+
+  .link-grid.covers .card-art {
+    width: 88px;
+    height: 88px;
+  }
+}
+
+.notation-list {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0 18px;
+}
+.notation-list > div {
+  display: grid;
+  grid-template-columns: minmax(84px, max-content) 1fr;
+  gap: 12px;
+  align-items: baseline;
+  padding: 8px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.notation-list dt {
+  font-family: var(--mono);
+  font-weight: 700;
+  white-space: pre;
+}
+.notation-list dd {
+  margin: 0;
+  color: var(--muted);
+}
+

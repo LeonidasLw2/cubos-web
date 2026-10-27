@@ -10,6 +10,7 @@ import './styles/solver.css';
 import './styles/notation.css';
 import './styles/trainer.css';
 import './styles/dialogs.css';
+import './styles/overrides.css';
 import { initUI, setTimerActive, isTimerIdle, openSettingsDialog } from './ui.js';
 import { startRouter } from './router.js';
 import { createNavHistory } from './nav-history.js';

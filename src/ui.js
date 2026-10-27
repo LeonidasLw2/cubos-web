@@ -180,7 +180,7 @@ function selectEvent(eventId) {
     btn.setAttribute('aria-pressed', String(btn.dataset.event === eventId));
   }
   state.lastResult = '0.00';
-  els.timer.textContent = state.lastResult;
+  showTimerText(state.lastResult);
   renderSession();
   loadScramble();
 }
@@ -267,6 +267,14 @@ function renderSolves() {
   els.solves.replaceChildren(...items);
   els.empty.hidden = state.solves.length > 0;
   els.clearSession.disabled = state.solves.length === 0;
+}
+
+// Pone el texto grande del timer. is-long se decide aquí (al cambiar de estado), no en cada cuadro.
+function showTimerText(text) {
+  els.timer.textContent = text;
+  const long = text.length > 7 || text.startsWith('DNF');
+  els.timer.classList.toggle('is-long', long);
+  if (long) els.timer.style.setProperty('--timer-chars', text.length);
 }
 
 function renderSession() {
@@ -396,17 +404,17 @@ const timer = createTimer({
     if (s === 'inspection' && prev === 'primed') {
       // Empieza la inspección (viene de una tecla o toque: se puede activar el audio).
       startAlerts();
-      els.timer.textContent = settings.countdown === 'up' ? '0' : '15';
+      showTimerText(settings.countdown === 'up' ? '0' : '15');
       els.timer.dataset.level = 'normal';
       els.timerZone.dataset.level = 'normal';
       els.inspRing.classList.toggle('up', settings.countdown === 'up');
       replay(els.inspRing, 'run'); // regresivo: el anillo se vacía en 15 s; progresivo: se llena
     } else if (s === 'holding' && !inspecting) {
-      els.timer.textContent = '0.00';
+      showTimerText('0.00');
     } else if (s === 'running') {
-      els.timer.textContent = settings.timerDisplay === 'solving' ? 'Resolviendo...' : '0.00';
+      showTimerText(settings.timerDisplay === 'solving' ? 'Resolviendo...' : '0.00');
     } else if (s === 'idle' || s === 'stopped') {
-      els.timer.textContent = state.lastResult; // tiempo recién hecho, o el anterior si se canceló
+      showTimerText(state.lastResult); // tiempo recién hecho, o el anterior si se canceló
       if (s === 'stopped' && prev === 'running') replay(els.timer, 'landed'); // el tiempo final "aterriza"
     }
     if (!inspecting) {
@@ -720,7 +728,7 @@ export function loadCustomScrambleInTimer(eventId, scrambleText) {
     state.solves = loadSolves(state.event);
     state.newSolveId = null;
     state.lastResult = '0.00';
-    els.timer.textContent = '0.00';
+    showTimerText('0.00');
     renderEvents();
     renderSession();
   }

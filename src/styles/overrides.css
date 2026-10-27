@@ -1,0 +1,101 @@
+/* Se importa al final: estas reglas tienen que ganar a las de los demás archivos (como en style.css original). */
+
+@media (pointer: coarse) {
+  .tabs a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 16px;
+  }
+
+  .event-btn {
+    min-height: 44px;
+    padding: 0 16px;
+  }
+
+  .icon-btn,
+  .history-nav .icon-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .text-btn {
+    min-height: 44px;
+    padding: 0 12px;
+  }
+
+  /* Lista de tiempos: +2, DNF y borrar */
+  .solve-actions {
+    gap: 6px;
+  }
+
+  .solve-actions button {
+    min-width: 44px;
+    min-height: 40px;
+    font-size: 0.8rem;
+  }
+
+  .solve-time {
+    min-height: 40px;
+  }
+
+  /* Tarjetas de casos */
+  .case-controls {
+    gap: 8px;
+  }
+
+  .case-controls button {
+    width: 48px;
+    height: 44px;
+  }
+
+  .case-controls .play {
+    width: 60px;
+  }
+
+  .case-alg {
+    min-height: 44px;
+  }
+
+  .case-alts summary {
+    padding: 12px 0;
+  }
+
+  .step-index a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 14px;
+  }
+
+  .breadcrumb a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
+
+/* ---------- Movimiento reducido ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *:not(.pb-badge, .ring-progress),
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .timer[data-state] {
+    transform: none;
+  }
+
+  .pb-burst {
+    display: none;
+  }
+
+  /* El aviso de PB se muestra igual, pero sin movimiento */
+  .pb-badge.show {
+    animation-name: badge-still;
+  }
+}
