@@ -248,9 +248,10 @@
 .offline-toast {
   position: fixed;
   left: 50%;
-  bottom: calc(16px + env(safe-area-inset-bottom));
-  z-index: 50;
+  bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+  z-index: 150; /* por encima de la barra inferior (100) */
   transform: translateX(-50%);
+  width: max-content; /* con left: 50% el ancho máximo sería la mitad de la pantalla */
   max-width: calc(100vw - 32px);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -266,11 +267,16 @@
   padding: 8px 8px 8px 16px;
   border-left: 3px solid var(--c-yellow);
   font-size: 0.9rem;
-  white-space: nowrap;
+}
+
+.update-banner span {
+  min-width: 0;
 }
 
 .update-btn {
-  min-height: 40px;
+  flex-shrink: 0;
+  min-height: 48px;
+  min-width: 48px;
   padding: 6px 14px;
   border: 0;
   border-radius: 8px;
@@ -284,12 +290,21 @@
 }
 
 .update-dismiss {
-  width: 40px;
-  height: 40px;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
   border: 0;
   border-radius: 8px;
   background: none;
   color: var(--muted);
+}
+
+/* Con la barra inferior móvil: el aviso y el toast quedan encima de ella */
+@media (max-width: 860px) {
+  .update-banner,
+  .offline-toast {
+    bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom) + var(--space-4));
+  }
 }
 
 .offline-toast {
