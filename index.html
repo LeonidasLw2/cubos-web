@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#0b0d12" />
+    <meta name="theme-color" content="#090b10" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -96,7 +96,7 @@
             <span class="sync-text" id="sync-text">Local</span>
           </div>
 
-          <button class="account-btn" id="account-btn" type="button" aria-label="Cuenta y sincronización">
+          <button class="account-btn" id="account-btn" type="button" aria-label="Iniciar sesión · Cuenta y sincronización">
             <span class="account-avatar" id="account-avatar" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             </span>
@@ -123,6 +123,12 @@
             <div class="scramble-actions">
               <button class="icon-btn toggle-view-btn" id="toggle-view" type="button" title="Alternar vista 3D / 2D" aria-label="Alternar vista 3D / 2D">
                 <span id="view-mode-badge" class="view-badge">3D</span>
+              </button>
+              <!-- Solo en celular: pliega o muestra el cubo de la mezcla para que el timer quepa sin scroll -->
+              <button class="icon-btn preview-toggle" id="toggle-preview" type="button" aria-expanded="false" aria-controls="scramble-view" title="Mostrar u ocultar el cubo" aria-label="Mostrar u ocultar el cubo">
+                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                  <path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Zm0 9 8-4.5M12 12 4 7.5M12 12v9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                </svg>
               </button>
               <button class="icon-btn" id="new-scramble" type="button" title="Nuevo scramble" aria-label="Nuevo scramble">
                 <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">

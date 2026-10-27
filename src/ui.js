@@ -45,6 +45,7 @@ const els = {
   scramble: $('scramble'),
   newScramble: $('new-scramble'),
   toggleView: $('toggle-view'),
+  togglePreview: $('toggle-preview'),
   viewModeBadge: $('view-mode-badge'),
   view: $('scramble-view'),
   timerZone: $('timer-zone'),
@@ -132,6 +133,7 @@ async function loadScramble() {
   state.scramble = null;
   els.scramble.textContent = 'Generando scramble...';
   els.scramble.classList.add('loading');
+  els.scramble.classList.remove('is-error');
   els.card.classList.remove('long');
   try {
     const scramble = await nextScramble(state.event);
@@ -144,6 +146,7 @@ async function loadScramble() {
     if (id !== state.requestId) return;
     console.error(err);
     els.scramble.textContent = 'No se pudo generar el scramble. Tocá ↻ para reintentar.';
+    els.scramble.classList.add('is-error');
   }
   els.scramble.classList.remove('loading');
   updatePlayer();
@@ -180,7 +183,7 @@ function selectEvent(eventId) {
     btn.setAttribute('aria-pressed', String(btn.dataset.event === eventId));
   }
   state.lastResult = '0.00';
-  els.timer.textContent = state.lastResult;
+  showTimerText(state.lastResult);
   renderSession();
   loadScramble();
 }
@@ -267,6 +270,14 @@ function renderSolves() {
   els.solves.replaceChildren(...items);
   els.empty.hidden = state.solves.length > 0;
   els.clearSession.disabled = state.solves.length === 0;
+}
+
+// Pone el texto grande del timer. is-long se decide aquí (al cambiar de estado), no en cada cuadro.
+function showTimerText(text) {
+  els.timer.textContent = text;
+  const long = text.length > 7 || text.startsWith('DNF');
+  els.timer.classList.toggle('is-long', long);
+  if (long) els.timer.style.setProperty('--timer-chars', text.length);
 }
 
 function renderSession() {
@@ -396,17 +407,17 @@ const timer = createTimer({
     if (s === 'inspection' && prev === 'primed') {
       // Empieza la inspección (viene de una tecla o toque: se puede activar el audio).
       startAlerts();
-      els.timer.textContent = settings.countdown === 'up' ? '0' : '15';
+      showTimerText(settings.countdown === 'up' ? '0' : '15');
       els.timer.dataset.level = 'normal';
       els.timerZone.dataset.level = 'normal';
       els.inspRing.classList.toggle('up', settings.countdown === 'up');
       replay(els.inspRing, 'run'); // regresivo: el anillo se vacía en 15 s; progresivo: se llena
     } else if (s === 'holding' && !inspecting) {
-      els.timer.textContent = '0.00';
+      showTimerText('0.00');
     } else if (s === 'running') {
-      els.timer.textContent = settings.timerDisplay === 'solving' ? 'Resolviendo...' : '0.00';
+      showTimerText(settings.timerDisplay === 'solving' ? 'Resolviendo...' : '0.00');
     } else if (s === 'idle' || s === 'stopped') {
-      els.timer.textContent = state.lastResult; // tiempo recién hecho, o el anterior si se canceló
+      showTimerText(state.lastResult); // tiempo recién hecho, o el anterior si se canceló
       if (s === 'stopped' && prev === 'running') replay(els.timer, 'landed'); // el tiempo final "aterriza"
     }
     if (!inspecting) {
@@ -720,7 +731,7 @@ export function loadCustomScrambleInTimer(eventId, scrambleText) {
     state.solves = loadSolves(state.event);
     state.newSolveId = null;
     state.lastResult = '0.00';
-    els.timer.textContent = '0.00';
+    showTimerText('0.00');
     renderEvents();
     renderSession();
   }
@@ -754,6 +765,12 @@ export function initUI() {
     els.toggleView.addEventListener('click', () => {
       currentViewMode = currentViewMode === '3D' ? '2D' : '3D';
       updatePlayer();
+    });
+  }
+  if (els.togglePreview) {
+    els.togglePreview.addEventListener('click', () => {
+      const open = els.card.classList.toggle('preview-open');
+      els.togglePreview.setAttribute('aria-expanded', String(open));
     });
   }
   if (els.openSettingsBottom) {
