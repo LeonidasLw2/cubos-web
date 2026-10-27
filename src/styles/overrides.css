@@ -72,6 +72,7 @@
     padding: 0 14px;
   }
 
+  .breadcrumbs a,
   .breadcrumb a {
     display: inline-flex;
     align-items: center;

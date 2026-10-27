@@ -270,7 +270,7 @@ Durante el escaneo automatizado de las referencias web no se encontró ninguna i
 - Consola sin errores en las 8 pantallas a 390×844.
 
 **Diferencias visuales conocidas respecto al diseño original que no fueron decididas a propósito** (pendientes de revisar):
-1. El estado activo de chips y selectores (categorías del Timer, grupos del Entrenador, opciones de Ajustes) pasó de relleno azul sólido a contorno celeste suave: se distingue menos.
+1. ~~Estado activo de chips y selectores más débil~~ → corregido: relleno sólido `--c-cube-blue` (3,15:1 contra el fondo no seleccionado, 5,17:1 el texto blanco).
 2. Las portadas de Métodos y Notación perdieron el degradado/vidrio de la tarjeta y su título es más chico.
-3. Las migas de pan del Solver ya no tienen color ni subrayado de enlace.
+3. ~~Migas de pan del Solver sin estilo de enlace~~ → corregido: color celeste, subrayado y foco visible.
 4. Los textos secundarios son algo más tenues (menos blancos) que antes.

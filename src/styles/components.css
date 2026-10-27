@@ -180,10 +180,10 @@
 }
 
 .event-btn[aria-pressed='true'] {
-  background: var(--c-celeste-subtle);
+  background: var(--c-cube-blue); /* relleno sólido: se distingue del resto (≥3:1) */
   color: #ffffff;
-  border-color: var(--c-celeste);
-  box-shadow: 0 0 12px rgba(116, 172, 223, 0.25);
+  border-color: var(--c-cube-blue);
+  box-shadow: 0 4px 12px -4px rgba(37, 99, 235, 0.6);
   font-weight: 600;
 }
 
@@ -304,11 +304,11 @@ select:focus {
 }
 
 .segmented input[type='radio']:checked + span {
-  background: var(--surface-3);
-  color: var(--text-primary);
+  background: var(--c-cube-blue);
+  color: #ffffff;
   font-weight: 600;
-  border: 1px solid var(--border-subtle);
-  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--c-cube-blue);
+  box-shadow: 0 4px 12px -4px rgba(37, 99, 235, 0.6);
 }
 
 /* ---------- 5. Diálogos y Modales ---------- */

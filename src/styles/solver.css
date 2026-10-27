@@ -908,3 +908,36 @@
 .solver-footer-note a {
   color: var(--c-celeste);
 }
+
+/* Migas de pan del Solver: enlaces con color y subrayado */
+.breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.breadcrumbs a {
+  color: var(--c-celeste);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (hover: hover) {
+  .breadcrumbs a:hover {
+    color: var(--text-primary);
+  }
+}
+
+.breadcrumbs a:focus-visible {
+  outline: 2px solid var(--c-celeste);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.breadcrumbs [aria-current] {
+  color: var(--text-primary);
+}

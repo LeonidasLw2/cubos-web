@@ -579,9 +579,14 @@
     border-radius: var(--radius-sheet);
     border-bottom: none;
     max-height: 85dvh;
-    animation: sheet-enter var(--duration-medium) var(--ease-m3);
     padding-bottom: max(20px, env(safe-area-inset-bottom));
     box-shadow: var(--shadow-sheet);
+  }
+
+  /* `.settings[open]` (fade-in) le ganaba a la entrada del sheet: por eso había que subir la especificidad */
+  dialog.settings[open],
+  dialog.account-dialog[open] {
+    animation: sheet-enter var(--duration-medium) var(--ease-m3);
   }
 
   /* Barra de arrastre decorativa (igual a la del menú "Más") */
