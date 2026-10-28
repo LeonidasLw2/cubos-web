@@ -215,7 +215,7 @@ Se capturaron y auditaron todas las rutas a **390 px (móvil)** y **1440 px (esc
    - `src/styles/topbar-nav.css` (header de escritorio y barra inferior nativa Android M3 con píldora).
    - `src/styles/timer.css` (pantalla del cronómetro, modo foco, inspección, estadísticas y scramble).
    - `src/styles/methods.css` (portada de métodos, selector de puzzles, visualizador de casos, stepper y tarjetas).
-   - `src/styles/solver.css` (editor 2D/3D responsive sin overflow, paleta, selector y reproductor).
+   - ~~`src/styles/solver.css`~~ (eliminado junto con la sección Solver).
    - `src/styles/notation.css` (selector de giros, visualizador 3D interactivo y probador de secuencias).
    - `src/styles/trainer.css` (entrenador de casos, grilla de filtros, pad táctil y estadísticas).
 2. **Corrección de accesibilidad en HTML**:
@@ -265,12 +265,18 @@ Durante el escaneo automatizado de las referencias web no se encontró ninguna i
 | Entrenar antes → después | 70 → 70 | 96 → 96 | 100 → 100 | 100 → 100 |
 
 - CLS del Timer: 0,018 (antes) → 0,000 (después). Se arregló reservando el alto de las categorías (`.events`) y de la mezcla (5 líneas) antes de que carguen.
-- Solver: TBT de ~10 s igual que antes (pendiente anotado en PLAN.md, fuera de este trabajo).
+- Solver: TBT de ~10 s igual que antes. Resuelto por eliminación: la sección Solver se borró (ver PLAN.md).
 - `prefers-reduced-motion` verificado con `emulateMedia({ reducedMotion: 'reduce' })` de Playwright (no inyectando la regla): duraciones de 0,01 ms y sheets de Ajustes y Cuenta pegados al borde inferior (hueco 0 px) con y sin la preferencia. El anillo de la inspección sigue animando a propósito (es información, no decoración).
 - Consola sin errores en las 8 pantallas a 390×844.
 
 **Diferencias visuales conocidas respecto al diseño original que no fueron decididas a propósito** (pendientes de revisar):
 1. ~~Estado activo de chips y selectores más débil~~ → corregido: relleno sólido `--c-cube-blue` (3,15:1 contra el fondo no seleccionado, 5,17:1 el texto blanco).
 2. Las portadas de Métodos y Notación perdieron el degradado/vidrio de la tarjeta y su título es más chico.
-3. ~~Migas de pan del Solver sin estilo de enlace~~ → corregido: color celeste, subrayado y foco visible.
+3. ~~Migas de pan del Solver sin estilo de enlace~~ → corregido, y ya no aplica: el Solver se eliminó (las migas de Métodos conservan ese estilo).
 4. Los textos secundarios son algo más tenues (menos blancos) que antes.
+
+
+---
+
+## Nota: eliminación del Solver
+La sección Solver (y con ella `solver.css`, el overflow de 174 px y el TBT de ~10 s descritos arriba) ya no existe. Las menciones anteriores al Solver son el registro histórico del rediseño. Barra inferior: 4 ítems (Timer, Métodos, Entrenar, Más), cada uno de un cuarto del ancho y de al menos 48 px de alto; escritorio: Timer, Métodos, Notación y Entrenar.

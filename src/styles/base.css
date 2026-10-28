@@ -98,7 +98,6 @@ select:focus-visible {
 /* Entrada fluida de vistas */
 .layout,
 .methods,
-.solver-page,
 .notation-page,
 .trainer-page {
   animation: view-in var(--duration-enter) var(--ease-m3);

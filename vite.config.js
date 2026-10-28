@@ -47,7 +47,7 @@ export default defineConfig({
         id: BASE,
         name: 'CubeSolver',
         short_name: 'CubeSolver',
-        description: 'Timer de speedcubing, solver interactivo, notación 3D y guías de métodos con casos animados.',
+        description: 'Timer de speedcubing, entrenador de casos, notación 3D y guías de métodos con casos animados.',
         lang: 'es',
         dir: 'ltr',
         // start_url y scope tienen que coincidir con la subcarpeta, si no Android no la instala bien.

@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="description" content="CubeSolver · Timer de speedcubing con scrambles oficiales, métodos animados para los 7 puzzles, notación interactiva y solver 3D." />
+    <meta name="description" content="CubeSolver · Timer de speedcubing con scrambles oficiales, métodos animados para los 7 puzzles, notación interactiva y entrenador de casos." />
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png" />
     <!-- El enlace al manifest lo agrega vite-plugin-pwa al armar la página. -->
@@ -75,10 +75,6 @@
           <a href="#/metodos" data-view="methods">
             <svg class="tab-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
             <span>Métodos</span>
-          </a>
-          <a href="#/solver" data-view="solver">
-            <svg class="tab-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-            <span>Solver</span>
           </a>
           <a href="#/notacion" data-view="notation">
             <svg class="tab-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
@@ -196,7 +192,6 @@
     </main>
 
     <main class="methods" id="view-methods" hidden></main>
-    <main class="methods solver-main" id="view-solver" hidden></main>
     <main class="methods notation-main" id="view-notation" hidden></main>
     <main class="methods" id="view-trainer" hidden></main>
 
@@ -349,7 +344,7 @@
     <div class="offline-toast" id="offline-toast" role="status" hidden>Lista para usar sin conexión</div>
     <div class="offline-toast" id="exit-toast" role="status" hidden>Tocá atrás otra vez para salir</div>
 
-    <!-- Barra de navegación inferior móvil (5 ítems: Timer, Métodos, Solver, Entrenar y Más) -->
+    <!-- Barra de navegación inferior móvil (4 ítems: Timer, Métodos, Entrenar y Más) -->
     <nav class="bottom-nav fadeable" aria-label="Navegación móvil">
       <a href="#/timer" data-view="timer" class="bottom-nav-item">
         <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>
@@ -358,10 +353,6 @@
       <a href="#/metodos" data-view="methods" class="bottom-nav-item">
         <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
         <span>Métodos</span>
-      </a>
-      <a href="#/solver" data-view="solver" class="bottom-nav-item">
-        <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-        <span>Solver</span>
       </a>
       <a href="#/entrenar" data-view="trainer" class="bottom-nav-item">
         <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>

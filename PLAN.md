@@ -8,7 +8,7 @@ Este documento registra el plan de trabajo en fases (A–G) y su estado actual.
 - [x] **Fase C:** Métodos nuevos por puzzle (5x5, 7x7, Megaminx, Pyraminx + EG y ZZ).
 - [x] **Fase D:** Nueva sección de Notación (`#/notacion`) con parser verificable y animaciones.
 - [x] **Fase E:** Inicio de sesión (Google / Firebase Auth) y sincronización en la nube (Firestore local-first).
-- [x] **Fase F:** Nueva sección Solver (`#/solver`) para 2x2, 3x3, 4x4, 5x5 y Pyraminx con verificación KPuzzle.
+- [x] **Fase F:** (eliminada después, ver "Eliminación de la sección Solver") Nueva sección Solver (`#/solver`) para 2x2, 3x3, 4x4, 5x5 y Pyraminx con verificación KPuzzle.
 - [x] **Fase G:** Revisión final integral, tests, build y reporte.
 
 ---
@@ -34,7 +34,7 @@ Este documento registra el plan de trabajo en fases (A–G) y su estado actual.
   - *Navegación y portada:* Tarjeta de Mirror Cube agregada a la grilla de portadas en `#/metodos`, entrada registrada en `src/data/method-pages.js` y `PAGE_METADATA` con chips, estadísticas, consejos y errores comunes específicos.
   - *Verificación:* `scripts/verify-algs.js` verifica todos los casos con KPuzzle (357 casos y 428 algoritmos validados).
 - [ ] **Fase 5 (Mirror):** Notación (Mirror en `#/notacion`, animación en visor 3D y probador de secuencias).
-- [ ] **Fase 6 (Mirror):** Solver (modo "Deshacer mezcla" animado en visor Mirror).
+- [x] ~~**Fase 6 (Mirror):** Solver (modo "Deshacer mezcla")~~ → descartada: la sección Solver se eliminó.
 - [ ] **Fase 7 (Mirror):** Entrenador (casos en Mirror si aplica).
 - [ ] **Fase 8 (Mirror):** Revisión final, capturas, tests y build.
 
@@ -162,7 +162,7 @@ Este documento registra el plan de trabajo en fases (A–G) y su estado actual.
 ---
 
 ## Tareas Pendientes Registradas
-- **Solver — Optimización de TBT en móvil**: Durante la auditoría de Lighthouse de la Fase 1 del rediseño visual se detectó un Total Blocking Time (TBT) de ~10 s en `#/solver` en móvil, originado por la ejecución e inicialización matemática del motor del solver en el hilo principal (`solver-worker.js` / tablas de pruning). Queda registrado como tarea pendiente de arquitectura/lógica para aislar completamente el cómputo y no trabar la carga inicial. En el rediseño visual nos aseguramos de no empeorar el rendimiento respecto al "antes".
+- ~~**Solver — Optimización de TBT en móvil**~~ → **Resuelto por eliminación**: la sección Solver se borró por completo, así que ya no hay motor de búsqueda ni TBT de ~10 s que optimizar. Contexto original: durante la auditoría de Lighthouse de la Fase 1 del rediseño visual se detectó un Total Blocking Time (TBT) de ~10 s en `#/solver` en móvil, originado por la ejecución e inicialización matemática del motor del solver en el hilo principal (`solver-worker.js` / tablas de pruning). Queda registrado como tarea pendiente de arquitectura/lógica para aislar completamente el cómputo y no trabar la carga inicial. En el rediseño visual nos aseguramos de no empeorar el rendimiento respecto al "antes".
 
 
 ### Fase 1 — Investigación y modelo geométrico (`src/data/mirror.js`)
@@ -221,3 +221,10 @@ Este documento registra el plan de trabajo en fases (A–G) y su estado actual.
 
 
 
+
+
+## Eliminación de la sección Solver
+- Se borraron `src/solver.js`, `solver-engine.js`, `solver-validator.js`, `solver-worker.js`, `src/styles/solver.css` y `tests/solver.test.js` (7 tests), y la ruta `#/solver/*` (ahora redirige al Timer).
+- La barra inferior móvil pasó de 5 a 4 ítems (Timer, Métodos, Entrenar, Más); la de escritorio quedó en Timer, Métodos, Notación y Entrenar.
+- Se conservan el modelo del Mirror y su visor, la generación de mezclas, cubing.js, `verify-algs` y las claves de `localStorage` (incluida `cubos-web:solver-prefs`).
+- Las fases F y 6 (Mirror) de arriba son historia: esa funcionalidad ya no existe.

@@ -298,6 +298,7 @@ body:not([data-view='timer']) .timer-only {
   }
 
   .bottom-nav-item {
+    flex: 1 1 0; /* 4 ítems: cada uno ocupa un cuarto de la barra */
     display: flex;
     flex-direction: column;
     align-items: center;

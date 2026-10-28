@@ -1,4 +1,4 @@
-// Router simple con hash: #/timer, #/metodos, #/solver, #/notacion, #/entrenar…
+// Router simple con hash: #/timer, #/metodos, #/notacion, #/entrenar…
 // parseRoute() es pura (se puede probar sin navegador); startRouter() escucha los cambios.
 import { METHOD_PAGES, LEGACY_METHOD_PATHS, methodHref, crumbsFor } from './data/method-pages.js';
 
@@ -13,10 +13,8 @@ export function parseRoute(hash) {
   const params = Object.fromEntries(new URLSearchParams(rawQuery));
   if (path === '' || path === 'timer') return { view: 'timer', path: 'timer' };
   if (path === 'entrenar') return { view: 'trainer', path };
-  if (path === 'solver' || path.startsWith('solver/')) {
-    const puzzle = path.slice('solver'.length).replace(/^\//, '') || params.puzzle || null;
-    return { view: 'solver', path: rawQuery ? `${path}?${rawQuery}` : path, puzzle, params };
-  }
+  // La sección Solver ya no existe: sus rutas viejas van al Timer.
+  if (path === 'solver' || path.startsWith('solver/')) return { view: 'timer', path: 'timer', redirect: '#/timer' };
   if (path === 'notacion' || path.startsWith('notacion/')) {
     const puzzle = path.slice('notacion'.length).replace(/^\//, '') || params.puzzle || null;
     return { view: 'notation', path: rawQuery ? `${path}?${rawQuery}` : path, puzzle, params };
