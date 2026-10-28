@@ -65,10 +65,15 @@ test('las rutas viejas redirigen a las nuevas', () => {
   }
 });
 
-test('secciones solver, notación y entrenar', () => {
-  assert.equal(parseRoute('#/solver').view, 'solver');
-  assert.equal(parseRoute('#/solver/3x3').view, 'solver');
-  assert.equal(parseRoute('#/solver/3x3').puzzle, '3x3');
+test('rutas viejas de #/solver redirigen al timer', () => {
+  for (const hash of ['#/solver', '#/solver/3x3', '#/solver/mirror?x=1']) {
+    const r = parseRoute(hash);
+    assert.equal(r.view, 'timer');
+    assert.equal(r.redirect, '#/timer');
+  }
+});
+
+test('secciones notación y entrenar', () => {
   assert.equal(parseRoute('#/notacion').view, 'notation');
   assert.equal(parseRoute('#/notacion/4x4').view, 'notation');
   assert.equal(parseRoute('#/notacion/4x4').puzzle, '4x4');

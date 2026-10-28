@@ -6,7 +6,6 @@ import './styles/components.css';
 import './styles/topbar-nav.css';
 import './styles/timer.css';
 import './styles/methods.css';
-import './styles/solver.css';
 import './styles/notation.css';
 import './styles/trainer.css';
 import './styles/dialogs.css';
@@ -21,7 +20,6 @@ import { initQuickScroll } from './quick-scroll.js';
 const views = {
   timer: document.getElementById('view-timer'),
   methods: document.getElementById('view-methods'),
-  solver: document.getElementById('view-solver'),
   notation: document.getElementById('view-notation'),
   trainer: document.getElementById('view-trainer'),
 };
@@ -29,7 +27,6 @@ const views = {
 let trainer = null;
 let shownMethodsPath = null;
 let shownNotationPath = null;
-let shownSolverPath = null;
 
 const desktopTabsContainer = document.getElementById('desktop-tabs');
 const tabIndicator = document.getElementById('tab-indicator');
@@ -48,7 +45,6 @@ const exitToast = document.getElementById('exit-toast');
 const TITLES = {
   timer: 'CubeSolver · Timer',
   methods: 'CubeSolver · Métodos',
-  solver: 'CubeSolver · Solver',
   notation: 'CubeSolver · Notación',
   trainer: 'CubeSolver · Entrenar',
 };
@@ -183,17 +179,6 @@ async function showRoute(route) {
   if (route.view !== 'notation') {
     shownNotationPath = null;
     destroyScopePlayer('notation');
-  }
-
-  if (route.view === 'solver' && route.path !== shownSolverPath) {
-    shownSolverPath = route.path;
-    const { renderSolver } = await import('./solver.js');
-    if (shownSolverPath !== route.path) return;
-    renderSolver(views.solver, route);
-  }
-  if (route.view !== 'solver') {
-    shownSolverPath = null;
-    destroyScopePlayer('solver');
   }
 
   window.scrollTo({ top: scrollTarget });

@@ -1,6 +1,6 @@
 # CubeSolver (`cubos-web`)
 
-Aplicación web progresiva (PWA) y móvil de speedcubing con cronómetro WCA, guías completas de métodos verificadas matemáticamente, solver interactivo paso a paso, guía animada de notación, entrenador de casos y sincronización opcional en la nube.
+Aplicación web progresiva (PWA) y móvil de speedcubing con cronómetro WCA, guías completas de métodos verificadas matemáticamente, guía animada de notación, entrenador de casos y sincronización opcional en la nube.
 
 ## Secciones principales
 
@@ -17,15 +17,11 @@ Aplicación web progresiva (PWA) y móvil de speedcubing con cronómetro WCA, gu
      - **7x7:** Reducción por barras de $1\times 5$, emparejamiento de aristas (midges, wings internas y externas) y paridades.
      - **Megaminx:** Método estándar en 6 etapas (Estrella, Primera cara, F2L, S2L, Resto de caras, Última capa en 4 pasos).
      - **Pyraminx:** Principiante, Keyhole, L4E, Top-First y 1-Flip.
-3. **Solver (`#/solver`):**
-   - Disponible para **2x2, 3x3, 4x4, 5x5 y Pyraminx** (ejecutado en Web Worker) + modo **"Deshacer mezcla"**.
-   - Editor 2D sincronizado con visor 3D, modo cara por cara con casillas $\ge 44\text{ px}$ para 4x4/5x5 en móvil, contador de stickers por color y validador previo en español.
-   - Reproductor paso a paso con explicación de cada movimiento en español, control de tiempo entre movimientos (0–3 s) y velocidad de giro.
-4. **Notación (`#/notacion`):**
+3. **Notación (`#/notacion`):**
    - Guía interactiva para los 7 puzzles con variantes normal / `'` / `2` / `++` / `--`, animación 3D y probador de secuencias en vivo con validación en español.
-5. **Entrenar (`#/entrenar`):**
+4. **Entrenar (`#/entrenar`):**
    - Entrenador de algoritmos por grupo (`PLL`, `OLL`, `F2L`, `CMLL`, `OLL 2x2`, `PBL`) con estadísticas por caso.
-6. **Cuenta y Sincronización (`src/cloud-sync.js`):**
+5. **Cuenta y Sincronización (`src/cloud-sync.js`):**
    - Arquitectura *local-first*: la app funciona al 100% sin cuenta usando `localStorage`.
    - Inicio de sesión opcional con Google (Firebase Auth + Cloud Firestore) con fusión por unión sin pérdida de tiempos, soporte offline y borrado con *tombstones*. Ver instrucciones en [`SETUP-NUBE.md`](./SETUP-NUBE.md).
 
@@ -38,7 +34,7 @@ npm install
 # Servidor de desarrollo
 npm run dev
 
-# Ejecutar todos los tests unitarios (timer, inspección, router, métodos, notación, solver, sync)
+# Ejecutar todos los tests unitarios (timer, inspección, router, métodos, notación, sync)
 npm test
 
 # Verificar matemáticamente todos los algoritmos de métodos y entrenador con KPuzzle

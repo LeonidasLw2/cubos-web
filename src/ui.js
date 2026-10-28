@@ -723,26 +723,6 @@ export function reloadSessionFromStorage() {
   renderSession();
 }
 
-export function loadCustomScrambleInTimer(eventId, scrambleText) {
-  const ev = getEvent(eventId);
-  if (ev.id !== state.event) {
-    state.event = ev.id;
-    saveSelectedEvent(state.event);
-    state.solves = loadSolves(state.event);
-    state.newSolveId = null;
-    state.lastResult = '0.00';
-    showTimerText('0.00');
-    renderEvents();
-    renderSession();
-  }
-  state.requestId++;
-  state.scramble = scrambleText;
-  els.scramble.textContent = scrambleText;
-  els.scramble.classList.remove('loading');
-  els.card.classList.toggle('long', scrambleText.length > 120);
-  updatePlayer();
-}
-
 // La PWA solo puede recargar (para actualizar) si el timer está quieto.
 export function isTimerIdle() {
   return timer.state === 'idle' && !isAnyDialogOpen();

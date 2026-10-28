@@ -40,5 +40,5 @@ Abrí [`src/firebase-config.js`](./src/firebase-config.js), completá los campos
 
 ### Estructura de datos en Firestore
 - `users/{uid}/solves/{solveId}`: un documento por cada tiempo (con `id` UUID, `puzzle`, `time`, `penalty`, `scramble`, `session`, `date`, `updatedAt` y `deleted` para tombstones).
-- `users/{uid}/meta/settings`: ajustes del Timer, inspección y velocidades del Solver.
+- `users/{uid}/meta/settings`: ajustes del Timer, inspección y (por compatibilidad) las preferencias viejas del Solver.
 - `users/{uid}/meta/progress`: algoritmos marcados como aprendidos en Métodos.
