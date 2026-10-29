@@ -211,7 +211,7 @@ function renderTrend() {
   const [lx, ly] = g.points.at(-1);
   els.trendChart.innerHTML = `
     <defs><linearGradient id="trend-fill" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" style="stop-color: var(--c-blue); stop-opacity: 0.35" /><stop offset="1" style="stop-color: var(--c-blue); stop-opacity: 0" />
+      <stop offset="0" style="stop-color: var(--c-celeste); stop-opacity: 0.35" /><stop offset="1" style="stop-color: var(--c-celeste); stop-opacity: 0" />
     </linearGradient></defs>
     <path d="${g.area}" fill="url(#trend-fill)" />
     <path d="${g.line}" class="trend-line" />

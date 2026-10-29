@@ -27,15 +27,16 @@ for (const [w, h] of SIZES) {
     await page.goto(BASE + route);
     await page.reload();
     await page.waitForTimeout(1800);
-    const m = await page.evaluate(() => {
-      const over = Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - innerWidth;
+    const m = await page.evaluate((width) => {
+      const over = Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - width;
       const z = document.querySelector('#timer-zone')?.getBoundingClientRect();
       const nav = document.querySelector('.bottom-nav');
       const navTop = nav && getComputedStyle(nav).display !== 'none' ? nav.getBoundingClientRect().top : innerHeight;
       const head = document.querySelector('.topbar')?.getBoundingClientRect().bottom ?? 0;
-      return { over, zone: z && { top: Math.round(z.top), bottom: Math.round(z.bottom), visible: z.height > 0 }, navTop: Math.round(navTop), head: Math.round(head) };
-    });
+      return { over, zone: z && { top: Math.round(z.top), bottom: Math.round(z.bottom), visible: z.height > 0 }, navTop: Math.round(navTop), head: Math.round(head), viewport: innerWidth };
+    }, w);
     const bad = [];
+    if (m.viewport !== w) bad.push(`viewport ampliado ${m.viewport}px (esperado ${w}px)`);
     if (errors.length) bad.push(`consola: ${errors[0].slice(0, 90)}`);
     if (m.over > 0) bad.push(`desborde horizontal ${m.over}px`);
     if (route === '#/timer') {
