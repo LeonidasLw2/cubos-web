@@ -1,5 +1,58 @@
 # Documento de Diseño — CubeSolver (`DESIGN.md`)
 
+
+## Dirección vigente v2 — Instrumento (completo hasta Fase 5)
+
+Esta sección describe la implementación de `rediseno-v2`. Los apartados numerados posteriores conservan la investigación y las mediciones históricas de v1; no representan una auditoría actual de v2. Estado y límites de verificación: `docs/REPORTES-REDISENO.md`.
+
+### Paleta y profundidad
+La fuente de verdad es `src/styles/tokens.css`: lienzo `#050506`, capas `#0e0e10`, `#17171a`, `#222226`, sheets `#121214` y avisos opacos `#1a1a1d`. La profundidad sale de estas capas y de bordes finos, sin degradados decorativos ni halos. Acento único `#74acdf`; texto sobre acento `#050506`. El logo argentino y las representaciones de puzzles conservan sus colores.
+
+Texto primario `#f5f5f7`, secundario `#a1a1a8`, terciario `#8e8e96`. Contrastes medidos sobre el lienzo: secundario 7,93:1 y borde de la zona táctil (`#6b6b73`) 3,86:1; chip activo frente a inactivo 8,00:1. `tests/design-tokens.test.js` comprueba los pares de texto/superficie y la selección. No confundir los colores del cubo con colores de estado de la interfaz.
+
+### Tipografía y formas
+Una familia: Inter variable latin, local, 48,25 kB, licencia OFL en `public/licenses/Inter-OFL.txt`, precarga desde HTML y caché PWA. Respaldo Arial con métricas ajustadas en `src/fonts.css`. Cifras tabulares globales; títulos peso 600, timer mínimo 300. Los centésimos usan texto secundario y dos spans persistentes creados por `createTimerText()`, compartido con Entrenar; se conserva el texto completo accesible.
+
+Radios de 10, 16 y 24 px; píldoras para categorías y filtros. Los sheets usan el radio superior de 24 px del token vigente, handle de 32×4 px y safe-area. Squircle únicamente dentro de `@supports`. Botones y selectores principales de 48 px; las casillas del Entrenador usan toda la fila como etiqueta táctil.
+
+### Timer y distribución
+Los dígitos flotan sobre el lienzo. Un borde fino visible delimita la zona táctil; al mantener pulsado los dígitos se tiñen de celeste y una barra inferior se estira. No hay tarjeta rellena detrás del tiempo. Categorías dentro de práctica; mezcla con texto completo y cubo plegado en móvil. Desde 861 px el visor arranca abierto y la sesión ocupa una columna independiente; el visor nunca se mueve ni se vuelve a adjuntar al plegarlo.
+
+El CSS del contenedor ajusta el tamaño del tiempo, y `showTimerText()` conserva `.is-long` para resultados largos/DNF sin decidirlo por fotograma. Se reservan categorías, mezcla, encabezado, visor de escritorio e ilustración vacía para evitar saltos. En 360×640, la zona medida va de y=335 a y=565; mezclas extensas compactan el reloj. El horizontal sitúa el reloj a la izquierda. Estadísticas e historial usan separadores; PB y penalizaciones usan celeste, y el confeti multicolor queda oculto.
+
+**Visibilidad verificada:** las excepciones de `.scramble-card.fadeable` y `.topbar.fadeable` tienen la misma especificidad que la regla de foco y ganan por aparecer después. El conflicto afectaba a ambas en inspección; en resolución ya eran visibles. No se encontró otro conflicto de excepción equivalente. La ayuda se oculta por una regla separada de visibility, y sesión, navegación y aviso de actualización se atenúan a propósito.
+
+El smoke ahora espera las animaciones/transiciones finitas de texto, encabezado y ancestros antes de medir, y multiplica sus opacidades para verificar el texto efectivo. Falló con opacity=0 en inspección en los nueve tamaños antes del ajuste; pasó con opacity=1 en los seis estados pedidos y los nueve tamaños después. No se cambió lógica JS de la aplicación. El subtítulo de portada usa display:block y quedó debajo en ocho anchos, con separación entre rectángulos de texto de 6,28 a 7,72 px.
+
+### Métodos, Notación, Entrenar y paneles
+Portadas y tarjetas neutras, aire entre secciones, migas celestes subrayadas y controles consistentes. Los algoritmos F2L distinguen armado e inserción con peso/subrayado además del color. Notación mantiene un único visor, catálogo, secuencias y validación. Mirror conserva geometría y materiales; no se modificó su motor.
+
+Entrenar mantiene caso, mezcla y reloj como núcleo, con foco de teclado y filas táctiles. Ajustes, Cuenta y Más se anclan abajo en móvil; la ventana reducida a 390×420 conserva el foco y el sheet dentro del área visible. Se agregó `interactive-widget=resizes-content` para Chrome Android; esto no sustituye la prueba del teclado en un Android real. El aviso de versión permanece arriba y los avisos inferiores respetan la navegación y safe-area. Autenticación y sincronización permanecen intactas.
+
+### Movimiento y validación
+La curva de resorte vive en `--spring`; interacciones cortas usan `--duration-quick`, entradas `--duration-medium` y respuesta del reloj `--duration-spring`. El pulido de Fase 5 limita transiciones a `transform`/`opacity`, elimina animaciones decorativas de color/sombra y acota todos los hover a `@media (hover: hover)`. El anillo de inspección conserva `stroke-dashoffset` como información de tiempo. El desplazamiento solicitado por la UI usa `instant` con movimiento reducido.
+
+`page.emulateMedia({ reducedMotion: 'reduce' })` verifica la preferencia real; los sheets se miden después de `Animation.finished`. El último chequeo estático encontró 45 reglas hover protegidas y 0 transiciones fuera de transform/opacity. Las fuentes e íconos son locales; `backdrop-filter` queda limitado a encabezado, navegación y sheets.
+
+La comparación visual se regeneró en `~/Desktop/capturas-rediseno-v2/`: ocho imágenes móviles (las siete principales más Timer en inspección) y dos de escritorio. Cada imagen compara main y la rama; cada panel conserva 390×844 o 1280×800. Se revisaron las diez. La portada ya mantiene su subtítulo debajo del título; no quedaron otras diferencias no intencionales identificadas en esas diez comparativas. La mayor altura de texto/controles, el gráfico después del historial, la eliminación de tarjetas/decoración y el PB celeste son decisiones visuales intencionales.
+
+### Lighthouse móvil de cierre (2026-10-29)
+
+Lighthouse 13.6.0 temporal, Chrome headless, 390×844, DPR 1, throttling simulado, builds reales servidas por preview. main `55c58ad` se compiló en una copia temporal sin cambiar la rama; ocho auditorías secuenciales, una por ruta/versión, sin los otros smokes en ejecución. Son mediciones sintéticas de una corrida, no rendimiento de Android real.
+
+| Ruta | Performance main → v2 | Accesibilidad main → v2 | Best Practices | SEO | CLS main → v2 |
+|---|---:|---:|---:|---:|---:|
+| timer | 96 → 100 | 100 → 100 | 100 → 100 | 100 → 100 | 0.09135 → 0.00000 |
+| metodos | 79 → 85 | 96 → 100 | 100 → 100 | 100 → 100 | 0.00000 → 0.00000 |
+| notacion | 80 → 86 | 95 → 98 | 100 → 100 | 100 → 100 | 0.00000 → 0.00000 |
+| entrenar | 81 → 86 | 96 → 100 | 100 → 100 | 100 → 100 | 0.00000 → 0.00000 |
+
+Accesibilidad, Best Practices y SEO no bajaron; CLS de v2 fue 0 en las cuatro rutas. Los informes HTML/JSON están fuera del repo en `~/Desktop/capturas-rediseno-v2/lighthouse/`. Notación conserva el aviso previo `heading-order` (98 puntos, frente a 95 en main); no se modificaron sus encabezados fuera del alcance autorizado. Falta la prueba en un Android real y con teclado virtual real antes de cualquier merge. No se hizo merge ni push.
+
+---
+
+## Archivo histórico v1
+
 Este documento consolida la investigación visual de la **Fase 1**, el análisis de tendencias modernas, la auditoría del estado actual de la aplicación y la especificación detallada del sistema de diseño para la modernización estética y experiencia nativa en Android.
 
 ---

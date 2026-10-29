@@ -1,17 +1,20 @@
-/* Fuentes propias (solo la parte "latin": alcanza para el español). Vite las copia
-   al build y la PWA las guarda en caché, así funcionan sin conexión. */
+/* Inter variable (SIL Open Font License 1.1, texto en public/licenses/Inter-OFL.txt).
+   Solo la parte "latin": alcanza para el español. Vite la copia al build y la PWA la guarda
+   en caché, así funciona sin conexión. */
 @font-face {
-  font-family: 'Space Grotesk';
+  font-family: 'Inter';
   font-style: normal;
   font-display: swap;
-  font-weight: 300 700;
-  src: url('../node_modules/@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  src: url('../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') format('woff2-variations');
 }
 
+/* Respaldo con las métricas de Inter para que el cambio de fuente no mueva el layout (CLS 0). */
 @font-face {
-  font-family: 'JetBrains Mono';
-  font-style: normal;
-  font-display: swap;
-  font-weight: 100 800;
-  src: url('../node_modules/@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2') format('woff2-variations');
+  font-family: 'Inter Fallback';
+  src: local('Arial');
+  size-adjust: 107.4%;
+  ascent-override: 90.2%;
+  descent-override: 22.5%;
+  line-gap-override: 0%;
 }

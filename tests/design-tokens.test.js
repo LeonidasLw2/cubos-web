@@ -37,7 +37,7 @@ function parseHex(hex) {
 // Extrae variables :root desde un archivo CSS
 function extractRootTokens(cssContent) {
   const tokens = {};
-  const rootMatch = cssContent.match(/:root\s*\{([^}]+)\}/s);
+  const rootMatch = cssContent.replace(/\/\*[\s\S]*?\*\//g, '').match(/:root\s*\{([^}]+)\}/s);
   if (!rootMatch) return tokens;
   const lines = rootMatch[1].split(';');
   for (const line of lines) {
@@ -58,17 +58,18 @@ test('tokens de diseño: contraste WCAG AA en todas las combinaciones texto/supe
   const tokens = extractRootTokens(css);
 
   const surfaces = [
-    { name: '--bg-canvas', hex: tokens['--bg-canvas'] || '#090b10' },
-    { name: '--surface-1', hex: tokens['--surface-1'] || '#121620' },
-    { name: '--surface-2', hex: tokens['--surface-2'] || '#1b202c' },
-    { name: '--surface-3', hex: tokens['--surface-3'] || '#242b3b' },
-    { name: '--surface-sheet', hex: tokens['--surface-sheet'] || '#121620' },
+    { name: '--surface-solid', hex: tokens['--surface-solid'] || '#1a1a1d' },
+    { name: '--bg-canvas', hex: tokens['--bg-canvas'] || '#050506' },
+    { name: '--surface-1', hex: tokens['--surface-1'] || '#0e0e10' },
+    { name: '--surface-2', hex: tokens['--surface-2'] || '#17171a' },
+    { name: '--surface-3', hex: tokens['--surface-3'] || '#222226' },
+    { name: '--surface-sheet', hex: tokens['--surface-sheet'] || '#0e0e10' },
   ];
 
   const texts = [
-    { name: '--text-primary', hex: tokens['--text-primary'] || '#f1f5f9' },
-    { name: '--text-secondary', hex: tokens['--text-secondary'] || '#94a3b8' },
-    { name: '--text-tertiary', hex: tokens['--text-tertiary'] || '#8e9cb2' },
+    { name: '--text-primary', hex: tokens['--text-primary'] || '#f5f5f7' },
+    { name: '--text-secondary', hex: tokens['--text-secondary'] || '#a1a1a8' },
+    { name: '--text-tertiary', hex: tokens['--text-tertiary'] || '#8e8e96' },
   ];
 
   // Cada texto debe tener al menos 4.5:1 de contraste en TODAS las superficies donde se presente
@@ -84,11 +85,10 @@ test('tokens de diseño: contraste WCAG AA en todas las combinaciones texto/supe
 });
 
 test('tokens de diseño: acentos y elementos grandes cumplen WCAG >= 3.0:1', () => {
-  let cssPath = path.resolve('src/styles/tokens.css');
-  if (!fs.existsSync(cssPath)) cssPath = path.resolve('src/style.css');
-  const tokens = extractRootTokens(cssPath);
+  const tokens = extractRootTokens(fs.readFileSync(path.resolve('src/styles/tokens.css'), 'utf8'));
 
-  const bg = tokens['--bg-canvas'] || '#090b10';
+  const bg = tokens['--bg-canvas'] || '#050506';
+  assert.ok(contrastRatio(tokens['--text-disabled'], bg) >= 3, 'el borde de la zona táctil debe distinguirse del lienzo');
   const accents = [
     { name: '--c-celeste', hex: tokens['--c-celeste'] || '#74acdf' },
     { name: '--c-sol', hex: tokens['--c-sol'] || '#f6b40e' },
@@ -104,9 +104,7 @@ test('tokens de diseño: acentos y elementos grandes cumplen WCAG >= 3.0:1', () 
 });
 
 test('tokens de diseño: el azul del cubo se distingue claramente del celeste patrio', () => {
-  let cssPath = path.resolve('src/styles/tokens.css');
-  if (!fs.existsSync(cssPath)) cssPath = path.resolve('src/style.css');
-  const tokens = extractRootTokens(cssPath);
+  const tokens = extractRootTokens(fs.readFileSync(path.resolve('src/styles/tokens.css'), 'utf8'));
 
   const celeste = tokens['--c-celeste'] || '#74acdf';
   const cubeBlue = tokens['--c-cube-blue'] || '#2563eb';
@@ -123,4 +121,25 @@ test('tokens de diseño: el azul del cubo se distingue claramente del celeste pa
     `El celeste patrio (lum: ${lumC.toFixed(3)}) debe ser claramente más claro y distinto que el azul del cubo (lum: ${lumB.toFixed(3)})`
   );
   assert.notEqual(celeste.toLowerCase(), cubeBlue.toLowerCase(), 'No deben compartir el mismo valor hex');
+});
+
+test('tokens de diseño: el estado seleccionado y el botón primario se distinguen (>= 3:1) y se leen (>= 4.5:1)', () => {
+  const tokens = extractRootTokens(fs.readFileSync(path.resolve('src/styles/tokens.css'), 'utf8'));
+  const accent = tokens['--c-celeste'];
+  const onAccent = tokens['--on-accent'];
+  assert.ok(contrastRatio(onAccent, accent) >= 4.5, 'el texto sobre el relleno de acento tiene que leerse');
+  // Chip activo (relleno de acento) contra los vecinos sin seleccionar
+  for (const n of ['--surface-1', '--surface-2', '--surface-3']) {
+    const r = contrastRatio(accent, tokens[n]);
+    assert.ok(r >= 3, `acento seleccionado contra ${n}: ${r.toFixed(2)}:1 < 3:1`);
+  }
+});
+
+test('tokens de diseño: fondo casi negro, timer con peso >= 300 y una sola familia tipográfica', () => {
+  const tokens = extractRootTokens(fs.readFileSync(path.resolve('src/styles/tokens.css'), 'utf8'));
+  const [r, g, b] = parseHex(tokens['--bg-canvas']);
+  assert.ok(relativeLuminance(r, g, b) < 0.005, 'el fondo tiene que estar cerca del negro');
+  assert.ok(Number(tokens['--timer-weight']) >= 300, 'dígitos del timer: peso mínimo 300');
+  assert.match(tokens['--font-sans'], /^'Inter'/);
+  assert.equal(tokens['--font-mono'], 'var(--font-sans)', 'sin segunda familia para números: tabular-nums');
 });

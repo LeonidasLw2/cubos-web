@@ -1,5 +1,6 @@
 // Interfaz: conecta el DOM con el timer, los scrambles, las estadísticas y el almacenamiento.
 import { createTimer } from './timer.js';
+import { createTimerText } from './timer-text.js';
 import {
   inspectionDisplay,
   alertsCrossed,
@@ -86,6 +87,8 @@ const els = {
   empty: $('empty'),
   clearSession: $('clear-session'),
 };
+
+const updateTimerText = createTimerText(els.timer);
 
 const state = {
   event: getEvent(loadSelectedEvent(DEFAULT_EVENT)).id,
@@ -208,7 +211,7 @@ function renderTrend() {
   const [lx, ly] = g.points.at(-1);
   els.trendChart.innerHTML = `
     <defs><linearGradient id="trend-fill" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" style="stop-color: var(--c-blue); stop-opacity: 0.35" /><stop offset="1" style="stop-color: var(--c-blue); stop-opacity: 0" />
+      <stop offset="0" style="stop-color: var(--c-celeste); stop-opacity: 0.35" /><stop offset="1" style="stop-color: var(--c-celeste); stop-opacity: 0" />
     </linearGradient></defs>
     <path d="${g.area}" fill="url(#trend-fill)" />
     <path d="${g.line}" class="trend-line" />
@@ -274,7 +277,7 @@ function renderSolves() {
 
 // Pone el texto grande del timer. is-long se decide aquí (al cambiar de estado), no en cada cuadro.
 function showTimerText(text) {
-  els.timer.textContent = text;
+  updateTimerText(text);
   const long = text.length > 7 || text.startsWith('DNF');
   els.timer.classList.toggle('is-long', long);
   if (long) els.timer.style.setProperty('--timer-chars', text.length);
@@ -429,7 +432,7 @@ const timer = createTimer({
   onInspectionTick(elapsed) {
     soundAlerts(elapsed);
     const { text, level } = inspectionDisplay(elapsed, settings.countdown);
-    if (els.timer.textContent !== text) els.timer.textContent = text;
+    if (els.timer.textContent !== text) updateTimerText(text);
     els.timer.dataset.level = level;
     if (els.timerZone.dataset.level !== level) els.timerZone.dataset.level = level;
   },
@@ -440,7 +443,7 @@ const timer = createTimer({
   },
 
   onTick(ms) {
-    if (settings.timerDisplay === 'time') els.timer.textContent = formatTime(ms);
+    if (settings.timerDisplay === 'time') updateTimerText(formatTime(ms));
   },
 
   onSolve: addSolve,
@@ -748,6 +751,9 @@ export function initUI() {
     });
   }
   if (els.togglePreview) {
+    const open = window.matchMedia('(min-width: 861px)').matches;
+    els.card.classList.toggle('preview-open', open);
+    els.togglePreview.setAttribute('aria-expanded', String(open));
     els.togglePreview.addEventListener('click', () => {
       const open = els.card.classList.toggle('preview-open');
       els.togglePreview.setAttribute('aria-expanded', String(open));

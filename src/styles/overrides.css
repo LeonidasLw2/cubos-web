@@ -137,78 +137,7 @@
     min-width: 0;
   }
 
-  /* Timer a la izquierda (completo, sobre la barra inferior); mezcla y tiempos a la derecha */
-  .layout {
-    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
-    grid-template-rows: auto 1fr;
-    align-items: start;
-    gap: 12px;
-  }
-
-  .practice {
-    display: contents;
-  }
-
-  .timer-zone {
-    grid-column: 1;
-    grid-row: 1 / span 2;
-    flex: 0 0 auto;
-    min-height: 0;
-    /* alto libre = pantalla - barra superior (~113) - barra inferior (~61) - márgenes */
-    height: clamp(150px, calc(100dvh - 190px), 260px);
-  }
-
-  /* Sin la vista 2D: en la columna angosta la mezcla se partiría en muchísimas líneas */
-  .timer-zone .hint,
-  .timer-zone .cancel-inspection {
-    margin-top: 6px;
-  }
-
-  .scramble-card {
-    grid-column: 2;
-    grid-row: 1;
-    grid-template-columns: minmax(0, 1fr);
-    padding: 8px 12px;
-  }
-
-  .scramble-view,
-  .preview-toggle {
-    display: none;
-  }
-
-  .scramble {
-    font-size: 0.9rem;
-  }
-
-  .session {
-    grid-column: 2;
-    grid-row: 2;
-  }
-
-  /* Inspección y resolución: pantalla completa (la altura fija de arriba no vale) y tamaños según la altura */
-  body[data-phase='inspection'] .timer-zone,
-  body[data-phase='running'] .timer-zone {
-    height: auto;
-  }
-
-  body[data-phase='inspection'] .timer-stage {
-    width: min(60vh, 260px);
-    height: min(60vh, 260px);
-  }
-
-  .insp-ring {
-    --ring-size: min(60vh, 260px);
-  }
-
-  .timer[data-inspecting] {
-    font-size: clamp(3rem, 26vh, 8rem);
-  }
-
-  body[data-phase='running'] .timer:not(.solving) {
-    font-size: clamp(3rem, 34vh, 9rem);
-  }
-
-  /* La barra superior no se queda fija: sobra poco alto */
+  /* La barra superior no se queda fija: sobra poco alto. */
   .topbar {
     position: static;
   }

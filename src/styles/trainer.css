@@ -18,7 +18,7 @@
   background: var(--surface-1);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
+  box-shadow: none;
 }
 
 .trainer-cube {
@@ -64,7 +64,7 @@
   user-select: none;
   -webkit-user-select: none;
   touch-action: none;
-  transition: all var(--duration-quick) var(--ease-standard);
+  transition: transform var(--duration-quick) var(--spring), opacity var(--duration-quick);
 }
 
 .trainer-pad .timer {
@@ -72,12 +72,12 @@
 }
 
 .trainer-pad[data-state='holding'] .timer {
-  color: var(--c-cube-red);
+  color: var(--c-celeste);
   transform: scale(0.97);
 }
 
 .trainer-pad[data-state='ready'] .timer {
-  color: var(--c-cube-green);
+  color: var(--c-celeste);
   transform: scale(1.02);
 }
 
@@ -126,7 +126,7 @@
   padding: 8px 10px;
   border-bottom: 1px solid var(--border-subtle);
   font-variant-numeric: tabular-nums;
-  transition: background var(--duration-quick);
+  transition: transform var(--duration-quick) var(--spring), opacity var(--duration-quick);
 }
 
 @media (hover: hover) {
@@ -150,7 +150,7 @@
 .trainer-row input {
   width: 20px;
   height: 20px;
-  accent-color: var(--c-cube-green);
+  accent-color: var(--c-celeste);
 }
 
 .trainer-row-name small {
@@ -174,4 +174,26 @@
     padding: 8px 4px;
     font-size: 0.9rem;
   }
+}
+/* Entrenar: el caso y el tiempo comparten una zona de práctica despejada. */
+.trainer-sets { min-height: 64px; padding-block: 8px; margin-bottom: 24px; }
+.trainer-sets .event-btn { min-height: 48px; }
+.trainer-practice { padding: 24px 0; border: 0; border-block: 1px solid var(--border-subtle); border-radius: 0; background: none; gap: 32px; }
+.trainer-cube { background: var(--surface-1); border-radius: var(--radius-xl); }
+.trainer-side { min-width: 0; }
+.trainer-scramble { min-height: 72px; font-size: 1rem; }
+.trainer-pad { min-height: 192px; padding: 24px 12px; border-color: var(--text-disabled); border-radius: var(--radius-xl); background: none; overscroll-behavior: contain; }
+.trainer-pad:focus-visible { outline: 2px solid var(--c-celeste); outline-offset: 3px; }
+.trainer-pad .timer { font-weight: 300; }
+.trainer-pad:is([data-state='holding'], [data-state='ready']) { border-color: var(--c-celeste); }
+.trainer-pad:is([data-state='holding'], [data-state='ready']) .timer-decimals { color: inherit; }
+.trainer-pad .hint { max-width: 40ch; margin: 12px auto 0; font-size: var(--font-xs); }
+.trainer-row { min-height: 56px; grid-template-columns: 32px minmax(0, 1fr) 44px 64px 64px; }
+.trainer-row-name { min-width: 0; overflow-wrap: anywhere; }
+.trainer-row input { accent-color: var(--c-celeste); }
+.trainer-bulk .text-btn, .trainer-actions .data-btn { min-height: 48px; }
+@media (max-width: 860px) { .trainer-practice { grid-template-columns: 1fr; gap: 24px; } }
+@media (max-width: 600px) {
+  .trainer-row { grid-template-columns: 28px minmax(0, 1fr) 32px 56px 56px; font-size: var(--font-xs); }
+  .trainer-cube { width: min(100%, 320px); height: 220px; min-height: 220px; }
 }

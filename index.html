@@ -2,8 +2,8 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#090b10" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
+    <meta name="theme-color" content="#050506" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -11,9 +11,10 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png" />
     <!-- El enlace al manifest lo agrega vite-plugin-pwa al armar la página. -->
+    <link rel="preload" href="./node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
     <title>CubeSolver · Timer</title>
   </head>
-  <body>
+  <body data-view="timer">
     <header class="topbar fadeable">
       <div class="top-row">
         <a href="#/timer" class="brand" aria-label="CubeSolver · Ir al Timer">
@@ -107,12 +108,11 @@
           </button>
         </div>
       </div>
-
-      <nav class="events timer-only" id="events" aria-label="Categoría"></nav>
     </header>
 
     <main class="layout" id="view-timer">
-      <section class="practice">
+      <section class="practice" aria-label="Cronómetro">
+        <nav class="events timer-only" id="events" aria-label="Categoría"></nav>
         <div class="scramble-card fadeable" id="scramble-card">
           <div class="scramble-main">
             <p class="scramble" id="scramble" aria-live="polite">Generando scramble...</p>
@@ -120,7 +120,7 @@
               <button class="icon-btn toggle-view-btn" id="toggle-view" type="button" title="Alternar vista 3D / 2D" aria-label="Alternar vista 3D / 2D">
                 <span id="view-mode-badge" class="view-badge">3D</span>
               </button>
-              <!-- Solo en celular: pliega o muestra el cubo de la mezcla para que el timer quepa sin scroll -->
+              <!-- Pliega el cubo sin mover ni volver a montar el visor. -->
               <button class="icon-btn preview-toggle" id="toggle-preview" type="button" aria-expanded="false" aria-controls="scramble-view" title="Mostrar u ocultar el cubo" aria-label="Mostrar u ocultar el cubo">
                 <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
                   <path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Zm0 9 8-4.5M12 12 4 7.5M12 12v9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
@@ -136,7 +136,7 @@
           <div class="scramble-view" id="scramble-view"></div>
         </div>
 
-        <div class="timer-zone" id="timer-zone">
+        <div class="timer-zone" id="timer-zone" tabindex="0" role="group" aria-label="Zona táctil del cronómetro">
           <div class="pb-badge" id="pb-badge" aria-hidden="true">¡Nuevo PB!</div>
           <!-- Festejo de PB: papelitos de los 6 colores (solo CSS) -->
           <div class="pb-burst" id="pb-burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>

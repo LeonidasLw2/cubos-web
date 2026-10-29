@@ -5,7 +5,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 // En GitHub Pages la página vive en una subcarpeta: https://<usuario>.github.io/cubos-web/
 const BASE = '/cubos-web/';
 // Mismo color que el fondo de la página (--bg en style.css).
-const BACKGROUND = '#090b10';
+const BACKGROUND = '#050506';
 
 export default defineConfig({
   // Vite antepone esta ruta a todos los archivos (JS, CSS, workers de cubing.js, íconos).

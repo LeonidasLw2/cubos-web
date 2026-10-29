@@ -3,8 +3,8 @@
        (franjas celeste #74ACDF / blanco / celeste y Sol de Mayo dorado #F6B40E en el centro frontal). -->
   <defs>
     <linearGradient id="fondo" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#192334" />
-      <stop offset="1" stop-color="#0b0f17" />
+      <stop offset="0" stop-color="#1c1c20" />
+      <stop offset="1" stop-color="#050506" />
     </linearGradient>
     <radialGradient id="brillo" cx="0.5" cy="0.38" r="0.58">
       <stop offset="0" stop-color="#74ACDF" stop-opacity="0.28" />

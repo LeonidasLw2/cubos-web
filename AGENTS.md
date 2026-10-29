@@ -17,3 +17,10 @@ Si este archivo contradice a `CLAUDE.md` o `PLAN.md`, valen esos dos. Si al term
 - No rompas los datos guardados de versiones anteriores (se normalizan al cargar).
 - Comentarios breves en español. Explicá los cambios en español, porque el usuario está aprendiendo.
 - Antes de cambios grandes, de borrar archivos o de hacer push, explicá el plan y pedí confirmación.
+
+## Rediseño visual v2 (rama `rediseno-v2`)
+Si la rama actual es `rediseno-v2`, o te piden trabajar en el rediseño visual, leé **`docs/REDISENO-V2.md`** además de `CLAUDE.md` y `DESIGN.md`. Ese archivo manda para ese trabajo: define las fases pendientes, las restricciones y los dos modos de ejecución.
+Para esa rama valen estas excepciones a las reglas de arriba:
+- No hagas `git pull` (la rama no tiene remoto) y nunca hagas push ni merge.
+- El trabajo se organiza en las fases del rediseño (2 a 5), no en las fases A–G de `PLAN.md`.
+- "Pedí confirmación antes de cambios grandes" se cumple así: en el modo con pausas, frená al final de cada fase y esperá el "Confirmado" de Leo; en el modo desatendido (solo si el prompt dice "MODO DESATENDIDO") no hay nadie para confirmar, así que seguí el protocolo de `docs/REDISENO-V2.md` y respetá sus prohibiciones absolutas.

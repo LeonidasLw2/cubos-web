@@ -410,7 +410,7 @@ function renderPageHero({ title, subtitle = '', intro = [], chips = [], accent =
         <div class="method-hero-text">${paragraphs(intro)}</div>
       </div>
       <div class="method-hero-visual">
-        <div class="hero-cube-stage" aria-label="Vista 3D interactiva"></div>
+        <div class="hero-cube-stage" role="region" aria-label="Vista 3D interactiva"></div>
         <div class="hero-cube-caption">
           <span>Arrastrá para rotar en 3D</span>
           <button type="button" class="hero-replay-btn" data-hero-play>▶ Animar ejemplo</button>
@@ -491,7 +491,7 @@ function renderStepper(steps, { title = 'Línea de etapas', isScroll = false } =
       const link = e.target.closest('[data-scroll-to]');
       if (!link) return;
       e.preventDefault();
-      document.getElementById(link.dataset.scrollTo)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.getElementById(link.dataset.scrollTo)?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
     });
   }
   return wrap;
@@ -602,7 +602,7 @@ function attachCaseExplorer(page, groups = []) {
           <strong>Tu progreso en esta página</strong>
           <span id="explorer-progress-label">0 / 0 aprendidos (0%)</span>
         </div>
-        <div class="explorer-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="explorer-progress-track" role="progressbar" aria-label="Casos aprendidos" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
           <div class="explorer-progress-fill" id="explorer-progress-fill" style="width: 0%"></div>
         </div>
       </div>
@@ -610,7 +610,7 @@ function attachCaseExplorer(page, groups = []) {
       <div class="explorer-controls-row">
         <label class="explorer-search">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="search" id="explorer-search-input" placeholder="Buscar caso, forma o algoritmo (ej. Sune, R U R')…" autocomplete="off" />
+          <input type="search" id="explorer-search-input" aria-label="Buscar caso, forma o algoritmo" placeholder="Buscar caso, forma o algoritmo (ej. Sune, R U R')…" autocomplete="off" />
         </label>
 
         ${
@@ -764,9 +764,9 @@ function methodsPresentation() {
           <h4>Capa por Capa (LBL)</h4>
           <p>La forma más intuitiva de empezar en 2x2, 3x3 o Pyraminx. Con pocos algoritmos aprendés a colocar esquinas y aristas sin desarmar lo que ya construiste.</p>
           <ul class="pathway-features">
-            <li>🎯 Objetivo 3x3: ~45 s – 2 min</li>
+            <li>Objetivo 3x3: ~45 s – 2 min</li>
             <li>🧠 3 algoritmos básicos</li>
-            <li>💡 Ideal para tu primera tarde</li>
+            <li>Ideal para tu primera tarde</li>
           </ul>
         </div>
 
@@ -775,9 +775,9 @@ function methodsPresentation() {
           <h4>CFOP de 2 looks → Completo</h4>
           <p>El método más usado en speedcubing. Empezá con CFOP de 2 looks (${UNIFIED_COUNTS.twoLookCfop} algoritmos: ${UNIFIED_COUNTS.twoLookOll} de OLL + ${UNIFIED_COUNTS.twoLookPll} de PLL) y avanzá hacia los ${UNIFIED_COUNTS.fullCfop} casos completos.</p>
           <ul class="pathway-features">
-            <li>🎯 Objetivo: ~8 s – 25 s</li>
-            <li>⚡ Cruz + F2L (${UNIFIED_COUNTS.fullF2l}) + OLL (${UNIFIED_COUNTS.fullOll}) + PLL (${UNIFIED_COUNTS.fullPll})</li>
-            <li>🚀 Progresión paso a paso</li>
+            <li>Objetivo: ~8 s – 25 s</li>
+            <li>Cruz + F2L (${UNIFIED_COUNTS.fullF2l}) + OLL (${UNIFIED_COUNTS.fullOll}) + PLL (${UNIFIED_COUNTS.fullPll})</li>
+            <li>Progresión paso a paso</li>
           </ul>
         </div>
 
@@ -786,8 +786,8 @@ function methodsPresentation() {
           <h4>Roux, Ortega/CLL y Yau</h4>
           <p>Dominá métodos sin rotaciones como Roux (~48 giros en 3x3), CLL en 2x2 y la reducción avanzada Yau / Yau5 para 4x4 y 5x5.</p>
           <ul class="pathway-features">
-            <li>🎯 Alta eficiencia de movimientos</li>
-            <li>🧩 Bloques 1×2×3, CMLL y 3-2-3</li>
+            <li>Alta eficiencia de movimientos</li>
+            <li>Bloques 1×2×3, CMLL y 3-2-3</li>
             <li>✨ Dominio completo de las categorías</li>
           </ul>
         </div>
@@ -795,21 +795,21 @@ function methodsPresentation() {
 
       <div class="features-banner">
         <div class="feature-item">
-          <div class="feature-icon">🎮</div>
+          <div class="feature-icon">${statIconSvg('moves')}</div>
           <div class="feature-text">
             <strong>Visor 3D Único + Miniaturas 2D</strong>
             <span>Miniaturas 2D instantáneas en cada tarjeta y un visor 3D interactivo compartido que no traba el celular.</span>
           </div>
         </div>
         <div class="feature-item">
-          <div class="feature-icon">✅</div>
+          <div class="feature-icon">${statIconSvg('book')}</div>
           <div class="feature-text">
             <strong>Seguimiento de Progreso</strong>
             <span>Marcá los casos que ya aprendiste, filtrá los que te faltan y sincronizalos en la nube.</span>
           </div>
         </div>
         <div class="feature-item">
-          <div class="feature-icon">🔍</div>
+          <div class="feature-icon">${statIconSvg('layers')}</div>
           <div class="feature-text">
             <strong>Algoritmos Verificados con KPuzzle</strong>
             <span>Cada algoritmo de la plataforma se comprueba matemáticamente antes de publicarse.</span>

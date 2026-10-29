@@ -144,7 +144,7 @@ export function renderNotation(container, route = {}) {
         <span class="notation-puzzle-tag">${spec.name}</span>
       </div>
       <p class="notation-viewer-desc" id="notation-active-desc">${moveDesc.description}</p>
-      <div class="notation-stage-box" id="notation-stage-box" aria-label="Visor 3D de notación"></div>
+      <div class="notation-stage-box" id="notation-stage-box" role="region" aria-label="Visor 3D de notación"></div>
       <div class="notation-stage-hint">Arrastrá con el mouse o el dedo para rotar la vista</div>
       <div class="notation-controls">
         <button type="button" class="btn-secondary btn-sm" id="notation-btn-play" title="Reproducir giro">
@@ -310,16 +310,16 @@ export function renderNotation(container, route = {}) {
   floatingBtn.id = 'notation-floating-btn';
   floatingBtn.hidden = true;
   floatingBtn.setAttribute('aria-label', 'Subir al visor 3D');
-  floatingBtn.innerHTML = `<span>🧊 Ver en 3D</span> <strong id="notation-floating-badge">${escapeHtml(activeAlg)}</strong> <span>↑</span>`;
+  floatingBtn.innerHTML = `<span>Ver en 3D</span> <strong id="notation-floating-badge">${escapeHtml(activeAlg)}</strong> <span>↑</span>`;
   page.appendChild(floatingBtn);
 
   floatingBtn.addEventListener('click', () => {
-    viewerAside.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    viewerAside.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
     floatingBtn.hidden = true;
   });
 
   page.querySelector('#notation-jump-down-btn')?.addEventListener('click', () => {
-    page.querySelector('.notation-group-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    page.querySelector('.notation-group-section')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
   });
 
   if (typeof IntersectionObserver !== 'undefined') {
