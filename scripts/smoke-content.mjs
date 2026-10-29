@@ -4,7 +4,7 @@ import { chromium } from 'playwright-core';
 const BASE = process.argv[2] ?? 'http://localhost:4173/cubos-web/';
 const browser = await chromium.launch({ channel: 'chrome', headless: true });
 try {
-  for (const width of [360, 390, 768, 861, 1024, 1280]) {
+  for (const width of [360, 390, 412, 667, 768, 861, 1024, 1280]) {
     const context = await browser.newContext({ viewport: { width, height: 844 }, isMobile: width < 861, hasTouch: width < 861 });
     const page = await context.newPage();
     const errors = [];
@@ -16,6 +16,16 @@ try {
       assert.equal(await page.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth)), width, `${width} ${route}: desborde`);
       const blur = await page.locator('main:visible').evaluate((el) => [...el.querySelectorAll('*')].filter((n) => getComputedStyle(n).backdropFilter !== 'none').length);
       assert.equal(blur, 0, `${route}: vidrio en contenido`);
+      if (route === '#/metodos') {
+        const gap = await page.locator('.method-hero h2 small').evaluate((subtitle) => {
+          const title = document.createRange();
+          title.setStart(subtitle.parentNode, 0);
+          title.setEndBefore(subtitle);
+          return subtitle.getBoundingClientRect().top - title.getBoundingClientRect().bottom;
+        });
+        assert.ok(gap >= 0, `${width}px: subtítulo superpuesto al título (${gap}px)`);
+        console.log(`  subtítulo ${width}px: debajo del título, separación ${gap.toFixed(2)}px`);
+      }
     }
     await page.goto(BASE + '#/metodos/3x3/cfop/pll');
     await page.waitForSelector('.case-card');

@@ -235,5 +235,6 @@ Este documento registra el plan de trabajo en fases (A–G) y su estado actual.
 - [x] Fase 2: Timer (Instrumento), responsive, estados, visor plegable, sesión y QA de interfaz.
 - [x] Fase 3: Métodos y Notación; chequeos de contenido e interfaz aprobados.
 - [x] Fase 4: Entrenador, Mirror y paneles; visor inicial de escritorio y QA aprobados.
-- [ ] Fase 5: pulido y nueve comparativas preparados; detenida por mezcla transparente durante inspección. Lighthouse y Android físico pendientes.
+- [x] Fase 5: corrección de visibilidad, pulido, diez comparativas y chequeos completos; Lighthouse móvil comparado con main, A11y/BP/SEO sin bajar y CLS 0.
+- Pendiente antes de merge: Android físico y teclado virtual real.
 - Guía vigente: `docs/REDISENO-V2.md`; mediciones: `docs/REPORTES-REDISENO.md`.

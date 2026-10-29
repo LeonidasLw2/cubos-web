@@ -1,5 +1,12 @@
 # Reportes del rediseño visual v2
-
+MODO DESATENDIDO. Estás en ~/cubos-web, rama rediseno-v2. Leé AGENTS.md, docs/REDISENO-V2.md y docs/REPORTES-REDISENO.md. El último commit es "wip(design): fase 5 - detenido por mezcla oculta": retomá desde ahí.
+Diagnóstico de Leo del bloqueo real (confirmado en timer.css): la línea 235, body[data-phase='inspection'] .fadeable:not(.hint), tiene más especificidad que la excepción de la línea 237, body[data-view='timer'] .scramble-card { opacity: 1 }, así que la mezcla queda con opacity 0 en inspección y corriendo. La restricción de la guía dice que el texto de la mezcla siempre es visible.
+Autorizado: corregí la especificidad en CSS (por ejemplo excluyendo .scramble-card en la regla de .fadeable o subiendo la especificidad de la excepción). Revisá si .topbar tiene el mismo problema y si hay otras excepciones con el mismo patrón, y decime cuáles encontraste. No toques lógica JS.
+Corregí smoke-timer: debe esperar a que terminen las transiciones (Animation.finished o getAnimations) antes de medir opacidad, y debe verificar que el texto de la mezcla es visible (opacity 1) en reposo, inspección, corriendo, resultado, +2 y DNF, en los 9 tamaños (no solo en escritorio). Probá antes que el chequeo falla con el bug y pasa con la corrección. Un intento por cada defecto del chequeo, máximo 2.
+Luego retomá la Fase 5: mantené todo lo ya hecho, corré todos los chequeos, Lighthouse móvil con `npx -y lighthouse` (13.6.0) sobre la build real de esta rama y la de main, y comparalos: Accessibility, Best Practices y SEO sin bajar, CLS 0.
+La diferencia no intencional que viste en el subtítulo de portada de Métodos (comparte línea con el título): corregila para que quede debajo del título en todos los anchos, o explicá con mediciones por qué no.
+Volvé a sacar las capturas "antes | después" con el bug ya corregido y reemplazá las de ~/Desktop/capturas-rediseno-v2/ (mismas reglas: fuera del repo, 7 móviles y 2 escritorio, y ahora agregá una del Timer en inspección a 390×844 para mostrar la mezcla visible).
+Dejá escrito que falta la prueba en un Android real y el teclado virtual real. NO hagas merge ni push. Al terminar: "ESTADO FINAL: COMPLETO hasta Fase 5" en docs/REPORTES-REDISENO.md; si algo falla de verdad, "ESTADO FINAL: DETENIDO" y el motivo. No preguntes nada: no hay nadie para responder.
 ## Fase 1 — cierre (2026-10-29)
 - Retirado el verificador de migración CSS autorizado; smoke-ui es el criterio vigente.
 - Timer y Entrenador comparten createTimerText: dos spans persistentes, centésimos secundarios, texto completo y .is-long conservados.
@@ -86,4 +93,20 @@ Dejá escrito que falta la prueba en un Android real. NO hagas merge ni push. Al
 - Lighthouse NO VERIFICADO: CLI temporal 13.6.0 disponible, auditorías no iniciadas por la detención. No se agregaron dependencias al proyecto; la copia temporal de main instaló sus dependencias declaradas para compilar sus fuentes originales.
 - Android físico, teclado virtual real y revisión completa de capturas pendientes. Fuentes locales y recarga sin conexión aprobadas en Fase 4. Sin cambios de datos, algoritmos, sincronización ni credenciales; sin merge ni push.
 
-ESTADO FINAL: DETENIDO en Fase 5
+
+## Fase 5 — cierre y verificación final (2026-10-29)
+- Corregida especificidad solo en CSS: .scramble-card y .topbar fallaban en inspección; corriendo ya daban opacity 1. No se encontró otra excepción equivalente; ayuda/sesión/navegación/aviso conservan su atenuación intencional.
+- smoke-timer espera Animation.finished en texto/encabezado y ancestros y comprueba opacidad efectiva: falló en 9/9 con el bug y pasó en 9/9 corregido, en reposo/inspección/corriendo/resultado/+2/DNF (54 comprobaciones requeridas). Sin cambios de lógica JS de la app.
+- Subtítulo debajo del título por CSS en ocho anchos, separación medida 6,28–7,72 px. No hizo falta reintentar por defectos del chequeo en esta reanudación.
+- npm test 116/116; verify-algs 357 casos, 428 algoritmos y 3152 comprobaciones; build aprobado. smoke-ui: 70 combinaciones, cuatro flujos, consola 0, desborde 0 px.
+- smoke-content: 5 rutas × 8 anchos; smoke-panels: 5 tamaños, normal/reduce, hueco inferior 0 px, player sin mover/remontar. CLS del Timer 0 en nueve tamaños; recarga sin conexión aprobada.
+- Lighthouse 13.6.0 móvil 390×844, DPR 1, throttling simulado, una auditoría secuencial por ruta/versión; builds reales main=55c58ad y rama. Valores P/A11y/BP/SEO antes → después:
+- Timer: 96/100/100/100 → 100/100/100/100; CLS 0,09135 → 0.
+- Métodos: 79/96/100/100 → 85/100/100/100; CLS 0 → 0.
+- Notación: 80/95/100/100 → 86/98/100/100; CLS 0 → 0. Persiste aviso previo heading-order.
+- Entrenar: 81/96/100/100 → 86/100/100/100; CLS 0 → 0. Se cumplen A11y/BP/SEO sin bajar y CLS 0 en las cuatro rutas.
+- Regeneradas y revisadas 10 comparativas externas: 7 pantallas móviles + inspección (390×844 por panel) y 2 escritorio (1280×800); ~/Desktop/capturas-rediseno-v2/. Informes Lighthouse HTML/JSON y prueba rojo/verde guardados allí; sin capturas en Git.
+- Diferencias no intencionales identificadas, corregidas: mezcla/encabezado en inspección y subtítulo inline. No se observaron otras en las 10 comparativas; esto no recorre visualmente cada caso individual. Documentación v2 actualizada; fuentes locales, datos y sincronización conservados.
+- Pendientes: Android real y teclado virtual real. Lighthouse es una corrida sintética por ruta/versión; no reemplaza hardware real. Árbol limpio al cierre, sin merge ni push.
+
+ESTADO FINAL: COMPLETO hasta Fase 5

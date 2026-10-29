@@ -717,6 +717,8 @@ a.link-card:hover .card-action {
 }
 
 .method-hero h2 small {
+  display: block;
+  margin-top: 8px;
   color: var(--c-celeste);
   font-size: 0.55em;
   font-weight: 600;

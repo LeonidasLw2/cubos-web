@@ -234,7 +234,8 @@ body[data-phase='running'] .timer-zone { cursor: none; }
 .fadeable { transition: opacity var(--duration-medium); }
 body[data-phase='inspection'] .fadeable:not(.hint), body[data-phase='running'] .fadeable { opacity: 0; pointer-events: none; }
 /* La mezcla sigue legible durante la inspección y la resolución. */
-body[data-view='timer'] .topbar, body[data-view='timer'] .scramble-card { opacity: 1; }
+body[data-view='timer'] .topbar.fadeable,
+body[data-view='timer'] .scramble-card.fadeable { opacity: 1; }
 body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) .scramble-view { visibility: hidden; }
 
 .solving-indicator { display: none; flex-direction: column; align-items: center; gap: 16px; color: var(--text-secondary); font-size: var(--font-xs); font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; }

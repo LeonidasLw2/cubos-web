@@ -24,6 +24,15 @@ try {
 
     });
     const geometry = async (label) => {
+      await page.evaluate(async () => {
+        const elements = new Set();
+        for (const target of [document.querySelector('#scramble'), document.querySelector('.topbar')]) {
+          for (let element = target; element; element = element.parentElement) elements.add(element);
+        }
+        const animations = [...elements].flatMap((element) => element.getAnimations())
+          .filter((animation) => Number.isFinite(animation.effect.getComputedTiming().endTime));
+        await Promise.all(animations.map((animation) => animation.finished));
+      });
       const m = await page.evaluate(() => {
         const zone = document.querySelector('#timer-zone').getBoundingClientRect();
         const timer = document.querySelector('#timer');
@@ -31,11 +40,16 @@ try {
         const nav = document.querySelector('.bottom-nav');
         const limit = getComputedStyle(nav).display === 'none' ? innerHeight : nav.getBoundingClientRect().top;
         const scramble = document.querySelector('#scramble');
+        const styles = [];
+        for (let element = scramble; element; element = element.parentElement) styles.push(getComputedStyle(element));
+        const textOpacity = styles.reduce((opacity, style) => opacity * Number(style.opacity), 1);
+        const topbarOpacity = getComputedStyle(document.querySelector('.topbar')).opacity;
         return {
           viewport: innerWidth, over: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth),
           zone: { top: zone.top, bottom: zone.bottom, width: zone.width, height: zone.height }, limit,
           timeFits: time.left >= zone.left && time.right <= zone.right && time.top >= zone.top && time.bottom <= zone.bottom,
-          scrambleVisible: getComputedStyle(scramble).visibility !== 'hidden' && getComputedStyle(scramble.parentElement.parentElement).opacity === '1',
+          scrambleVisible: scramble.getClientRects().length > 0 && styles.every((style) => style.display !== 'none' && style.visibility === 'visible'),
+          textOpacity, topbarOpacity,
         };
       });
       assert.equal(m.viewport, width, `${label}: viewport`);
@@ -43,6 +57,8 @@ try {
       assert.ok(m.zone.top >= 0 && m.zone.bottom <= m.limit + 1, `${label}: zona ${m.zone.top}–${m.zone.bottom}, límite ${m.limit}`);
       assert.ok(m.timeFits, `${label}: dígitos fuera de la zona`);
       assert.ok(m.scrambleVisible, `${label}: mezcla oculta`);
+      if (label !== 'loading') assert.equal(m.textOpacity, 1, `${label}: opacidad efectiva de la mezcla`);
+      assert.equal(m.topbarOpacity, '1', `${label}: opacidad del encabezado`);
       return m;
     };
     try {
@@ -152,7 +168,7 @@ try {
         console.log('  ✔ recarga sin conexión: interfaz, fuente local y generación de mezcla');
       }
       assert.deepEqual(errors, []);
-      console.log(`✔ ${width}×${height}: CLS=${cls}; zona=${Math.round(idle.zone.top)}–${Math.round(idle.zone.bottom)}; estados, spans, visor único, foco y reduced-motion`);
+      console.log(`✔ ${width}×${height}: mezcla opacity=1 en reposo/inspección/corriendo/resultado/+2/DNF; CLS=${cls}; zona=${Math.round(idle.zone.top)}–${Math.round(idle.zone.bottom)}; estados, spans, visor único, foco y reduced-motion`);
     } catch (error) {
       failures++;
       console.error(`✖ ${width}×${height}: ${error.message}`);
