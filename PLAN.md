@@ -232,6 +232,6 @@ Este documento registra el plan de trabajo en fases (A–G) y su estado actual.
 ## Rediseño visual v2 (rama local `rediseno-v2`)
 - [x] Fase 0: maquetas y dirección A aprobada.
 - [x] Fase 1: tokens, componentes base, smoke de interfaz y cierre de centésimos.
-- [ ] Fase 2: Timer.
+- [x] Fase 2: Timer (Instrumento), responsive, estados, visor plegable, sesión y QA de interfaz.
 - [ ] Fases 3–5: pendientes; no autorizadas en esta ejecución.
 - Guía vigente: `docs/REDISENO-V2.md`; mediciones: `docs/REPORTES-REDISENO.md`.

@@ -20,13 +20,14 @@ try {
       new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) if (!entry.hadRecentInput) window.timerCLS += entry.value;
       }).observe({ type: 'layout-shift', buffered: true });
-      localStorage.setItem('cubos-web:settings', JSON.stringify({ alerts: 'none' }));
+      if (!localStorage.getItem('cubos-web:settings')) localStorage.setItem('cubos-web:settings', JSON.stringify({ alerts: 'none' }));
 
     });
     const geometry = async (label) => {
       const m = await page.evaluate(() => {
         const zone = document.querySelector('#timer-zone').getBoundingClientRect();
-        const time = document.querySelector('#timer').getBoundingClientRect();
+        const timer = document.querySelector('#timer');
+        const time = (getComputedStyle(timer).display === 'none' ? document.querySelector('#solving-indicator') : timer).getBoundingClientRect();
         const nav = document.querySelector('.bottom-nav');
         const limit = getComputedStyle(nav).display === 'none' ? innerHeight : nav.getBoundingClientRect().top;
         const scramble = document.querySelector('#scramble');
@@ -123,6 +124,19 @@ try {
       assert.equal(await page.locator('#timer-zone').evaluate((el) => getComputedStyle(el).touchAction), 'none');
       assert.equal(await page.locator('#timer-zone').evaluate((el) => getComputedStyle(el).overscrollBehaviorY), 'contain');
       assert.equal(await page.locator('#timer').evaluate((el) => getComputedStyle(el).fontWeight), '300');
+      if ((width === 360 && height === 640) || width === 1280) {
+        await page.evaluate(() => localStorage.setItem('cubos-web:settings', JSON.stringify({ alerts: 'none', inspection: false, timerDisplay: 'solving' })));
+        await page.reload();
+        await page.waitForFunction(() => !document.querySelector('#scramble').classList.contains('loading'));
+        await page.keyboard.down('Space'); await page.waitForTimeout(650); await page.keyboard.up('Space');
+        await page.waitForFunction(() => document.body.dataset.phase === 'running');
+        assert.ok(await page.locator('#solving-indicator').isVisible());
+        assert.ok(await page.locator('#timer').isHidden());
+        await geometry('tiempo oculto');
+        await page.keyboard.press('Space');
+        await page.waitForFunction(() => document.body.dataset.phase === 'idle');
+        console.log('  ✔ modo de tiempo oculto: indicador y resultado reales');
+      }
       if (width === 1280) {
         await page.evaluate(() => navigator.serviceWorker.ready);
         await page.reload();
