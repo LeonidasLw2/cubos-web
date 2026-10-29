@@ -31,11 +31,11 @@ try {
     await page.waitForSelector('#case-modal-stage twisty-player');
     assert.equal(await page.locator('#case-modal-stage twisty-player').count(), 1);
     await page.locator('#case-modal-close').click();
-    await page.goto(BASE + '#/notacion');
+    await page.goto(BASE + '#/notacion/3x3');
     await page.waitForSelector('#notation-seq-input');
     await page.locator('#notation-seq-input').fill('INVALIDO');
     await page.locator('#notation-seq-play-btn').click();
-    assert.ok(await page.locator('.notation-seq-error').isVisible());
+    assert.ok(await page.locator('#view-notation .notation-seq-error').isVisible());
     await page.locator('#notation-seq-input').fill("R U R' U'");
     await page.locator('#notation-seq-play-btn').click();
     assert.ok(await page.locator('.notation-seq-valid').isVisible());

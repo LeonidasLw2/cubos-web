@@ -81,7 +81,7 @@ Alcance
 3. Dentro de cada fase, commiteá seguido con prefijo `wip(design): ...` en puntos estables, para que un corte por cupo no pierda trabajo.
 4. Al cerrar cada fase: chequeos de la sección 7 y commit final `feat(design): fase N - ...`. Agregá el reporte (formato de la sección 10) a `docs/REPORTES-REDISENO.md` y commiteálo.
 5. Pasá a la fase siguiente SOLO si todos los chequeos pasan y el reporte no tiene riesgos bloqueantes. Si no: frená, escribí en el reporte qué falló y qué intentaste, y no sigas.
-6. Máximo 2 intentos por el mismo problema. Si no se resuelve, dejá nota en el reporte y frená (o seguí con otra tarea de la fase que no dependa de eso, si existe).
+6. Si un chequeo falla por un defecto del propio chequeo (falso positivo, selector ambiguo), corregí el chequeo y reintentá. Contá un máximo de 2 intentos por problema; frená solo si el fallo persiste o es un fallo real de la interfaz. Registrá el motivo y los intentos en el reporte.
 7. Pocas capturas: ninguna salvo las de la Fase 5. No leas `node_modules`, `dist` ni `package-lock.json`; usá grep antes de abrir archivos.
 8. Al terminar todo, o al frenar, escribí al final de `docs/REPORTES-REDISENO.md` una línea `ESTADO FINAL: COMPLETO` o `ESTADO FINAL: DETENIDO en Fase N por <motivo>`, con el árbol de trabajo limpio.
 

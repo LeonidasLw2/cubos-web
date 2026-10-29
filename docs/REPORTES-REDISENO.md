@@ -37,4 +37,26 @@
 - Falta la prueba en Android real. La Fase 3 queda sin aprobar y el árbol se conserva en un commit de trabajo.
 - smoke-ui finalizó: 10 rutas × 7 tamaños, cuatro flujos, 0 errores de consola y 0 px de desborde; el chequeo adicional sigue bloqueante.
 
-ESTADO FINAL: DETENIDO en Fase 3
+
+## Solicitud de reanudación de Leo (texto conservado)
+
+```text
+MODO DESATENDIDO. Estás en ~/cubos-web, rama rediseno-v2. Leé AGENTS.md, docs/REDISENO-V2.md y docs/REPORTES-REDISENO.md. El último commit es "wip(design): fase 3 - detenido en verificacion": retomá desde ahí.
+Aclaración de reglas, que agregarás a docs/REDISENO-V2.md (sección 8, punto 6) en tu primer commit: si un chequeo falla por un defecto del propio chequeo (falso positivo, selector ambiguo), corregí el chequeo y reintentá; contá un máximo de 2 intentos por problema; frená solo si el fallo persiste o es un fallo real de la interfaz.
+Diagnóstico de Leo para el bloqueo actual: en scripts/smoke-content.mjs (línea 38), .notation-seq-error coincide con el aviso de Notación y con #account-auth-error, un <p hidden> del diálogo de Cuenta que comparte la clase. Acotá el selector al contenedor de la página de Notación, sin tocar la interfaz. Corré todo de nuevo y, si pasa, cerrá la Fase 3 con el commit "feat(design): fase 3 - Metodos y Notacion".
+Después ejecutá las Fases 4 y 5 en orden, con los mismos chequeos y el mismo formato de reporte, un commit por fase.
+(Opcional: borrá esta línea si preferís el cubo plegado en escritorio.) Al empezar la Fase 4, hacé que en escritorio (861 px o más) el visor de la mezcla arranque desplegado; en móvil sigue plegado. Verificá que no se mueva ni se remonte el twisty-player.
+Lighthouse no está instalado: en la Fase 5 podés usar `npx -y lighthouse` (ejecución temporal; no lo agregues a package.json). Si no se puede ejecutar, anotalo como NO VERIFICADO y no frenes por eso.
+En la Fase 5, guardá las capturas "antes | después" FUERA del repo, en ~/Desktop/capturas-rediseno-v2/, con nombres claros (01-timer-movil.png, etc.). Máximo 8 en 390×844 (Timer, Métodos, Notación, Entrenar, Ajustes, Cuenta, Mirror) más 2 en 1280×800 (Timer y Métodos). "Antes" = main; "después" = esta rama. No las commitees.
+Dejá escrito que falta la prueba en un Android real. NO hagas merge ni push. Al terminar, "ESTADO FINAL: COMPLETO hasta Fase 5" en docs/REPORTES-REDISENO.md; si algo falla de verdad, "ESTADO FINAL: DETENIDO en Fase N" y el motivo. No preguntes nada: no hay nadie para responder.
+```
+
+## Fase 3 — cierre de Métodos y Notación (2026-10-29)
+- Selector de error acotado a #view-notation; interfaz sin cambios durante esta reanudación.
+- Corregido otro falso positivo del chequeo: su escenario de 3×3 ahora abre #/notacion/3x3 en lugar de heredar Mirror de la navegación previa.
+- Un reintento por cada defecto del chequeo, sin fallos persistentes; aclaración incorporada a sección 8, punto 6 de la guía.
+- smoke-content: 5 rutas × 6 anchos (360, 390, 768, 861, 1024, 1280), 0 desborde, 0 errores; búsqueda, aprendido, modal único, notación válida/inválida y reduced-motion aprobados.
+- npm test: 116/116; verify-algs: 357 casos, 428 algoritmos, 3152 comprobaciones; build aprobado.
+- smoke-ui: 10 rutas × 7 tamaños, cuatro flujos, 0 errores de consola y 0 px de desborde.
+- Historial del reporte recuperado del commit; se conserva íntegro el pedido de Leo que estaba sin commit.
+- Android físico y comparación visual/Lighthouse pendientes de Fase 5; sin riesgos bloqueantes medidos.
