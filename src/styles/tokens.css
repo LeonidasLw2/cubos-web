@@ -3,53 +3,49 @@
    ========================================================================== */
 
 :root {
-  /* ---------- Superficies y Elevación Tonal (Dark Mode) ---------- */
-  --bg-canvas: #090b10;
-  --surface-1: #121620;
-  --surface-2: #1b202c;
-  --surface-3: #242b3b;
-  --surface-sheet: #121620;
-  --surface-solid: #171b23;
+  /* ---------- Superficies: capas por luminosidad sobre un negro casi puro (OLED) ---------- */
+  --bg-canvas: #050506;
+  --surface-1: #0e0e10;
+  --surface-2: #17171a;
+  --surface-3: #222226;
+  --surface-sheet: #121214;
+  --surface-solid: #1a1a1d;       /* avisos y toasts: opacos, nunca se transparentan */
 
   /* Aliases para compatibilidad con código existente */
   --bg: var(--bg-canvas);
-  --surface: rgba(24, 28, 37, 0.85);
+  --surface: rgba(14, 14, 16, 0.88);
 
-  /* ---------- Bordes de precisión de 1px ---------- */
+  /* ---------- Bordes de 1 px ---------- */
   --border-subtle: rgba(255, 255, 255, 0.08);
   --border-medium: rgba(255, 255, 255, 0.14);
-  --border-strong: rgba(255, 255, 255, 0.22);
+  --border-strong: rgba(255, 255, 255, 0.24);
   --border-focus: #74acdf;
-
-  /* Alias previo */
   --border: var(--border-subtle);
 
-  /* ---------- Tipografía y Colores de Texto (Verificado WCAG AA/AAA) ---------- */
-  --text-primary: #f1f5f9;       /* 17.97:1 sobre --bg-canvas (Supera AAA) */
-  --text-secondary: #94a3b8;     /* 7.68:1 sobre --bg-canvas (Supera AAA) */
-  --text-tertiary: #8e9cb2;      /* >= 5.09:1 en TODAS las superficies (Supera AA) */
-  --text-disabled: #64748b;
-
-  /* Aliases previos */
+  /* ---------- Texto (contrastes calculados en tests/design-tokens.test.js) ---------- */
+  --text-primary: #f5f5f7;        /* 18,71:1 sobre --bg-canvas */
+  --text-secondary: #a1a1a8;      /* 7,93:1 sobre --bg-canvas, 6,17:1 sobre --surface-3 */
+  --text-tertiary: #8e8e96;       /* 6,27:1 sobre --bg-canvas, 4,88:1 sobre --surface-3 */
+  --text-disabled: #6b6b73;       /* deshabilitado: exento de contraste (WCAG 1.4.3) */
   --text: var(--text-primary);
   --muted: var(--text-secondary);
 
-  /* ---------- Identidad y Acentos (Argentina + Cubo) ---------- */
-  --c-celeste: #74acdf;
-  --c-celeste-subtle: rgba(116, 172, 223, 0.14);
-  --c-celeste-border: rgba(116, 172, 223, 0.35);
-  --c-sol: #f6b40e;
+  /* ---------- Acento único: el celeste de la bandera ---------- */
+  --c-celeste: #74acdf;           /* 8,45:1 sobre --bg-canvas */
+  --c-celeste-subtle: rgba(116, 172, 223, 0.16);
+  --c-celeste-border: rgba(116, 172, 223, 0.4);
+  --on-accent: #050506;           /* texto sobre un relleno de acento: 8,45:1 */
+  --c-sol: #f6b40e;               /* solo en el logo y donde representa al cubo */
   --c-sol-subtle: rgba(246, 180, 14, 0.15);
 
-  /* 6 Colores del Cubo (UI y acentos). Azul claramente distinguible del celeste */
+  /* 6 colores del cubo: SOLO donde representan al cubo (ilustraciones, casos, stickers) */
   --c-cube-white: #f8fafc;
   --c-cube-yellow: #fbbf24;
   --c-cube-green: #34d399;
-  --c-cube-blue: #2563eb;        /* Azul real saturado (#2563eb), no confundible con #74acdf */
+  --c-cube-blue: #2563eb;
   --c-cube-red: #ef4444;
   --c-cube-orange: #f97316;
 
-  /* Aliases previos para el cubo */
   --c-white: var(--c-cube-white);
   --c-yellow: var(--c-cube-yellow);
   --c-green: var(--c-cube-green);
@@ -57,40 +53,38 @@
   --c-red: var(--c-cube-red);
   --c-orange: var(--c-cube-orange);
 
-  /* ---------- Fuentes Tipográficas ---------- */
-  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --font-display: 'Space Grotesk', var(--font-sans);
-  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', 'SF Mono', Menlo, Consolas, monospace;
-
-  /* Aliases previos */
+  /* ---------- Tipografía: una sola familia (Inter variable) con cifras tabulares ---------- */
+  --font-sans: 'Inter', 'Inter Fallback', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: var(--font-sans);
+  --font-mono: var(--font-sans);  /* sin mono: los números usan tabular-nums (ver base.css) */
   --font: var(--font-sans);
   --mono: var(--font-mono);
 
-  /* ---------- Escala Tipográfica Fluida con clamp() ---------- */
-  /* El timer usa un mínimo de 2.5rem para que "DNF (10:23.45)" entre sin cortar a 360 px */
-  --font-timer: clamp(4.5rem, 17vw, 11rem);
-  --font-display-title: clamp(1.75rem, 4vw, 2.75rem);
-  --font-h1: clamp(1.4rem, 3vw, 2.25rem);
-  --font-h2: clamp(1.2rem, 2.2vw, 1.65rem);
-  --font-h3: clamp(1.05rem, 1.6vw, 1.25rem);
-  --font-body: clamp(0.9rem, 1.2vw, 1rem);
-  --font-sm: 0.875rem;          /* 14px */
-  --font-xs: 0.75rem;           /* 12px */
-  --font-mono-alg: clamp(0.95rem, 1.4vw, 1.15rem);
+  /* Escala (ratio ~1,2). El timer lo manda showTimerText() con --timer-chars */
+  --font-timer: clamp(5.5rem, 29vw, 11rem);
+  --timer-weight: 300;            /* mínimo 300: más fino no se lee de reojo */
+  --font-display-title: clamp(2rem, 5vw, 3rem);
+  --font-h1: clamp(1.75rem, 4vw, 2.5rem);
+  --font-h2: clamp(1.25rem, 2.4vw, 1.625rem);
+  --font-h3: clamp(1.0625rem, 1.6vw, 1.25rem);
+  --font-body: 1rem;
+  --font-sm: 0.875rem;
+  --font-xs: 0.75rem;
+  --font-mono-alg: clamp(0.95rem, 1.4vw, 1.125rem);
+  --tracking-tight: -0.022em;     /* títulos */
+  --tracking-timer: -0.045em;
 
-  /* ---------- Radios de Borde (Material 3 Expressive) ---------- */
+  /* ---------- Radios: escala corta 6 / 10 / 16 / 24 ---------- */
   --radius-xs: 6px;
   --radius-sm: 10px;
-  --radius-md: 14px;
-  --radius-lg: 18px;
+  --radius-md: 16px;
+  --radius-lg: 16px;
   --radius-xl: 24px;
-  --radius-sheet: 28px 28px 0 0;
+  --radius-sheet: 24px 24px 0 0;
   --radius-pill: 9999px;
-
-  /* Alias previo */
   --radius: var(--radius-lg);
 
-  /* ---------- Escala de Espaciado (múltiplos de 4/8 px) ---------- */
+  /* ---------- Espaciado (múltiplos de 4 px) ---------- */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -99,17 +93,18 @@
   --space-6: 24px;
   --space-8: 32px;
   --space-10: 40px;
-  --space-12: 48px;             /* Target táctil mínimo recomendado */
+  --space-12: 48px;             /* área táctil mínima */
 
-  /* ---------- Sombras e Iluminación ---------- */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 14px -2px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 12px 32px -8px rgba(0, 0, 0, 0.65);
-  --shadow-sheet: 0 -10px 36px rgba(0, 0, 0, 0.75);
-  --shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), var(--shadow-md);
-  --shadow-hover: inset 0 1px 0 rgba(255, 255, 255, 0.08), var(--shadow-lg);
+  /* ---------- Elevación: sombras suaves, la profundidad la dan las capas ---------- */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 6px 20px -6px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 18px 40px -12px rgba(0, 0, 0, 0.8);
+  --shadow-sheet: 0 -12px 40px rgba(0, 0, 0, 0.7);
+  --shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), var(--shadow-md);
+  --shadow-hover: inset 0 1px 0 rgba(255, 255, 255, 0.06), var(--shadow-lg);
 
-  /* ---------- Animaciones y Curvas ---------- */
+  /* ---------- Movimiento: curva con resorte (solo transform y opacity) ---------- */
+  --spring: linear(0, 0.42 10%, 0.94 24%, 1.07 36%, 1.02 50%, 1 64%, 1);
   --ease-m3: cubic-bezier(0.2, 0, 0, 1);
   --ease-standard: cubic-bezier(0.2, 0.7, 0.2, 1);
   --ease: var(--ease-standard);
@@ -117,8 +112,15 @@
   --duration-quick: 150ms;
   --duration-medium: 220ms;
   --duration-enter: 280ms;
+  --duration-spring: 500ms;
 
-  /* Altura de navegación móvil flexible M3 */
+  /* ---------- Capas (z-index) ---------- */
+  --z-header: 60;
+  --z-nav: 100;
+  --z-toast: 200;
+  --z-banner: 300;
+
+  /* Altura de la barra inferior móvil */
   --bottom-nav-height: 64px;
 
   color-scheme: dark;

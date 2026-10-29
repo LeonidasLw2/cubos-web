@@ -28,8 +28,7 @@
   padding: 16px 20px;
   background: var(--surface-1);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-md);
 }
 
 .scramble-main {
@@ -140,6 +139,42 @@
   user-select: none;
   -webkit-user-select: none;
   touch-action: none;
+  overscroll-behavior: contain;
+  /* Área táctil sin tarjeta: fondo y borde apenas visibles; al apretar se ilumina (ver ::before) */
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+}
+
+/* Capa de acento que se enciende al apretar: solo opacidad */
+.timer-zone::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  border: 1px solid var(--c-celeste);
+  background: var(--c-celeste-subtle);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-quick) var(--ease-standard);
+}
+
+.timer-zone:has(.timer[data-state='primed'])::before,
+.timer-zone:has(.timer[data-state='holding']):not(.is-solving)::before,
+.timer-zone:has(.timer[data-state='ready'])::before {
+  opacity: 1;
+}
+
+/* En inspección y resolución la zona ocupa toda la pantalla, sin marco */
+body[data-phase='inspection'] .timer-zone,
+body[data-phase='running'] .timer-zone {
+  border-color: transparent;
+  border-radius: 0;
+}
+
+body[data-phase='inspection'] .timer-zone::before,
+body[data-phase='running'] .timer-zone::before {
+  display: none;
 }
 
 .timer-stage {
@@ -153,12 +188,11 @@
   position: relative;
   font-family: var(--font-mono);
   font-size: var(--font-timer);
-  font-weight: 700;
+  font-weight: var(--timer-weight);
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.04em;
+  letter-spacing: var(--tracking-timer);
   line-height: 1;
   color: var(--text-primary);
-  text-shadow: 0 0 32px rgba(116, 172, 223, 0.2);
   transition: color 0.12s, transform 0.2s var(--ease-standard);
   max-width: 100%;
   text-align: center;

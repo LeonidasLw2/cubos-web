@@ -16,8 +16,11 @@ html {
   margin: 0;
   padding: 0;
   height: 100%;
+  background: var(--bg-canvas);
   scrollbar-width: thin;
-  scrollbar-color: rgba(116, 172, 223, 0.4) var(--surface-1);
+  scrollbar-color: var(--surface-3) transparent;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -26,42 +29,23 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   background-color: var(--bg-canvas);
-  background-image:
-    radial-gradient(1000px 500px at 0% -5%, rgba(61, 139, 255, 0.1), transparent 60%),
-    radial-gradient(800px 450px at 100% 0%, rgba(46, 194, 126, 0.07), transparent 60%),
-    radial-gradient(800px 600px at 50% 120%, rgba(246, 180, 14, 0.05), transparent 60%);
   color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: var(--font-body);
   line-height: 1.5;
+  font-variant-numeric: tabular-nums; /* los números no "bailan" (tiempos, contadores, mezclas) */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
-  overflow-x: hidden;
 }
 
-/* Trama sutil de cubo en el fondo sin repaints pesados */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-  background-size: 34px 34px;
-  -webkit-mask-image: radial-gradient(ellipse 90% 65% at 50% 0%, #000 25%, transparent 80%);
-  mask-image: radial-gradient(ellipse 90% 65% at 50% 0%, #000 25%, transparent 80%);
-}
-
-/* Encabezados con Space Grotesk y escala fluida */
+/* Títulos: Inter con peso 600 y tracking cerrado; la jerarquía sale del tamaño */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
-  letter-spacing: -0.015em;
+  letter-spacing: var(--tracking-tight);
   margin: 0;
   color: var(--text-primary);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 h1 { font-size: var(--font-h1); line-height: 1.2; }
@@ -92,7 +76,8 @@ a:focus-visible,
 input:focus-visible,
 select:focus-visible {
   outline: 2px solid var(--border-focus);
-  outline-offset: 2px;
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
 }
 
 /* Entrada fluida de vistas */
@@ -108,22 +93,23 @@ select:focus-visible {
   to { opacity: 1; transform: none; }
 }
 
-/* Scrollbars personalizados para Chrome / Safari / Edge */
+/* Scrollbars discretos para Chrome / Safari / Edge */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-canvas);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(116, 172, 223, 0.35);
+  background: var(--surface-3);
   border-radius: var(--radius-pill);
-  border: 2px solid var(--bg-canvas);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--c-celeste);
+@media (hover: hover) {
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--border-strong);
+  }
 }
