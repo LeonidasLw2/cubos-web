@@ -331,3 +331,28 @@ body:not([data-view='timer']) .timer-only {
     stroke-width: 2.3;
   }
 }
+
+/* El encabezado compartido debe caber también entre móvil y escritorio. */
+@media (max-width: 1099px) {
+  .account-label { display: none; }
+  .account-btn { min-width: 48px; min-height: 48px; padding: 0; justify-content: center; }
+  .top-row { gap: 12px; }
+  .tabs a { padding-inline: 10px; }
+  .tab-icon { display: none; }
+}
+
+@media (max-width: 1099px) {
+  .sync-text { display: none; }
+  .sync-indicator { padding: 6px; }
+  .topbar-actions { gap: 4px; }
+}
+
+/* Reserva las métricas del encabezado antes de cargar la fuente y el estado de cuenta. */
+body[data-view='timer'] .brand { width: 180px; }
+body[data-view='timer'] .tabs a { width: 112px; }
+@media (min-width: 1100px) {
+  body[data-view='timer'] .sync-indicator { width: 160px; }
+  body[data-view='timer'] .sync-text,
+  body[data-view='timer'] .account-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  body[data-view='timer'] .account-btn { width: 144px; }
+}

@@ -88,6 +88,7 @@ test('tokens de diseño: acentos y elementos grandes cumplen WCAG >= 3.0:1', () 
   const tokens = extractRootTokens(fs.readFileSync(path.resolve('src/styles/tokens.css'), 'utf8'));
 
   const bg = tokens['--bg-canvas'] || '#050506';
+  assert.ok(contrastRatio(tokens['--text-disabled'], bg) >= 3, 'el borde de la zona táctil debe distinguirse del lienzo');
   const accents = [
     { name: '--c-celeste', hex: tokens['--c-celeste'] || '#74acdf' },
     { name: '--c-sol', hex: tokens['--c-sol'] || '#f6b40e' },

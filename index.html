@@ -11,9 +11,10 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png" />
     <!-- El enlace al manifest lo agrega vite-plugin-pwa al armar la página. -->
+    <link rel="preload" href="./node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
     <title>CubeSolver · Timer</title>
   </head>
-  <body>
+  <body data-view="timer">
     <header class="topbar fadeable">
       <div class="top-row">
         <a href="#/timer" class="brand" aria-label="CubeSolver · Ir al Timer">
