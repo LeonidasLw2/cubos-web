@@ -234,5 +234,6 @@ Este documento registra el plan de trabajo en fases (A–G) y su estado actual.
 - [x] Fase 1: tokens, componentes base, smoke de interfaz y cierre de centésimos.
 - [x] Fase 2: Timer (Instrumento), responsive, estados, visor plegable, sesión y QA de interfaz.
 - [x] Fase 3: Métodos y Notación; chequeos de contenido e interfaz aprobados.
-- [ ] Fases 4 y 5: autorizadas, pendientes.
+- [x] Fase 4: Entrenador, Mirror y paneles; visor inicial de escritorio y QA aprobados.
+- [ ] Fase 5: pulido, capturas y verificación final.
 - Guía vigente: `docs/REDISENO-V2.md`; mediciones: `docs/REPORTES-REDISENO.md`.

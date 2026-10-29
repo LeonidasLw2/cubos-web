@@ -203,11 +203,11 @@ export function renderTrainer(container) {
     </header>
     <nav class="events trainer-sets" aria-label="Grupo de casos"></nav>
     <section class="trainer-practice">
-      <div class="trainer-cube" aria-label="Caso a resolver"></div>
+      <div class="trainer-cube" role="region" aria-label="Caso a resolver"></div>
       <div class="trainer-side">
         <p class="trainer-scramble-label">Mezcla</p>
         <p class="scramble trainer-scramble"></p>
-        <div class="trainer-pad" role="button" tabindex="-1" aria-label="Tocá y mantené para empezar; tocá para parar">
+        <div class="trainer-pad" role="button" tabindex="0" aria-label="Tocá y mantené para empezar; tocá para parar">
           <div class="timer trainer-time" role="timer">0.00</div>
           <p class="hint">Mantené la barra espaciadora (o el dedo acá) y soltá para empezar. Cualquier tecla o toque lo para.</p>
         </div>

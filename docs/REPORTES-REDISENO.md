@@ -60,3 +60,15 @@ Dejá escrito que falta la prueba en un Android real. NO hagas merge ni push. Al
 - smoke-ui: 10 rutas × 7 tamaños, cuatro flujos, 0 errores de consola y 0 px de desborde.
 - Historial del reporte recuperado del commit; se conserva íntegro el pedido de Leo que estaba sin commit.
 - Android físico y comparación visual/Lighthouse pendientes de Fase 5; sin riesgos bloqueantes medidos.
+
+## Fase 4 — Entrenar, Mirror y paneles (2026-10-29)
+- Visor del Timer desplegado al iniciar desde 861 px, plegado en móvil; inicialización de presentación con aria-expanded y espacio reservado, sin cambiar el motor del timer.
+- Entrenador con zona sin tarjeta, peso 300, acento celeste, foco de teclado y filas táctiles; Mirror conserva geometría, materiales y renderer.
+- Ajustes, Cuenta y Más usan capas neutras, controles de 48 px y sheets con safe-area; mensajes de carga/error/sin conexión y actualización conservan sus funciones.
+- smoke-panels: 5 tamaños, movimiento normal/reduce, 0 px de hueco inferior en sheets, entrenador real y Mirror único; cuatro plegados sin mutaciones del contenedor ni cambio de player/padre.
+- Dos defectos distintos del chequeo corregidos con un reintento cada uno: esperar montaje en lugar de visibilidad en móvil y activar modalidad de teclado antes de evaluar focus-visible.
+- smoke-timer: 9 tamaños, CLS=0 vacío/con 12 tiempos; zona 360×640 y=335–565, escritorio 1280×800 y=451–777; flujo y recarga sin conexión aprobados.
+- npm test 116/116; verify-algs 357 casos, 428 algoritmos, 3152 comprobaciones; build y smoke-ui (70 combinaciones, cuatro flujos, consola 0, desborde 0 px) aprobados.
+- Teclado: foco probado con ventana reducida a 390×420; interactive-widget=resizes-content según [Chrome](https://developer.chrome.com/blog/viewport-resize-behavior/). Teclado virtual real NO verificado.
+- Avisos de actualización/sin conexión verificados como fixtures visuales; no se inició sesión ni se tocó sincronización, datos o dependencias.
+- Falta Android físico. Sin riesgos bloqueantes medidos; capturas y Lighthouse quedan en Fase 5.

@@ -71,8 +71,10 @@ try {
       const player = await page.locator('#scramble-view').evaluate((el) => { window.timerPlayer = el.firstElementChild; return el.children.length; });
       assert.equal(player, 1);
       if (height > 500) {
+        assert.equal(await page.locator('#toggle-preview').getAttribute('aria-expanded'), String(width >= 861));
+        assert.equal(await page.locator('#scramble-view').isVisible(), width >= 861);
         await page.locator('#toggle-preview').click();
-        assert.ok(await page.locator('#scramble-view').isVisible());
+        assert.equal(await page.locator('#scramble-view').isVisible(), width < 861);
         await page.locator('#toggle-preview').click();
         assert.equal(await page.locator('#scramble-view').evaluate((el) => el.children.length === 1 && el.firstElementChild === window.timerPlayer), true);
         await page.evaluate(() => scrollTo(0, 0));

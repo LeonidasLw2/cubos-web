@@ -751,6 +751,9 @@ export function initUI() {
     });
   }
   if (els.togglePreview) {
+    const open = window.matchMedia('(min-width: 861px)').matches;
+    els.card.classList.toggle('preview-open', open);
+    els.togglePreview.setAttribute('aria-expanded', String(open));
     els.togglePreview.addEventListener('click', () => {
       const open = els.card.classList.toggle('preview-open');
       els.togglePreview.setAttribute('aria-expanded', String(open));

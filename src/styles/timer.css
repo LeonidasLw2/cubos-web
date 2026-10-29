@@ -488,3 +488,11 @@ body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) .s
     display: none;
   }
 }
+
+/* El visor de escritorio tiene espacio reservado desde el primer cuadro. */
+@media (min-width: 861px) {
+  .scramble-card { grid-template-columns: minmax(0, 1fr) 200px; min-height: 218px; }
+  .scramble-main { grid-column: 1; }
+  .scramble-view { grid-column: 2; grid-row: 1; }
+  .timer-zone { min-height: 280px; }
+}

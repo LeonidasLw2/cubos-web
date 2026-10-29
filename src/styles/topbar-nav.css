@@ -356,3 +356,5 @@ body[data-view='timer'] .tabs a { width: 112px; }
   body[data-view='timer'] .account-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
   body[data-view='timer'] .account-btn { width: 144px; }
 }
+.sync-indicator:is([data-state], [data-sync-state]) { color: var(--text-secondary); border-color: var(--border-medium); }
+.sync-indicator:is([data-state], [data-sync-state]) .sync-dot { background: var(--c-celeste); box-shadow: none; }
