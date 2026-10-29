@@ -24,4 +24,17 @@
 - Decisiones: cubo plegado también en escritorio y encabezado compartido compacto para evitar desbordes; sin cambios de lógica, algoritmos, datos, sincronización ni dependencias.
 - No verificado: Android físico, fallos reales del generador y Lighthouse/comparación final con main (Fase 5). Sin capturas; Fases 3–5 pendientes. Sin riesgos bloqueantes medidos.
 
-ESTADO FINAL: COMPLETO hasta Fase 2
+
+## Fase 3 — detenida en verificación (2026-10-29)
+- Preparadas portadas, árbol, tarjetas, filtros, modal y catálogo de Métodos/Notación con superficies neutras, acento celeste y controles principales de 48 px.
+- Migas con enlace subrayado; roles y nombres accesibles agregados; íconos de portada reutilizan SVG existentes. Diagramas y algoritmos conservados.
+- npm test: 116/116; verify-algs: 357 casos, 428 algoritmos, 3152 comprobaciones; build aprobado (aviso existente de chunks >500 kB).
+- BLOQUEO: el chequeo adicional scripts/smoke-content.mjs falló en línea 38: .notation-seq-error coincide con el aviso de Notación y con #account-auth-error oculto.
+- El fallo fue del selector del chequeo agregado en esta fase. No alcanza para certificar todas las interacciones ni demuestra por sí solo un error de la interfaz.
+- Se hizo un intento; no se corrigió ni se reintentó después del fallo por la instrucción explícita de Leo de frenar ante un chequeo fallido.
+- Fases 4 y 5 no iniciadas; visor de escritorio todavía plegado como en Fase 2. Sin cambios de lógica, datos, sincronización ni dependencias del proyecto.
+- No se hicieron capturas ni comparación Lighthouse con main: corresponden a Fase 5. Lighthouse tampoco se encontró en PATH ni en la caché de npm.
+- Falta la prueba en Android real. La Fase 3 queda sin aprobar y el árbol se conserva en un commit de trabajo.
+- smoke-ui finalizó: 10 rutas × 7 tamaños, cuatro flujos, 0 errores de consola y 0 px de desborde; el chequeo adicional sigue bloqueante.
+
+ESTADO FINAL: DETENIDO en Fase 3

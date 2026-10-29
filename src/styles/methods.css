@@ -28,8 +28,11 @@
   text-decoration: none;
 }
 
+@media (hover: hover) {
+
 .breadcrumb a:hover {
   color: var(--text);
+}
 }
 
 .breadcrumb [aria-current] {
@@ -59,7 +62,7 @@
 .page-head p,
 .method-step > p {
   margin: 0 0 10px;
-  color: #c5cad6;
+  color: var(--text-secondary);
   line-height: 1.6;
 }
 
@@ -78,13 +81,11 @@
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background:
-    radial-gradient(90% 120% at 100% 0%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 60%),
-    var(--sheen),
-    var(--surface);
-  box-shadow: var(--shadow);
+    var(--surface-1);
+  box-shadow: none;
   color: var(--text);
   text-decoration: none;
-  transition: transform 0.25s var(--ease), border-color 0.25s, box-shadow 0.25s;
+  transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
 }
 
 /* Línea de color arriba, con el acento del puzzle o del método */
@@ -93,13 +94,16 @@
   position: absolute;
   inset: 0 0 auto;
   height: 3px;
-  background: linear-gradient(90deg, var(--accent), transparent 85%);
+  background: var(--surface-1);
 }
+
+@media (hover: hover) {
 
 a.link-card:hover {
   transform: translateY(-3px);
   border-color: color-mix(in srgb, var(--accent) 45%, transparent);
-  box-shadow: var(--shadow-hover), 0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent);
+  box-shadow: none;
+}
 }
 
 /* Cubo de muestra en cada tarjeta */
@@ -110,17 +114,20 @@ a.link-card:hover {
   width: 72px;
   height: 72px;
   transform: translateY(-50%);
-  transition: transform 0.35s var(--ease);
+  transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
 }
 
 .card-art svg {
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.45));
+  filter: none;
 }
+
+@media (hover: hover) {
 
 a.link-card:hover .card-art {
   transform: translateY(-50%) rotate(-6deg) scale(1.08);
+}
 }
 
 /* Portadas de los puzzles: más grandes */
@@ -157,11 +164,11 @@ a.link-card:hover .card-art {
 }
 
 .accent-white { --accent: var(--c-white); }
-.accent-yellow { --accent: var(--c-yellow); }
-.accent-red { --accent: var(--c-red); }
-.accent-orange { --accent: var(--c-orange); }
-.accent-blue { --accent: var(--c-blue); }
-.accent-green { --accent: var(--c-green); }
+.accent-yellow { --accent: var(--c-celeste); }
+.accent-red { --accent: var(--c-celeste); }
+.accent-orange { --accent: var(--c-celeste); }
+.accent-blue { --accent: var(--c-celeste); }
+.accent-green { --accent: var(--c-celeste); }
 .accent-celeste { --accent: var(--c-celeste); }
 
 .card-tag {
@@ -185,12 +192,15 @@ a.link-card:hover .card-art {
   font-weight: 600;
   color: var(--accent);
   opacity: 0.85;
-  transition: transform 0.2s var(--ease), opacity 0.2s var(--ease);
+  transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
 }
+
+@media (hover: hover) {
 
 a.link-card:hover .card-action {
   opacity: 1;
   transform: translateX(3px);
+}
 }
 
 /* ---------- Presentaciones y Showcase de Métodos ---------- */
@@ -214,9 +224,9 @@ a.link-card:hover .card-action {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: rgba(61, 139, 255, 0.15);
-  color: var(--c-blue);
-  border: 1px solid rgba(61, 139, 255, 0.35);
+  background: var(--surface-2);
+  color: var(--c-celeste);
+  border: 1px solid var(--border-medium);
   margin-bottom: 8px;
 }
 
@@ -244,23 +254,26 @@ a.link-card:hover .card-action {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: none;
   display: flex;
   flex-direction: column;
   gap: 10px;
   position: relative;
-  transition: transform 0.25s var(--ease), border-color 0.25s;
+  transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
 }
+
+@media (hover: hover) {
 
 .pathway-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.18);
+  border-color: var(--border-medium);
+}
 }
 
 .pathway-card.highlight {
-  border-color: rgba(61, 139, 255, 0.5);
-  background: radial-gradient(circle at 100% 0%, rgba(61, 139, 255, 0.1), transparent 60%), var(--surface);
-  box-shadow: 0 10px 30px -10px rgba(61, 139, 255, 0.25);
+  border-color: var(--border-medium);
+  background: var(--surface-1);
+  box-shadow: none;
 }
 
 .pathway-step {
@@ -268,12 +281,12 @@ a.link-card:hover .card-action {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--c-blue);
+  color: var(--c-celeste);
 }
 
-.stage-1 .pathway-step { color: var(--c-green); }
-.stage-2 .pathway-step { color: var(--c-blue); }
-.stage-3 .pathway-step { color: var(--c-orange); }
+.stage-1 .pathway-step { color: var(--c-celeste); }
+.stage-2 .pathway-step { color: var(--c-celeste); }
+.stage-3 .pathway-step { color: var(--c-celeste); }
 
 .pathway-card h4 {
   margin: 0;
@@ -377,7 +390,7 @@ a.link-card:hover .card-action {
 
 .move-pill strong {
   font-family: var(--mono);
-  color: var(--c-yellow);
+  color: var(--c-celeste);
   font-size: 0.95rem;
 }
 
@@ -404,8 +417,8 @@ a.link-card:hover .card-action {
 }
 
 .comparison-col.featured {
-  border-color: rgba(61, 139, 255, 0.4);
-  background: radial-gradient(circle at 100% 0%, rgba(61, 139, 255, 0.12), transparent 70%), var(--surface);
+  border-color: var(--border-medium);
+  background: var(--surface-1);
 }
 
 .comp-header {
@@ -430,9 +443,9 @@ a.link-card:hover .card-action {
 }
 
 .comp-badge.popular {
-  background: rgba(61, 139, 255, 0.2);
-  color: var(--c-blue);
-  border: 1px solid rgba(61, 139, 255, 0.4);
+  background: var(--surface-2);
+  color: var(--c-celeste);
+  border: 1px solid var(--border-medium);
 }
 
 .comp-row {
@@ -440,7 +453,7 @@ a.link-card:hover .card-action {
   justify-content: space-between;
   align-items: baseline;
   padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--border-medium);
   font-size: 0.82rem;
 }
 
@@ -489,13 +502,16 @@ a.link-card:hover .card-action {
   border-radius: 12px;
   text-decoration: none;
   color: var(--text);
-  transition: all 0.2s var(--ease);
+  transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
 }
+
+@media (hover: hover) {
 
 .stage-link:hover {
   transform: translateY(-2px);
-  border-color: var(--c-blue);
-  background: rgba(61, 139, 255, 0.12);
+  border-color: var(--c-celeste);
+  background: var(--surface-2);
+}
 }
 
 .stage-num {
@@ -504,8 +520,8 @@ a.link-card:hover .card-action {
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  background: var(--c-blue);
-  color: #fff;
+  background: var(--c-celeste);
+  color: var(--text-secondary);
   font-weight: 800;
   font-size: 0.85rem;
   flex-shrink: 0;
@@ -525,15 +541,15 @@ a.link-card:hover .card-action {
 /* Consejos Pro */
 .pro-tips-card {
   padding: 24px;
-  background: radial-gradient(ellipse at 0% 0%, rgba(255, 213, 0, 0.08), transparent 60%), var(--surface);
-  border: 1px solid rgba(255, 213, 0, 0.25);
+  background: var(--surface-1);
+  border: 1px solid var(--border-medium);
   border-radius: var(--radius);
 }
 
 .pro-tips-card h4 {
   margin: 0 0 16px;
   font-size: 1.15rem;
-  color: var(--c-yellow);
+  color: var(--c-celeste);
 }
 
 .tips-grid {
@@ -582,7 +598,7 @@ a.link-card:hover .card-action {
 }
 
 .text-link {
-  color: var(--c-blue);
+  color: var(--c-celeste);
 }
 
 .step-index {
@@ -608,18 +624,21 @@ a.link-card:hover .card-action {
   color: var(--muted);
   font-size: 0.85rem;
   text-decoration: none;
-  transition: color 0.15s, border-color 0.15s;
+  transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
 }
 
 .step-index a::before {
   content: counter(step) '. ';
-  color: var(--c-yellow);
+  color: var(--c-celeste);
   font-weight: 700;
 }
+
+@media (hover: hover) {
 
 .step-index a:hover {
   color: var(--text);
   border-color: var(--muted);
+}
 }
 
 .method-step {
@@ -641,16 +660,16 @@ a.link-card:hover .card-action {
   width: 30px;
   height: 30px;
   border-radius: 8px;
-  background: var(--c-yellow);
-  color: #111;
+  background: var(--c-celeste);
+  color: var(--on-accent);
   font-size: 0.95rem;
 }
 
 .step-goal {
   padding: 10px 14px;
-  border-left: 3px solid var(--c-green);
+  border-left: 3px solid var(--c-celeste);
   border-radius: 0 8px 8px 0;
-  background: rgba(46, 194, 126, 0.08);
+  background: var(--surface-2);
 }
 
 /* ---------- Componentes de Presentación de Métodos (Hero, Stats, Stepper, Buscador, Info, Nav) ---------- */
@@ -664,11 +683,8 @@ a.link-card:hover .card-action {
   border: 1px solid color-mix(in srgb, var(--accent, var(--c-celeste)) 32%, var(--border));
   border-radius: 22px;
   background:
-    radial-gradient(95% 120% at 100% 0%, color-mix(in srgb, var(--accent, var(--c-celeste)) 18%, transparent), transparent 65%),
-    radial-gradient(70% 90% at 0% 100%, rgba(116, 172, 223, 0.08), transparent 65%),
-    var(--sheen),
-    var(--surface);
-  box-shadow: var(--shadow);
+    var(--surface-1);
+  box-shadow: none;
 }
 
 .hero-chips {
@@ -708,7 +724,7 @@ a.link-card:hover .card-action {
 
 .method-hero-text p {
   margin: 0 0 8px;
-  color: #ccd2de;
+  color: var(--text-secondary);
   font-size: 0.95rem;
   line-height: 1.6;
 }
@@ -724,7 +740,7 @@ a.link-card:hover .card-action {
   gap: 8px;
   padding: 12px;
   border-radius: 18px;
-  background: radial-gradient(circle at 50% 45%, rgba(116, 172, 223, 0.16), rgba(0, 0, 0, 0.25) 75%);
+  background: var(--surface-1);
   border: 1px solid var(--border);
 }
 
@@ -762,18 +778,21 @@ a.link-card:hover .card-action {
 .hero-replay-btn {
   padding: 4px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(116, 172, 223, 0.4);
-  background: rgba(116, 172, 223, 0.14);
+  border: 1px solid var(--border-medium);
+  background: var(--surface-2);
   color: var(--text);
   font-size: 0.75rem;
   font-weight: 600;
   white-space: nowrap;
-  transition: background 0.2s, border-color 0.2s;
+  transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
 }
 
+@media (hover: hover) {
+
 .hero-replay-btn:hover {
-  background: rgba(116, 172, 223, 0.26);
+  background: var(--surface-2);
   border-color: var(--c-celeste);
+}
 }
 
 /* Fila de Stats */
@@ -791,8 +810,8 @@ a.link-card:hover .card-action {
   padding: 14px 16px;
   border: 1px solid var(--border);
   border-radius: 14px;
-  background: var(--sheen), var(--surface);
-  box-shadow: var(--shadow);
+  background: var(--surface-1);
+  box-shadow: none;
 }
 
 .method-stat-icon {
@@ -801,9 +820,9 @@ a.link-card:hover .card-action {
   width: 38px;
   height: 38px;
   border-radius: 10px;
-  background: rgba(116, 172, 223, 0.14);
+  background: var(--surface-2);
   color: var(--c-celeste);
-  border: 1px solid rgba(116, 172, 223, 0.3);
+  border: 1px solid var(--border-medium);
   flex-shrink: 0;
 }
 
@@ -876,13 +895,16 @@ a.link-card:hover .card-action {
   background: var(--surface-2);
   color: var(--text);
   text-decoration: none;
-  transition: border-color 0.2s, transform 0.2s var(--ease), background 0.2s;
+  transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
 }
+
+@media (hover: hover) {
 
 .stepper-link:hover {
   border-color: var(--c-celeste);
-  background: rgba(116, 172, 223, 0.12);
+  background: var(--surface-2);
   transform: translateY(-2px);
+}
 }
 
 .stepper-num {
@@ -891,8 +913,8 @@ a.link-card:hover .card-action {
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  background: linear-gradient(135deg, var(--c-celeste), var(--c-blue));
-  color: #08101d;
+  background: var(--surface-1);
+  color: var(--on-accent);
   font-weight: 800;
   font-size: 0.84rem;
   flex-shrink: 0;
@@ -925,8 +947,8 @@ a.link-card:hover .card-action {
   margin-bottom: 28px;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius);
-  background: var(--sheen), var(--surface);
-  box-shadow: var(--shadow);
+  background: var(--surface-1);
+  box-shadow: none;
 }
 
 .explorer-progress-row {
@@ -953,15 +975,15 @@ a.link-card:hover .card-action {
   width: 100%;
   height: 8px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--surface-2);
   overflow: hidden;
 }
 
 .explorer-progress-fill {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--c-celeste), var(--c-green));
-  transition: width 0.3s var(--ease);
+  background: var(--surface-1);
+  transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
 }
 
 .explorer-controls-row {
@@ -1024,25 +1046,28 @@ a.link-card:hover .card-action {
   font-size: 0.8rem;
   font-weight: 600;
   white-space: nowrap;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
 }
+
+@media (hover: hover) {
 
 .chip-btn:hover {
   color: var(--text);
   border-color: var(--border-strong);
 }
+}
 
 .chip-btn.is-active {
-  background: rgba(116, 172, 223, 0.2);
+  background: var(--surface-2);
   border-color: var(--c-celeste);
-  color: #fff;
+  color: var(--text-secondary);
 }
 
 .explorer-empty {
   margin: 4px 0 0;
   padding: 14px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--surface-2);
   color: var(--muted);
   text-align: center;
   font-size: 0.88rem;
@@ -1063,25 +1088,23 @@ a.link-card:hover .card-action {
   padding: 15px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: var(--sheen), var(--surface);
-  box-shadow: var(--shadow);
+  background: var(--surface-1);
+  box-shadow: none;
   animation: card-in 0.35s var(--ease) backwards;
   animation-delay: calc(min(var(--i, 0), 12) * 35ms);
-  transition: border-color 0.2s, box-shadow 0.25s, transform 0.25s var(--ease);
+  transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
 }
 
 .case-card.is-learned {
-  border-color: rgba(46, 194, 126, 0.42);
+  border-color: var(--border-medium);
   background:
-    radial-gradient(90% 90% at 100% 0%, rgba(46, 194, 126, 0.1), transparent 60%),
-    var(--sheen),
-    var(--surface);
+    var(--surface-1);
 }
 
 @media (hover: hover) {
   .case-card:hover {
     border-color: var(--border-strong);
-    box-shadow: var(--shadow-hover);
+    box-shadow: none;
     transform: translateY(-2px);
   }
 }
@@ -1115,18 +1138,21 @@ a.link-card:hover .card-action {
   font-weight: 700;
   white-space: nowrap;
   flex-shrink: 0;
-  transition: all 0.15s var(--ease);
+  transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
 }
 
+@media (hover: hover) {
+
 .learned-btn:hover {
-  border-color: var(--c-green);
+  border-color: var(--c-celeste);
   color: var(--text);
+}
 }
 
 .learned-btn.is-learned {
-  background: rgba(46, 194, 126, 0.18);
-  border-color: rgba(46, 194, 126, 0.5);
-  color: #9ef0c4;
+  background: var(--surface-2);
+  border-color: var(--border-medium);
+  color: var(--text-secondary);
 }
 
 .case-desc {
@@ -1148,15 +1174,18 @@ a.link-card:hover .card-action {
   height: 96px;
   padding: 6px;
   border-radius: 12px;
-  background: radial-gradient(circle at 50% 45%, rgba(116, 172, 223, 0.14), rgba(0, 0, 0, 0.22) 75%);
+  background: var(--surface-1);
   border: 1px solid var(--border);
   cursor: pointer;
-  transition: transform 0.2s var(--ease), border-color 0.2s;
+  transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
 }
+
+@media (hover: hover) {
 
 .case-thumb:hover {
   border-color: var(--c-celeste);
   transform: scale(1.03);
+}
 }
 
 .case-thumb svg {
@@ -1179,19 +1208,22 @@ a.link-card:hover .card-action {
   gap: 6px;
   width: 100%;
   padding: 7px 10px;
-  border: 1px solid rgba(116, 172, 223, 0.35);
+  border: 1px solid var(--border-medium);
   border-radius: 8px;
-  background: rgba(116, 172, 223, 0.12);
+  background: var(--surface-2);
   color: var(--text);
   font-size: 0.8rem;
   font-weight: 600;
   white-space: nowrap;
-  transition: background 0.15s, border-color 0.15s;
+  transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
 }
 
+@media (hover: hover) {
+
 .watch-anim-btn:hover {
-  background: rgba(116, 172, 223, 0.22);
+  background: var(--surface-2);
   border-color: var(--c-celeste);
+}
 }
 
 /* Modal compartido de animación 3D */
@@ -1226,7 +1258,7 @@ a.link-card:hover .card-action {
   position: relative;
   border-radius: 16px;
   border: 1px solid var(--border);
-  background: radial-gradient(circle at 50% 45%, rgba(116, 172, 223, 0.18), rgba(0, 0, 0, 0.35) 75%);
+  background: var(--surface-1);
   padding: 10px;
 }
 
@@ -1275,7 +1307,7 @@ a.link-card:hover .card-action {
 .alg-tag {
   padding: 2px 6px;
   border-radius: 5px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--surface-2);
   color: var(--muted);
   font-family: var(--font);
   font-size: 0.7rem;
@@ -1303,7 +1335,7 @@ a.link-card:hover .card-action {
   padding: 18px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: var(--sheen), var(--surface);
+  background: var(--surface-1);
 }
 
 .what-learn-card h4 {
@@ -1321,9 +1353,9 @@ a.link-card:hover .card-action {
 
 .two-look-banner {
   padding: 22px;
-  border: 1px solid rgba(255, 213, 0, 0.28);
+  border: 1px solid var(--border-medium);
   border-radius: var(--radius);
-  background: radial-gradient(ellipse at 0% 0%, rgba(255, 213, 0, 0.08), transparent 65%), var(--surface);
+  background: var(--surface-1);
 }
 
 .two-look-banner .pathway-grid {
@@ -1334,7 +1366,7 @@ a.link-card:hover .card-action {
   padding: 20px 22px;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius);
-  background: radial-gradient(ellipse at 100% 0%, rgba(116, 172, 223, 0.1), transparent 65%), var(--surface);
+  background: var(--surface-1);
 }
 
 .other-methods-card h4 {
@@ -1366,7 +1398,7 @@ a.link-card:hover .card-action {
   padding: 20px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: var(--sheen), var(--surface);
+  background: var(--surface-1);
 }
 
 .info-block-head {
@@ -1390,27 +1422,27 @@ a.link-card:hover .card-action {
 }
 
 .info-badge.prereq {
-  background: rgba(116, 172, 223, 0.16);
+  background: var(--surface-2);
   color: var(--c-celeste);
-  border: 1px solid rgba(116, 172, 223, 0.35);
+  border: 1px solid var(--border-medium);
 }
 
 .info-badge.tips {
-  background: rgba(46, 194, 126, 0.16);
-  color: var(--c-green);
-  border: 1px solid rgba(46, 194, 126, 0.35);
+  background: var(--surface-2);
+  color: var(--c-celeste);
+  border: 1px solid var(--border-medium);
 }
 
 .info-badge.mistakes {
-  background: rgba(255, 77, 94, 0.16);
-  color: var(--c-red);
-  border: 1px solid rgba(255, 77, 94, 0.35);
+  background: var(--surface-2);
+  color: var(--c-celeste);
+  border: 1px solid var(--border-medium);
 }
 
 .info-list {
   margin: 0;
   padding-left: 18px;
-  color: #ccd2de;
+  color: var(--text-secondary);
   font-size: 0.88rem;
   line-height: 1.6;
 }
@@ -1449,9 +1481,9 @@ a.link-card:hover .card-action {
   gap: 16px;
   padding: 24px;
   margin-bottom: 28px;
-  border: 1px solid rgba(116, 172, 223, 0.45);
+  border: 1px solid var(--border-medium);
   border-radius: 20px;
-  background: radial-gradient(circle at 100% 50%, rgba(116, 172, 223, 0.2), transparent 65%), var(--surface);
+  background: var(--surface-1);
 }
 
 .method-cta-banner h3 {
@@ -1472,20 +1504,23 @@ a.link-card:hover .card-action {
   min-height: 44px;
   padding: 10px 20px;
   border-radius: 12px;
-  background: linear-gradient(135deg, var(--c-celeste), var(--c-blue));
-  color: #07101e;
+  background: var(--surface-1);
+  color: var(--on-accent);
   font-family: var(--font-display);
   font-weight: 800;
   font-size: 0.92rem;
   text-decoration: none;
   white-space: nowrap;
-  box-shadow: 0 8px 22px -6px rgba(116, 172, 223, 0.65);
-  transition: transform 0.2s var(--ease), box-shadow 0.2s;
+  box-shadow: none;
+  transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
 }
+
+@media (hover: hover) {
 
 .cta-primary-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 26px -6px rgba(116, 172, 223, 0.85);
+  box-shadow: none;
+}
 }
 
 .slide-nav {
@@ -1504,10 +1539,10 @@ a.link-card:hover .card-action {
   padding: 14px 18px;
   border: 1px solid var(--border);
   border-radius: 14px;
-  background: var(--sheen), var(--surface);
+  background: var(--surface-1);
   color: var(--text);
   text-decoration: none;
-  transition: border-color 0.2s, transform 0.2s var(--ease), background 0.2s;
+  transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
 }
 
 .slide-nav-btn.next {
@@ -1515,10 +1550,13 @@ a.link-card:hover .card-action {
   align-items: flex-end;
 }
 
+@media (hover: hover) {
+
 .slide-nav-btn:hover {
   border-color: var(--c-celeste);
-  background: rgba(116, 172, 223, 0.1);
+  background: var(--surface-2);
   transform: translateY(-2px);
+}
 }
 
 .slide-nav-btn small {
@@ -1567,19 +1605,22 @@ a.link-card:hover .card-action {
   border-radius: 8px;
   background: var(--surface-2);
   color: var(--muted);
-  transition: color 0.15s, background 0.15s, border-color 0.15s;
+  transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
 }
+
+@media (hover: hover) {
 
 .case-controls button:hover {
   color: var(--text);
 }
+}
 
 .case-controls .play {
   width: 46px;
-  background: linear-gradient(135deg, #2f6fe0, #1d4fb8);
+  background: var(--surface-1);
   border-color: transparent;
-  color: #fff;
-  box-shadow: 0 6px 16px -6px rgba(61, 139, 255, 0.7);
+  color: var(--text-secondary);
+  box-shadow: none;
 }
 
 .case-alg {
@@ -1593,15 +1634,18 @@ a.link-card:hover .card-action {
   line-height: 1.45;
   text-align: left;
   word-spacing: 0.1em;
-  transition: border-color 0.15s;
+  transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
 }
 
 .case-alg.is-active {
-  border-color: var(--c-yellow);
+  border-color: var(--c-celeste);
 }
+
+@media (hover: hover) {
 
 .case-alg:hover:not(.is-active) {
   border-color: var(--border);
+}
 }
 
 .pre-auf {
@@ -1633,23 +1677,23 @@ a.link-card:hover .card-action {
   margin: 8px 0 0;
   padding: 8px 10px;
   border-radius: 8px;
-  background: rgba(61, 139, 255, 0.08);
-  color: #c5cad6;
+  background: var(--surface-2);
+  color: var(--text-secondary);
   font-size: 0.82rem;
   line-height: 1.5;
 }
 
 .case-idea strong {
-  color: var(--c-blue);
+  color: var(--c-celeste);
 }
 
 /* F2L: la parte que arma el par y la que lo inserta, en dos colores */
 .alg-pair {
-  color: var(--c-orange);
+  color: var(--c-celeste);
 }
 
 .alg-insert {
-  color: var(--c-green);
+  color: var(--c-celeste);
 }
 
 .alg-legend {
@@ -1722,8 +1766,8 @@ a.link-card:hover .card-action {
   padding: 16px 16px 16px 52px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: var(--sheen), var(--surface);
-  box-shadow: var(--shadow);
+  background: var(--surface-1);
+  box-shadow: none;
   animation: card-in 0.35s var(--ease) backwards;
 }
 
@@ -1749,7 +1793,7 @@ a.link-card:hover .card-action {
   height: 24px;
   border-radius: 6px;
   background: var(--c-white);
-  color: #111;
+  color: var(--on-accent);
   font-size: 0.8rem;
   font-weight: 700;
 }
@@ -1758,7 +1802,7 @@ a.link-card:hover .card-action {
   padding: 18px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: linear-gradient(180deg, rgba(255, 213, 0, 0.05), transparent 60%);
+  background: var(--surface-1);
 }
 
 .two-look .method-step {
@@ -1810,3 +1854,51 @@ a.link-card:hover .card-action {
   color: var(--muted);
 }
 
+/* Direction A: la estructura y la tipografía marcan la jerarquía. */
+.methods { padding: 24px max(16px, env(safe-area-inset-right)) 60px max(16px, env(safe-area-inset-left)); }
+.methods-page, .case-card, .tip-card { animation: none; }
+.breadcrumb { gap: 8px; margin-bottom: 24px; }
+.breadcrumb a, .text-link { color: var(--c-celeste); text-decoration: underline; text-underline-offset: 4px; }
+.breadcrumb a { display: inline-flex; align-items: center; min-height: 48px; }
+.accent-white, .accent-yellow, .accent-red, .accent-orange, .accent-blue, .accent-green { --accent: var(--c-celeste); }
+.methods-kicker { display: block; margin-bottom: 8px; font-size: var(--font-xs); font-weight: 600; color: var(--c-celeste); letter-spacing: 0.06em; text-transform: uppercase; }
+.methods-hero-title { max-width: 22ch; margin-bottom: 12px; font-size: var(--font-h1); }
+.methods-hero-desc { max-width: 65ch; line-height: 1.6; }
+.link-grid { gap: 16px; }
+.link-card { padding-block: 24px; border-radius: var(--radius-md); background: var(--surface-1); }
+.link-card::before { display: none; }
+.link-card h3 { font-weight: 600; }
+.card-action { color: var(--c-celeste); opacity: 1; }
+.card-tag, .hero-chip, .presentation-badge, .comp-badge.popular, .info-badge { background: var(--surface-2); border-color: var(--border-subtle); color: var(--text-secondary); font-weight: 500; }
+.method-hero { padding: 0; border: 0; border-radius: 0; background: none; gap: 32px; margin-bottom: 32px; }
+.method-hero h2, .page-head h2 { font-weight: 600; }
+.method-hero-visual { background: var(--surface-1); border-radius: var(--radius-xl); }
+.method-stat-card { padding: 16px 0; border: 0; border-bottom: 1px solid var(--border-subtle); border-radius: 0; background: none; }
+.method-stat-icon { background: none; border: 0; color: var(--text-secondary); }
+.method-stat-body strong { font-weight: 500; }
+.stepper-section, .case-explorer-bar { padding: 20px; border-color: var(--border-subtle); }
+.stepper-num, .stage-num, .step-number { background: var(--c-celeste); color: var(--on-accent); font-weight: 600; }
+.step-goal { background: var(--surface-1); border-color: var(--c-celeste); }
+.explorer-progress-fill { background: var(--c-celeste); transition: none; }
+.explorer-search input { min-width: 0; }
+.explorer-progress-text { flex-wrap: wrap; }
+.case-card { padding: 20px; box-shadow: none; }
+.case-card.is-learned { background: var(--surface-1); border-color: var(--c-celeste); }
+.chip-btn.is-active, .learned-btn.is-learned, .cta-primary-btn, .case-controls .play { background: var(--c-celeste); border-color: var(--c-celeste); color: var(--on-accent); }
+.case-alg.is-active { border-color: var(--c-celeste); }
+.alg-pair { color: var(--c-celeste); font-weight: 600; }
+.alg-insert { color: var(--text-primary); text-decoration: underline; text-underline-offset: 3px; }
+.hero-replay-btn, .learned-btn, .watch-anim-btn, .chip-btn, .case-alg, .explorer-group-select-wrap select, .step-index a, .case-alts summary { min-height: 48px; }
+.case-controls button { min-width: 48px; min-height: 48px; }
+.case-thumb { background: var(--surface-2); }
+.case-modal-stage-wrap { background: var(--surface-1); }
+.case-modal { background: var(--surface-sheet); }
+@media (min-width: 861px) { .methods { padding-inline: 32px; } }
+@media (max-width: 600px) {
+  .method-hero { gap: 24px; }
+  .case-card { padding: 16px; }
+  .case-thumb-row { grid-template-columns: 80px minmax(0, 1fr); gap: 12px; }
+  .case-thumb { width: 80px; height: 80px; }
+  .case-title-row { flex-wrap: wrap; }
+  .case-explorer-bar { padding: 16px; }
+}

@@ -10,8 +10,8 @@
   padding: 22px 24px;
   border: 1px solid var(--border);
   border-radius: 22px;
-  background: var(--sheen), var(--surface);
-  box-shadow: var(--shadow);
+  background: var(--surface-1);
+  box-shadow: none;
   margin-bottom: 20px;
 }
 
@@ -35,19 +35,22 @@
   font-weight: 700;
   text-decoration: none;
   white-space: nowrap;
-  transition: all 0.2s var(--ease);
+  transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
 }
+
+@media (hover: hover) {
 
 .notation-puzzle-chip:hover {
   border-color: var(--c-celeste);
   color: var(--text);
 }
+}
 
 .notation-puzzle-chip.is-active {
-  background: linear-gradient(135deg, rgba(116, 172, 223, 0.26), rgba(47, 111, 224, 0.34));
+  background: var(--surface-1);
   border-color: var(--c-celeste);
-  color: #fff;
-  box-shadow: 0 6px 18px -6px rgba(116, 172, 223, 0.5);
+  color: var(--text-secondary);
+  box-shadow: none;
 }
 
 .notation-layout {
@@ -74,10 +77,10 @@
   padding: 18px;
   border: 1px solid var(--border-strong);
   border-radius: 20px;
-  background: var(--sheen), rgba(18, 22, 31, 0.94);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: var(--shadow);
+  background: var(--surface-1);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -94,9 +97,9 @@
   display: inline-block;
   padding: 3px 10px;
   border-radius: 8px;
-  background: rgba(246, 180, 14, 0.16);
-  border: 1px solid rgba(246, 180, 14, 0.35);
-  color: var(--c-sol);
+  background: var(--surface-2);
+  border: 1px solid var(--border-medium);
+  color: var(--c-celeste);
   font-family: var(--mono);
   font-size: 0.92rem;
   font-weight: 700;
@@ -135,7 +138,7 @@
   max-height: min(60vh, 290px);
   margin-inline: auto;
   border-radius: 16px;
-  background: radial-gradient(circle at 50% 45%, rgba(116, 172, 223, 0.14), rgba(10, 13, 19, 0.7));
+  background: var(--surface-1);
   border: 1px solid var(--border);
   display: grid;
   place-items: center;
@@ -176,17 +179,20 @@
   color: var(--text);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s var(--ease);
+  transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
 }
+
+@media (hover: hover) {
 
 .btn-sm:hover {
   border-color: var(--c-celeste);
 }
+}
 
 .btn-sm.is-active {
-  background: rgba(116, 172, 223, 0.22);
+  background: var(--surface-2);
   border-color: var(--c-celeste);
-  color: #fff;
+  color: var(--text-secondary);
 }
 
 .notation-speed-row {
@@ -217,7 +223,7 @@
 .notation-speed-btn.is-active {
   background: var(--c-celeste);
   border-color: var(--c-celeste);
-  color: #0b0d12;
+  color: var(--on-accent);
 }
 
 .notation-intro-card,
@@ -226,8 +232,8 @@
   padding: 20px;
   border: 1px solid var(--border);
   border-radius: 18px;
-  background: var(--sheen), var(--surface);
-  box-shadow: var(--shadow);
+  background: var(--surface-1);
+  box-shadow: none;
 }
 
 .notation-intro-grid {
@@ -251,14 +257,14 @@
 .notation-intro-block.is-accent {
   padding: 14px;
   border-radius: 14px;
-  background: rgba(116, 172, 223, 0.07);
-  border: 1px solid rgba(116, 172, 223, 0.22);
+  background: var(--surface-2);
+  border: 1px solid var(--border-medium);
 }
 
 .notation-diagram-note {
   margin-top: 8px !important;
   padding-top: 8px;
-  border-top: 1px dashed rgba(116, 172, 223, 0.3);
+  border-top: 1px dashed var(--border-medium);
   color: var(--text) !important;
 }
 
@@ -320,11 +326,14 @@
   max-width: 100%;
   overflow-wrap: anywhere; /* las secuencias largas del Mirror no deben ensanchar la página */
   text-align: left;
-  transition: border-color 0.15s;
+  transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
 }
+
+@media (hover: hover) {
 
 .notation-sample-chip:hover {
   border-color: var(--c-celeste);
+}
 }
 
 .notation-sample-chip code {
@@ -339,9 +348,9 @@
 .notation-seq-error {
   padding: 12px 14px;
   border-radius: 12px;
-  background: rgba(255, 77, 77, 0.1);
-  border: 1px solid rgba(255, 77, 77, 0.35);
-  color: #ffb3b3;
+  background: var(--surface-2);
+  border: 1px solid var(--border-medium);
+  color: var(--text-secondary);
   font-size: 0.86rem;
 }
 
@@ -353,8 +362,8 @@
 .notation-seq-valid {
   padding: 12px 14px;
   border-radius: 12px;
-  background: rgba(46, 194, 126, 0.08);
-  border: 1px solid rgba(46, 194, 126, 0.28);
+  background: var(--surface-2);
+  border: 1px solid var(--border-medium);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -370,13 +379,13 @@
 }
 
 .notation-seq-ok {
-  color: var(--c-green);
+  color: var(--c-celeste);
   font-weight: 700;
 }
 
 .notation-seq-inv code {
   font-family: var(--mono);
-  color: var(--c-sol);
+  color: var(--c-celeste);
 }
 
 .notation-seq-steps {
@@ -395,8 +404,11 @@
   cursor: pointer;
 }
 
+@media (hover: hover) {
+
 .notation-step-pill:hover {
   border-color: var(--c-celeste);
+}
 }
 
 .notation-group-head {
@@ -429,16 +441,19 @@
   flex-direction: column;
   justify-content: space-between;
   gap: 10px;
-  transition: border-color 0.2s, transform 0.15s;
+  transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
 }
 
+@media (hover: hover) {
+
 .notation-move-card:hover {
-  border-color: rgba(116, 172, 223, 0.45);
+  border-color: var(--border-medium);
+}
 }
 
 .notation-move-card.is-selected {
   border-color: var(--c-celeste);
-  box-shadow: 0 0 0 1px rgba(116, 172, 223, 0.35);
+  box-shadow: none;
 }
 
 .notation-move-label {
@@ -451,8 +466,8 @@
   margin-top: 4px;
   padding: 2px 8px;
   border-radius: 999px;
-  background: rgba(246, 180, 14, 0.14);
-  color: var(--c-sol);
+  background: var(--surface-2);
+  color: var(--c-celeste);
   font-size: 0.72rem;
   font-weight: 700;
   white-space: nowrap;
@@ -484,7 +499,7 @@
   background: var(--surface);
   color: var(--text);
   cursor: pointer;
-  transition: all 0.15s var(--ease);
+  transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
 }
 
 .notation-variant-btn code {
@@ -499,18 +514,21 @@
   white-space: nowrap;
 }
 
+@media (hover: hover) {
+
 .notation-variant-btn:hover {
   border-color: var(--c-celeste);
 }
+}
 
 .notation-variant-btn.is-active {
-  background: linear-gradient(135deg, rgba(116, 172, 223, 0.25), rgba(47, 111, 224, 0.32));
+  background: var(--surface-1);
   border-color: var(--c-celeste);
-  color: #fff;
+  color: var(--text-secondary);
 }
 
 .notation-variant-btn.is-active span {
-  color: #dceeff;
+  color: var(--text-secondary);
 }
 
 @media (max-width: 960px) {
@@ -548,16 +566,16 @@
     z-index: 90;
     padding: 10px 16px;
     border-radius: 999px;
-    background: linear-gradient(135deg, rgba(20, 28, 42, 0.96), rgba(11, 15, 23, 0.98));
+    background: var(--surface-1);
     border: 1px solid var(--c-celeste);
-    color: #fff;
+    color: var(--text-secondary);
     font-size: 0.82rem;
     font-weight: 700;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), 0 0 12px rgba(116, 172, 223, 0.35);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     cursor: pointer;
-    transition: transform 0.2s var(--ease), opacity 0.2s var(--ease);
+    transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
     animation: fade-in 0.25s var(--ease);
   }
 
@@ -577,19 +595,22 @@
     margin-top: 4px;
     padding: 8px 12px;
     border-radius: 10px;
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--surface-2);
     border: 1px solid var(--border);
     color: var(--c-celeste);
     font-size: 0.8rem;
     font-weight: 600;
     text-decoration: none;
     cursor: pointer;
-    transition: background 0.15s ease, border-color 0.15s ease;
+    transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
   }
 
+  @media (hover: hover) {
+
   .notation-jump-down-link:hover {
-    background: rgba(116, 172, 223, 0.12);
+    background: var(--surface-2);
     border-color: var(--c-celeste);
+  }
   }
 }
 
@@ -600,3 +621,26 @@
     bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom) + var(--space-4));
   }
 }
+/* Notación comparte el lenguaje visual de Métodos, sin vidrio sobre el cubo. */
+.notation-header { padding: 0; border: 0; border-radius: 0; background: none; gap: 24px; margin-bottom: 32px; }
+.notation-layout { grid-template-columns: minmax(0, 1fr) 320px; gap: 32px; }
+.notation-viewer-card { border-radius: var(--radius-xl); border-color: var(--border-subtle); background: var(--surface-1); }
+.notation-stage-box { background: var(--surface-2); border: 0; }
+.notation-viewer-badge, .notation-follows-pill { background: var(--surface-2); color: var(--text-primary); border-color: var(--border-subtle); font-weight: 500; }
+.notation-puzzle-chip, .notation-speed-btn, .notation-sample-chip, .notation-step-pill, .notation-variant-btn, .notation-jump-down-link, .notation-controls button, .notation-seq-input { min-height: 48px; }
+.notation-puzzle-chip { font-weight: 500; }
+.notation-puzzle-chip.is-active, .notation-variant-btn.is-active, .notation-speed-btn.is-active, .btn-sm.is-active { background: var(--c-celeste); color: var(--on-accent); border-color: var(--c-celeste); }
+.notation-variant-btn.is-active span { color: var(--on-accent); }
+.notation-group-section { padding: 0; border: 0; background: none; }
+.notation-move-card { background: var(--surface-1); border-radius: var(--radius-md); }
+.notation-intro-card, .notation-tester-card { border-radius: var(--radius-md); }
+.notation-seq-error { border-left: 3px solid var(--c-celeste); background: var(--surface-2); color: var(--text-primary); }
+.notation-seq-valid { background: var(--surface-2); border-color: var(--border-medium); }
+.notation-seq-ok, .notation-seq-inv code { color: var(--c-celeste); }
+.notation-floating-btn { min-height: 48px; background: var(--surface-solid); color: var(--text-primary); }
+@media (max-width: 860px) {
+  .notation-layout { grid-template-columns: 1fr; gap: 24px; }
+  .notation-viewer-aside { order: -1; position: static; }
+  .notation-viewer-card { padding: 16px; }
+}
+@media (min-width: 861px) { .notation-viewer-aside { order: 0; position: sticky; top: 88px; } }

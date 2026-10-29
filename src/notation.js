@@ -144,7 +144,7 @@ export function renderNotation(container, route = {}) {
         <span class="notation-puzzle-tag">${spec.name}</span>
       </div>
       <p class="notation-viewer-desc" id="notation-active-desc">${moveDesc.description}</p>
-      <div class="notation-stage-box" id="notation-stage-box" aria-label="Visor 3D de notación"></div>
+      <div class="notation-stage-box" id="notation-stage-box" role="region" aria-label="Visor 3D de notación"></div>
       <div class="notation-stage-hint">Arrastrá con el mouse o el dedo para rotar la vista</div>
       <div class="notation-controls">
         <button type="button" class="btn-secondary btn-sm" id="notation-btn-play" title="Reproducir giro">

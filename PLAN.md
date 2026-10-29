@@ -233,5 +233,6 @@ Este documento registra el plan de trabajo en fases (A–G) y su estado actual.
 - [x] Fase 0: maquetas y dirección A aprobada.
 - [x] Fase 1: tokens, componentes base, smoke de interfaz y cierre de centésimos.
 - [x] Fase 2: Timer (Instrumento), responsive, estados, visor plegable, sesión y QA de interfaz.
-- [ ] Fases 3–5: pendientes; no autorizadas en esta ejecución.
+- [ ] Fase 3: cambios de Métodos y Notación preparados; detenida por fallo del chequeo adicional (ver reporte).
+- [ ] Fases 4 y 5: autorizadas, pendientes; no iniciadas por el bloqueo de Fase 3.
 - Guía vigente: `docs/REDISENO-V2.md`; mediciones: `docs/REPORTES-REDISENO.md`.
