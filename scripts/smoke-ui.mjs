@@ -1,7 +1,7 @@
 // Humo de interfaz: recorre las rutas a varios anchos y reporta errores de consola,
 // desborde horizontal y si el timer entra completo en pantalla. También prueba el flujo del timer.
 // Uso: npm run build && npm run preview   (en otra terminal)   →   node scripts/smoke-ui.mjs [url]
-// Necesita playwright-core (no está en package.json): PLAYWRIGHT_MODULE=/ruta/a/playwright-core/index.mjs
+// Usa playwright-core (devDependency) y Google Chrome instalado.
 const BASE = (process.argv[2] ?? 'http://localhost:4173/cubos-web/').replace(/\/?$/, '/');
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE ?? 'playwright-core');
 

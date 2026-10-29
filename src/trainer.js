@@ -4,6 +4,7 @@ import { TRAINER_SETS, findSet } from './data/trainer-sets.js';
 import { caseScramble, realCaseScramble, AUFS } from './case-scramble.js';
 import { DISPLAY_SETUP, STICKERING } from './data/stickering.js';
 import { createTimer } from './timer.js';
+import { createTimerText } from './timer-text.js';
 import { formatTime } from './stats.js';
 import { loadTrainerData, saveTrainerData } from './storage.js';
 import { normalizeTrainer, addTime, caseStats, pickCase } from './trainer-store.js';
@@ -19,6 +20,7 @@ let set = findSet(data.set);
 let current = null; // { case, scramble }
 let active = false; // la vista del entrenador está a la vista
 let els = null;
+let updateTimerText = null;
 let player = null;
 let discard = false;
 let upcoming = null; // { setId, caseId, promise }: la mezcla siguiente, preparada de antemano
@@ -58,14 +60,14 @@ const timer = createTimer({
     els.pad.dataset.state = state;
     if (state === 'running') document.body.dataset.phase = 'running';
     else if (document.body.dataset.phase === 'running') delete document.body.dataset.phase;
-    if (state === 'holding' || state === 'ready') els.time.textContent = formatTime(0);
+    if (state === 'holding' || state === 'ready') updateTimerText(formatTime(0));
   },
   onTick(ms) {
-    els.time.textContent = formatTime(ms);
+    updateTimerText(formatTime(ms));
   },
   onSolve({ time }) {
     if (discard) return; // se cambió de sección con el tiempo corriendo: no se guarda
-    els.time.textContent = formatTime(time);
+    updateTimerText(formatTime(time));
     data = addTime(data, set.id, current.case.id, Math.round(time));
     save();
     showLast(current, time);
@@ -243,6 +245,7 @@ export function renderTrainer(container) {
     count: q('.trainer-count'),
     list: q('.trainer-list'),
   };
+  updateTimerText = createTimerText(els.time);
   player = null;
 
   els.sets.addEventListener('click', (e) => {
@@ -293,7 +296,7 @@ export function setTrainerActive(on) {
     timer.blur();
     timer.cancel();
     discard = false;
-    if (els) els.time.textContent = formatTime(0);
+    if (els) updateTimerText(formatTime(0));
     player = null;
     destroyScopePlayer('trainer');
   } else if (els && current?.scramble) {

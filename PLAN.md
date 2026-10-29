@@ -228,3 +228,10 @@ Este documento registra el plan de trabajo en fases (A–G) y su estado actual.
 - La barra inferior móvil pasó de 5 a 4 ítems (Timer, Métodos, Entrenar, Más); la de escritorio quedó en Timer, Métodos, Notación y Entrenar.
 - Se conservan el modelo del Mirror y su visor, la generación de mezclas, cubing.js, `verify-algs` y las claves de `localStorage` (incluida `cubos-web:solver-prefs`).
 - Las fases F y 6 (Mirror) de arriba son historia: esa funcionalidad ya no existe.
+
+## Rediseño visual v2 (rama local `rediseno-v2`)
+- [x] Fase 0: maquetas y dirección A aprobada.
+- [x] Fase 1: tokens, componentes base, smoke de interfaz y cierre de centésimos.
+- [ ] Fase 2: Timer.
+- [ ] Fases 3–5: pendientes; no autorizadas en esta ejecución.
+- Guía vigente: `docs/REDISENO-V2.md`; mediciones: `docs/REPORTES-REDISENO.md`.

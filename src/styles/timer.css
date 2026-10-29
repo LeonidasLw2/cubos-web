@@ -198,6 +198,15 @@ body[data-phase='running'] .timer-zone::before {
   text-align: center;
 }
 
+.timer-decimals {
+  color: var(--text-secondary);
+}
+
+.timer[data-state='holding'] .timer-decimals,
+.timer[data-state='ready'] .timer-decimals {
+  color: inherit;
+}
+
 /* Tiempos largos (más de 7 caracteres o DNF): el tamaño depende de cuántos caracteres hay */
 .timer.is-long {
   font-size: min(var(--font-timer), calc(80vw / (var(--timer-chars, 8) * 0.58)));
