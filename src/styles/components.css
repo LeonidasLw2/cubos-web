@@ -21,10 +21,7 @@
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
-  transition: background var(--duration-quick) var(--ease-standard),
-              border-color var(--duration-quick) var(--ease-standard),
-              color var(--duration-quick) var(--ease-standard),
-              transform var(--duration-spring) var(--spring);
+  transition: transform var(--duration-spring) var(--spring);
 }
 
 /* Efecto de toque reactivo unificado para todos los botones interactivos */
@@ -123,9 +120,7 @@
   background: var(--surface-2);
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
-  transition: background var(--duration-quick) var(--ease-standard),
-              color var(--duration-quick) var(--ease-standard),
-              transform var(--duration-spring) var(--spring);
+  transition: transform var(--duration-spring) var(--spring);
 }
 
 /* Íconos: un solo set de trazo (compatible con Lucide), 1,8 px de línea */
@@ -182,9 +177,7 @@
   color: var(--text-secondary);
   font-size: var(--font-sm);
   font-weight: 500;
-  transition: background var(--duration-quick) var(--ease-standard),
-              color var(--duration-quick) var(--ease-standard),
-              transform var(--duration-spring) var(--spring);
+  transition: transform var(--duration-spring) var(--spring);
   flex-shrink: 0;
 }
 
@@ -209,8 +202,7 @@
   background: var(--surface-1);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  transition: border-color var(--duration-quick) var(--ease-standard),
-              box-shadow var(--duration-quick) var(--ease-standard);
+  transition: none;
 }
 
 /* ---------- 4. Inputs, Toggles y Controles ---------- */
@@ -226,8 +218,7 @@ select {
   color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: var(--font-body);
-  transition: border-color var(--duration-quick) var(--ease-standard),
-              box-shadow var(--duration-quick) var(--ease-standard);
+  transition: none;
 }
 
 input[type='text']:focus,
@@ -252,8 +243,7 @@ select:focus {
   background: var(--surface-3);
   border: 1px solid var(--border-medium);
   cursor: pointer;
-  transition: background var(--duration-quick) var(--ease-standard),
-              border-color var(--duration-quick) var(--ease-standard);
+  transition: none;
 }
 
 .switch::after,
@@ -266,8 +256,7 @@ select:focus {
   height: 20px;
   border-radius: 50%;
   background: var(--text-tertiary);
-  transition: transform var(--duration-quick) var(--ease-m3),
-              background var(--duration-quick) var(--ease-standard);
+  transition: transform var(--duration-quick) var(--ease-m3);
 }
 
 .switch:checked,
@@ -314,8 +303,7 @@ select:focus {
   font-size: var(--font-sm);
   font-weight: 500;
   color: var(--text-secondary);
-  transition: background var(--duration-quick) var(--ease-standard),
-              color var(--duration-quick) var(--ease-standard);
+  transition: none;
 }
 
 .segmented input[type='radio']:checked + span {
@@ -435,7 +423,7 @@ dialog[open] {
 }
 
 @keyframes enter {
-  from { opacity: 0; transform: translateY(-8px) scale(0.98); background: var(--surface-2); }
+  from { opacity: 0; transform: translateY(-8px) scale(0.98); }
   to { opacity: 1; transform: none; }
 }
 
@@ -449,11 +437,11 @@ dialog[open] {
 }
 
 @keyframes pb-glow {
-  0% { transform: scale(1); text-shadow: none; }
-  20% { transform: scale(1.08); color: var(--c-yellow); text-shadow: 0 0 24px rgba(255, 213, 0, 0.55), 0 0 60px rgba(255, 138, 0, 0.35); }
-  45% { color: var(--c-orange); }
-  70% { color: var(--c-green); text-shadow: 0 0 30px rgba(46, 194, 126, 0.35); }
-  100% { transform: scale(1); text-shadow: none; }
+  0% { transform: scale(1); }
+  20% { transform: scale(1.08); }
+  45% { }
+  70% { }
+  100% { transform: scale(1); }
 }
 
 @keyframes badge {

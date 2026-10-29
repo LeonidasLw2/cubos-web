@@ -491,7 +491,7 @@ function renderStepper(steps, { title = 'Línea de etapas', isScroll = false } =
       const link = e.target.closest('[data-scroll-to]');
       if (!link) return;
       e.preventDefault();
-      document.getElementById(link.dataset.scrollTo)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.getElementById(link.dataset.scrollTo)?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
     });
   }
   return wrap;

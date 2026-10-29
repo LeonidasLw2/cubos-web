@@ -72,3 +72,18 @@ Dejá escrito que falta la prueba en un Android real. NO hagas merge ni push. Al
 - Teclado: foco probado con ventana reducida a 390×420; interactive-widget=resizes-content según [Chrome](https://developer.chrome.com/blog/viewport-resize-behavior/). Teclado virtual real NO verificado.
 - Avisos de actualización/sin conexión verificados como fixtures visuales; no se inició sesión ni se tocó sincronización, datos o dependencias.
 - Falta Android físico. Sin riesgos bloqueantes medidos; capturas y Lighthouse quedan en Fase 5.
+
+## Fase 5 — detenida por fallo real (2026-10-29)
+- Preparado pulido de movimiento: 45 reglas hover protegidas, 0 transiciones fuera de transform/opacity; scroll instantáneo con reduced-motion y documentación v2 en DESIGN.md.
+- npm test 116/116; verify-algs 357 casos, 428 algoritmos, 3152 comprobaciones; build aprobado; Inter 48,25 kB, CSS 91,15 kB / 16,65 kB gzip.
+- smoke-ui: 70 combinaciones y cuatro flujos aprobados, consola 0 y desborde 0 px. smoke-content aprobado en seis anchos.
+- smoke-panels aprobado en cinco tamaños, normal/reduce y hueco inferior 0 px; su espera fija de 550 ms se reemplazó por Animation.finished (un reintento por falso positivo de animación aún en curso).
+- BLOQUEO REAL: smoke-timer falló en 1280×800: mezcla oculta durante inspección; Chrome confirmó phase=inspection y opacity=0 tras esperar 600 ms. No se corrigió la interfaz ni se continuó después de confirmarlo.
+- Causa: body[data-phase='inspection'] .fadeable:not(.hint) prevalece sobre la excepción de .scramble-card. El chequeo previo podía pasar al medir antes de avanzar la transición.
+- CLS=0 medido vacío/con 12 tiempos en nueve tamaños; eso no compensa el fallo de visibilidad. La Fase 5 queda sin aprobar.
+- Nueve comparativas fuera del repo, ~/Desktop/capturas-rediseno-v2/: 7 móviles y 2 escritorio; cada panel 390×844 o 1280×800, con franja antes/después. main=55c58ad, build temporal sin alterar la rama.
+- Diferencia visual no intencional observada respecto de main: el subtítulo de portada de Métodos comparte línea con el título según el ancho disponible; revisión visual completa pendiente. El resto de cambios de paleta, fuente, tarjetas, categorías y PB son intencionales.
+- Lighthouse NO VERIFICADO: CLI temporal 13.6.0 disponible, auditorías no iniciadas por la detención. No se agregaron dependencias al proyecto; la copia temporal de main instaló sus dependencias declaradas para compilar sus fuentes originales.
+- Android físico, teclado virtual real y revisión completa de capturas pendientes. Fuentes locales y recarga sin conexión aprobadas en Fase 4. Sin cambios de datos, algoritmos, sincronización ni credenciales; sin merge ni push.
+
+ESTADO FINAL: DETENIDO en Fase 5

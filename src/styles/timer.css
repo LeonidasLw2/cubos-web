@@ -375,10 +375,16 @@ body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) .s
   opacity: 0.28;
 }
 
-.quick-scrollbar:hover,
 .quick-scrollbar:focus-within,
 .quick-scrollbar.is-active {
   opacity: 1;
+}
+
+@media (hover: hover) {
+
+.quick-scrollbar:hover {
+  opacity: 1;
+}
 }
 
 .quick-scroll-btn {
@@ -393,7 +399,7 @@ body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) .s
   cursor: pointer;
   box-shadow: var(--shadow-sm);
   padding: 0;
-  transition: transform 0.15s ease, background 0.15s ease;
+  transition: transform 0.15s ease;
   flex-shrink: 0;
 }
 
@@ -421,13 +427,20 @@ body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) .s
   width: 4px;
   border-radius: var(--radius-pill);
   background: rgba(255, 255, 255, 0.12);
-  transition: background 0.2s ease, width 0.2s ease;
+  transition: none;
 }
 
-.quick-scrollbar:hover .quick-scroll-track::before,
 .quick-scrollbar.is-active .quick-scroll-track::before {
   background: rgba(116, 172, 223, 0.3);
   width: 6px;
+}
+
+@media (hover: hover) {
+
+.quick-scrollbar:hover .quick-scroll-track::before {
+  background: rgba(116, 172, 223, 0.3);
+  width: 6px;
+}
 }
 
 .quick-scroll-thumb {
@@ -438,7 +451,7 @@ body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) .s
   border-radius: var(--radius-pill);
   background: linear-gradient(180deg, var(--c-celeste), var(--c-cube-blue));
   box-shadow: 0 0 10px rgba(116, 172, 223, 0.6);
-  transition: width 0.15s ease, background 0.15s ease;
+  transition: none;
   cursor: grab;
   display: flex;
   align-items: center;

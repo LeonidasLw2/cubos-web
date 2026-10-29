@@ -30,10 +30,10 @@ try {
           else await page.locator('#open-settings').click();
         } else if (id === 'account-dialog') await page.locator('#account-btn').click();
         else await page.locator('#open-more-sheet').click();
-        await page.waitForTimeout(550);
+        await page.locator(`#${id}`).evaluate((el) => Promise.all(el.getAnimations().map((animation) => animation.finished)));
         const rect = await page.locator(`#${id}`).boundingBox();
         assert.ok(rect.x >= 0 && rect.x + rect.width <= width + 1 && rect.y >= 0 && rect.y + rect.height <= height + 1, `${id}: fuera del viewport`);
-        if (width <= 640 || id === 'more-sheet') assert.ok(Math.abs(height - rect.y - rect.height) <= 1, `${id}: hueco inferior`);
+        if (width <= 640 || id === 'more-sheet') assert.ok(Math.abs(height - rect.y - rect.height) <= 1, `${id}: hueco inferior ${height - rect.y - rect.height}px tras terminar la animación`);
         if (id === 'settings' && width === 390) {
           await page.setViewportSize({ width, height: 420 });
           await page.locator('#settings input[name="inspection"]').focus();

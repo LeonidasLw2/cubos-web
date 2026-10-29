@@ -85,7 +85,7 @@
   border-radius: 2px;
   background: var(--c-celeste);
   pointer-events: none;
-  transition: transform var(--duration-enter) var(--ease-m3), width var(--duration-enter) var(--ease-m3), opacity var(--duration-quick);
+  transition: transform var(--duration-enter) var(--ease-m3), opacity var(--duration-quick);
 }
 
 .tabs a {
@@ -102,12 +102,12 @@
   font-weight: 500;
   text-decoration: none;
   white-space: nowrap;
-  transition: color var(--duration-quick), transform var(--duration-quick);
+  transition: transform var(--duration-quick);
 }
 
 .tabs a .tab-icon {
   flex-shrink: 0;
-  transition: stroke var(--duration-quick), transform var(--duration-quick);
+  transition: transform var(--duration-quick);
 }
 
 @media (hover: hover) {
@@ -204,7 +204,7 @@
   font-size: 0.82rem;
   font-weight: 600;
   white-space: nowrap;
-  transition: all var(--duration-quick) var(--ease-standard);
+  transition: none;
 }
 
 @media (hover: hover) {
@@ -300,7 +300,7 @@ body:not([data-view='timer']) .timer-only {
     white-space: nowrap;
     min-width: 56px;
     min-height: 48px; /* Área táctil accesible mínima de 48px */
-    transition: color var(--duration-quick) var(--ease-standard);
+    transition: none;
   }
 
   /* Píldora indicadora activa M3 Expressive */
@@ -311,7 +311,7 @@ body:not([data-view='timer']) .timer-only {
     padding: 2px 14px;
     border-radius: var(--radius-pill);
     box-sizing: content-box;
-    transition: background var(--duration-medium) var(--ease-m3);
+    transition: none;
   }
 
   .bottom-nav-item:active {

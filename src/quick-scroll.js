@@ -125,7 +125,7 @@ export function initQuickScroll({
 
     window.scrollTo({
       top: targetY,
-      behavior: smooth ? 'smooth' : 'instant',
+      behavior: smooth && !window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'smooth' : 'instant',
     });
 
     const offset = Math.round(ratio * Math.max(0, trackH - thumbH));
@@ -203,14 +203,14 @@ export function initQuickScroll({
   upBtn?.addEventListener('click', (e) => {
     e.stopPropagation();
     wakeUp();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
   });
 
   downBtn?.addEventListener('click', (e) => {
     e.stopPropagation();
     wakeUp();
     const { scrollH } = getScrollMetrics();
-    window.scrollTo({ top: scrollH, behavior: 'smooth' });
+    window.scrollTo({ top: scrollH, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
   });
 
   // Escuchar scroll y resize de la ventana

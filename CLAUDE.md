@@ -92,4 +92,6 @@ Todas las etapas pedidas están hechas. Trabajar una etapa a la vez; no adelanta
 - Fase 2 aprobada por Leo. Fase 3 cerrada: Métodos/Notación con superficies neutras, acento único, migas subrayadas y controles principales de 48 px. QA: `scripts/smoke-content.mjs` (seis anchos, interacción y visor único); los errores se buscan dentro de #view-notation.
 - Fase 4 cerrada: Entrenador, Mirror y paneles. El visor del Timer arranca desplegado desde 861 px; plegar solo cambia display, nunca mueve ni remonta el player. `scripts/smoke-panels.mjs` verifica sheets, foco, entrenador, Mirror, avisos y estabilidad del visor.
 - `interactive-widget=resizes-content` permite que Chrome Android ajuste el viewport al teclado; la prueba automatizada reduce la ventana, no reemplaza el teclado físico/virtual real.
-- Fase 5 autorizada y pendiente. Android físico pendiente; sin push ni merge.
+- Fase 5 detenida: en inspección, la mezcla queda con opacity 0 por la especificidad de la regla de .fadeable:not(.hint). No aprobar ni publicar hasta corregirla y verificar después de terminar la transición.
+- Pulido preparado: hover solo con hover:hover, transiciones transform/opacity y desplazamiento instantáneo con reduced-motion. La regla de scroll es presentación; motores y datos no se modifican.
+- Capturas comparativas fuera del repo: ~/Desktop/capturas-rediseno-v2/ (7 móviles + 2 escritorio). Lighthouse NO VERIFICADO: se obtuvo la CLI temporal 13.6.0, pero no se ejecutaron auditorías por la detención ante el fallo real. Android físico pendiente; sin push ni merge.

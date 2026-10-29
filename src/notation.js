@@ -310,16 +310,16 @@ export function renderNotation(container, route = {}) {
   floatingBtn.id = 'notation-floating-btn';
   floatingBtn.hidden = true;
   floatingBtn.setAttribute('aria-label', 'Subir al visor 3D');
-  floatingBtn.innerHTML = `<span>🧊 Ver en 3D</span> <strong id="notation-floating-badge">${escapeHtml(activeAlg)}</strong> <span>↑</span>`;
+  floatingBtn.innerHTML = `<span>Ver en 3D</span> <strong id="notation-floating-badge">${escapeHtml(activeAlg)}</strong> <span>↑</span>`;
   page.appendChild(floatingBtn);
 
   floatingBtn.addEventListener('click', () => {
-    viewerAside.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    viewerAside.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
     floatingBtn.hidden = true;
   });
 
   page.querySelector('#notation-jump-down-btn')?.addEventListener('click', () => {
-    page.querySelector('.notation-group-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    page.querySelector('.notation-group-section')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
   });
 
   if (typeof IntersectionObserver !== 'undefined') {
