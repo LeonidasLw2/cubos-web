@@ -211,6 +211,10 @@ h3 { letter-spacing: -0.014em; }
 /* overscroll-behavior solo actúa en contenedores con scroll: el cuerpo de cada hoja es el propio <dialog> */
 .bottom-sheet, dialog.settings { overflow-y: auto; overscroll-behavior-y: contain; }
 .bottom-sheet { max-height: calc(100dvh - 16px - env(safe-area-inset-top)); }
+/* Horizontal: la hoja casi llena el alto; el último ítem no debe quedar pegado al borde */
+@media (orientation: landscape) and (max-height: 500px) {
+  .bottom-sheet { padding-bottom: calc(28px + env(safe-area-inset-bottom)); }
+}
 .bottom-sheet::backdrop, .settings::backdrop { background: rgb(0 0 0 / calc(0.65 * (1 - var(--sheet-progress, 0)))); }
 dialog.settings > .sheet-handle { display: none; }
 @media (max-width: 640px) {
