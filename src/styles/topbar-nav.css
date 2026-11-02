@@ -12,7 +12,7 @@
   gap: var(--space-2);
   padding: 8px 16px;
   border-bottom: 1px solid var(--border-subtle);
-  background: rgba(5, 5, 6, 0.78);
+  background: var(--glass-bar);
   backdrop-filter: saturate(1.5) blur(20px);
   -webkit-backdrop-filter: saturate(1.5) blur(20px);
 }
@@ -276,7 +276,7 @@ body:not([data-view='timer']) .timer-only {
     justify-content: space-around;
     min-height: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
     padding: 6px 8px max(6px, env(safe-area-inset-bottom));
-    background: rgba(14, 14, 16, 0.82);
+    background: var(--glass-nav);
     backdrop-filter: saturate(1.5) blur(20px);
     -webkit-backdrop-filter: saturate(1.5) blur(20px);
     border-top: 1px solid var(--border-subtle);

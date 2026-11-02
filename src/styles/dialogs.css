@@ -26,7 +26,7 @@
 }
 
 .settings::backdrop {
-  background: rgba(5, 6, 9, 0.7);
+  background: var(--scrim);
   backdrop-filter: blur(3px);
 }
 
@@ -352,7 +352,7 @@
 }
 
 .bottom-sheet::backdrop {
-  background: rgba(5, 6, 9, 0.7);
+  background: var(--scrim);
   backdrop-filter: blur(3px);
 }
 
@@ -632,12 +632,12 @@
     height: 4px;
     margin: 0 auto 12px;
     border-radius: 2px;
-    background: rgba(255, 255, 255, 0.28);
+    background: var(--handle);
   }
 }
 /* Sheets y estados de cuenta: capas neutras y un único acento. */
 .settings { background: var(--surface-sheet); border-radius: var(--radius-xl); overflow-y: auto; overscroll-behavior: contain; }
-.settings::backdrop, .bottom-sheet::backdrop { background: rgba(0, 0, 0, 0.65); backdrop-filter: none; }
+.settings::backdrop, .bottom-sheet::backdrop { background: var(--scrim); backdrop-filter: none; }
 .settings-head h2, .sheet-head h2 { font-size: 1.25rem; font-weight: 600; }
 .settings-head .icon-btn, .sheet-head .icon-btn { width: 48px; height: 48px; }
 .setting { min-height: 64px; }
