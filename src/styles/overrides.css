@@ -198,10 +198,8 @@ h3 { letter-spacing: -0.014em; }
 .quick-scrollbar.is-active .quick-scroll-thumb { width: 10px; background: var(--c-celeste); box-shadow: none; }
 .quick-scroll-grip { display: none; }
 
-/* Cambio de sección: entra con un fundido corto y 6 px de desplazamiento (solo transform/opacity) */
-@keyframes view-in { from { opacity: 0; transform: translateY(6px); } }
+/* Sin fundido de entrada en las secciones: opacidad 0 en el elemento LCP lo retrasaba (Timer 0,9 s → 3,1 s en Lighthouse) */
 @keyframes pill-in { from { transform: scale(0.88); } }
 @media (prefers-reduced-motion: no-preference) {
-  .layout:not([hidden]), .methods:not([hidden]) { animation: view-in var(--duration-enter) var(--ease-m3); }
   .bottom-nav-item[aria-current='page'] svg { animation: pill-in 320ms var(--spring-crit); }
 }
