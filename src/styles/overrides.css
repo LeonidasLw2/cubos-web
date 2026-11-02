@@ -190,3 +190,10 @@ h3 { letter-spacing: -0.014em; }
   :root { --border-subtle: rgba(255, 255, 255, 0.28); }
   .bottom-nav, .topbar { background: var(--bg-canvas); }
 }
+
+/* Scroll rápido: aparece al desplazarse, se esconde solo, más chico y sin brillos */
+.quick-scrollbar.is-idle:not(:focus-within) { opacity: 0; pointer-events: none; }
+.quick-scroll-btn { width: 20px; height: 20px; background: var(--surface-2); color: var(--text-secondary); box-shadow: none; }
+.quick-scroll-thumb { width: 6px; background: var(--text-tertiary); box-shadow: none; }
+.quick-scrollbar.is-active .quick-scroll-thumb { width: 10px; background: var(--c-celeste); box-shadow: none; }
+.quick-scroll-grip { display: none; }

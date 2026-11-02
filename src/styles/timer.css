@@ -513,6 +513,8 @@ body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) .s
 @media (min-width: 861px) {
   .scramble-card { grid-template-columns: minmax(0, 1fr) 200px; min-height: 218px; }
   .scramble-main { grid-column: 1; }
+  /* Acciones pegadas al scramble, alineadas a su borde (el glifo, no el botón de 48 px) */
+  .scramble-actions { justify-content: flex-start; margin-inline-start: -12px; }
   .scramble-view { grid-column: 2; grid-row: 1; }
   .timer-zone { min-height: 280px; }
 }
