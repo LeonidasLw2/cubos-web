@@ -179,6 +179,7 @@ function selectEvent(eventId) {
   saveSelectedEvent(eventId);
   state.solves = loadSolves(eventId);
   state.newSolveId = null;
+  clearPbFlash();
   if (eventId === 'mirror' && isTouch) {
     currentViewMode = '2D';
   }
@@ -296,6 +297,7 @@ function commit() {
 
 // Guarda el resultado que entrega el timer ({ time, penalty, autoPenalty }).
 function addSolve(result) {
+  clearPbFlash();
   const previousBest = bestTime(state.solves);
   const now = Date.now();
   const solve = {
@@ -315,7 +317,14 @@ function addSolve(result) {
   loadScramble();
 }
 
+// Resalta "Mejor" y la fila nueva. Con movimiento reducido la clase no anima y queda fija hasta el próximo tiempo.
+function clearPbFlash() {
+  document.querySelectorAll('.pb-flash').forEach((el) => el.classList.remove('pb-flash'));
+}
+
 function celebratePB() {
+  document.querySelector('.stat-best')?.classList.add('pb-flash');
+  els.solves.querySelector('.solve')?.classList.add('pb-flash');
   replay(els.timer, 'pb');
   replay(els.pbBadge, 'show');
   replay(els.pbBurst, 'show');

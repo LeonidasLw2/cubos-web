@@ -276,6 +276,13 @@ body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) .s
 .solve { display: grid; grid-template-columns: 1.5rem minmax(0, 1fr) auto; align-items: center; gap: 0 8px; padding: 8px 0; background: linear-gradient(90deg, transparent, var(--border-subtle) 14%, var(--border-subtle) 86%, transparent) bottom / 100% 1px no-repeat; }
 .solve.enter { animation: timer-row-in var(--duration-enter) var(--ease-m3); }
 @keyframes timer-row-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+/* Nuevo récord: resaltado celeste que se desvanece una sola vez (opacity). El timer ya está detenido. */
+.stat-best, .solve { position: relative; }
+.stat-best.pb-flash::before, .solve.pb-flash::before { content: ''; position: absolute; inset: 0 -8px; border-radius: var(--radius-sm); background: var(--c-celeste-subtle); pointer-events: none; animation: pb-fade 1.4s var(--ease-standard) forwards; }
+@keyframes pb-fade { to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .stat-best.pb-flash::before, .solve.pb-flash::before { animation: none; }
+}
 .solve-index { color: var(--text-tertiary); font-size: var(--font-xs); }
 .solve-main { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
 .solve-time { min-height: 48px; max-width: 100%; font-size: 1.1875rem; font-weight: 400; text-align: left; overflow-wrap: anywhere; }

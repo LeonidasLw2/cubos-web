@@ -208,7 +208,9 @@ h3 { letter-spacing: -0.014em; }
 .sheet-handle { position: relative; touch-action: none; cursor: grab; }
 .sheet-handle::after { content: ''; position: absolute; inset: -14px -64px; } /* zona de agarre amplia */
 .sheet-head, .settings-head { touch-action: none; }
-.bottom-sheet, dialog.settings { overscroll-behavior: contain; }
+/* overscroll-behavior solo actúa en contenedores con scroll: el cuerpo de cada hoja es el propio <dialog> */
+.bottom-sheet, dialog.settings { overflow-y: auto; overscroll-behavior-y: contain; }
+.bottom-sheet { max-height: calc(100dvh - 16px - env(safe-area-inset-top)); }
 .bottom-sheet::backdrop, .settings::backdrop { background: rgb(0 0 0 / calc(0.65 * (1 - var(--sheet-progress, 0)))); }
 dialog.settings > .sheet-handle { display: none; }
 @media (max-width: 640px) {
