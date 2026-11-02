@@ -278,7 +278,7 @@ body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) .s
 @keyframes timer-row-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
 /* Nuevo récord: resaltado celeste que se desvanece una sola vez (opacity). El timer ya está detenido. */
 .stat-best, .solve { position: relative; }
-.stat-best.pb-flash::before, .solve.pb-flash::before { content: ''; position: absolute; inset: 0 -8px; border-radius: var(--radius-sm); background: var(--c-celeste-subtle); pointer-events: none; animation: pb-fade 1.4s var(--ease-standard) forwards; }
+.stat-best.pb-flash::before, .solve.pb-flash::before { content: ''; position: absolute; inset: 0 -8px; border-radius: var(--radius-sm); background: color-mix(in srgb, var(--c-celeste) 20%, transparent); pointer-events: none; animation: pb-fade 1.4s linear forwards; }
 @keyframes pb-fade { to { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) {
   .stat-best.pb-flash::before, .solve.pb-flash::before { animation: none; }
