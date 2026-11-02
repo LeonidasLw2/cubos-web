@@ -223,3 +223,24 @@ dialog.settings > .sheet-handle { display: none; }
 .event-pill { position: absolute; top: 0; left: 0; border-radius: var(--radius-pill); background: var(--c-celeste); pointer-events: none; transition: transform 300ms var(--spring-crit); will-change: transform; }
 .events.has-pill .event-btn { position: relative; z-index: 1; }
 .events.has-pill .event-btn[aria-pressed='true'] { background: transparent; border-color: transparent; }
+
+/* Borde de scroll de la barra superior: aparece al desplazar la página (línea de luz celeste).
+   Animación ligada al scroll, solo opacity y fuera del hilo principal; sin soporte queda el borde de siempre. */
+@supports (animation-timeline: scroll()) {
+  .topbar::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 -1px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--c-celeste-border) 20%, var(--c-celeste-border) 80%, transparent);
+    opacity: 0;
+    pointer-events: none;
+    animation: topbar-edge linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 48px;
+  }
+  @keyframes topbar-edge { to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .topbar::after { animation: none; }
+  }
+}

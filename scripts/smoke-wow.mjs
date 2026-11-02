@@ -81,4 +81,18 @@ try {
     await ctx.close();
   }
 
+  // --- Fase 6: borde de scroll de la barra superior ---
+  for (const reduced of [false, true]) {
+    const { ctx, page, errors } = await open({}, reduced);
+    await page.goto(BASE + '#/metodos/3x3/pll');
+    await page.waitForFunction(() => document.documentElement.scrollHeight > innerHeight + 400);
+    const edge = () => page.evaluate(() => getComputedStyle(document.querySelector('.topbar'), '::after').opacity);
+    assert.equal(await edge(), '0', 'arriba: sin borde');
+    await page.evaluate(() => scrollTo(0, 400));
+    await page.waitForTimeout(150);
+    assert.equal(await edge(), reduced ? '0' : '1', reduced ? 'movimiento reducido: sin animación' : 'abajo: borde visible');
+    assert.deepEqual(errors, []);
+    console.log(`✔ borde de scroll (${reduced ? 'movimiento reducido' : 'normal'})`);
+    await ctx.close();
+  }
 } finally { await browser.close(); }
