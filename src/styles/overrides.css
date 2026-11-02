@@ -217,3 +217,9 @@ dialog.settings > .sheet-handle { display: none; }
   dialog.settings > .sheet-handle { display: block; margin: 0 auto 12px; width: 32px; height: 4px; border-radius: 2px; background: var(--handle); }
   dialog.settings:has(> .sheet-handle)::before { content: none; }
 }
+
+/* Píldora de categoría (src/ui.js, placeEventPill): se desliza con transform; el texto cambia al instante. */
+.events { position: relative; }
+.event-pill { position: absolute; top: 0; left: 0; border-radius: var(--radius-pill); background: var(--c-celeste); pointer-events: none; transition: transform 300ms var(--spring-crit); will-change: transform; }
+.events.has-pill .event-btn { position: relative; z-index: 1; }
+.events.has-pill .event-btn[aria-pressed='true'] { background: transparent; border-color: transparent; }

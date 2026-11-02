@@ -44,4 +44,41 @@ try {
     console.log(`✔ PB flash (${reduced ? 'movimiento reducido: estático' : 'se desvanece'})`);
     await ctx.close();
   }
+
+  // --- Fase 4: píldora de categorías (360 px, lista con scroll horizontal) ---
+  {
+    const { ctx, page, errors } = await open();
+    await page.evaluate(() => document.fonts.ready);
+    const geo = () => page.evaluate(() => {
+      const pill = document.querySelector('.event-pill');
+      const btn = document.querySelector('.event-btn[aria-pressed="true"]');
+      const p = pill.getBoundingClientRect(); const b = btn.getBoundingClientRect();
+      return { dx: Math.abs(p.left - b.left), dy: Math.abs(p.top - b.top), dw: Math.abs(p.width - b.width), dh: Math.abs(p.height - b.height), tr: getComputedStyle(pill).transitionProperty };
+    });
+    const near = (g, label) => assert.ok(g.dx < 1 && g.dy < 1 && g.dw < 1 && g.dh < 1, `${label}: ${JSON.stringify(g)}`);
+    for (const ev of ['222', '444', '555', '777', 'minx', 'pyram', 'mirror', '333']) {
+      await page.locator(`[data-event='${ev}']`).scrollIntoViewIfNeeded();
+      await page.locator(`[data-event='${ev}']`).click();
+      // Respuesta inmediata: el estado y el destino de la píldora cambian en el mismo clic.
+      assert.equal(await page.evaluate(() => document.querySelector('.event-pill').style.transform !== ''), true);
+      assert.equal((await geo()).tr, 'transform', 'solo se anima transform');
+      await page.waitForTimeout(450);
+      near(await geo(), `categoría ${ev}`);
+    }
+    // Desplazar la lista, cambiar el tamaño y la fuente: la píldora sigue sobre el botón.
+    await page.locator('#events').evaluate((el) => { el.scrollLeft = 80; });
+    await page.waitForTimeout(100);
+    near(await geo(), 'tras scroll');
+    await page.setViewportSize({ width: 412, height: 800 });
+    await page.waitForTimeout(150);
+    near(await geo(), 'tras resize');
+    // Cambiar de vista y volver (display none → recalcula al mostrarse).
+    await page.goto(BASE + '#/metodos'); await page.goto(BASE + '#/timer');
+    await page.waitForTimeout(200);
+    near(await geo(), 'tras volver al timer');
+    assert.deepEqual(errors, []);
+    console.log('✔ píldora de categorías: 8 botones a 360 px, scroll, resize y cambio de vista');
+    await ctx.close();
+  }
+
 } finally { await browser.close(); }

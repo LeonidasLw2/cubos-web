@@ -173,6 +173,34 @@ function renderEvents() {
   );
 }
 
+// Píldora deslizante de la categoría activa: misma idea que el indicador de las pestañas (main.js).
+// Solo se anima transform; el ancho/alto se fijan al instante. Está dentro del scroll, así que
+// offsetLeft no depende del desplazamiento horizontal.
+let eventPill = null;
+function placeEventPill(animate = true) {
+  const active = els.events.querySelector('.event-btn[aria-pressed="true"]');
+  if (!active || !active.offsetWidth) return; // vista oculta: el ResizeObserver reintenta al mostrarse
+  if (!eventPill) {
+    eventPill = document.createElement('span');
+    eventPill.className = 'event-pill';
+    eventPill.setAttribute('aria-hidden', 'true');
+  }
+  if (eventPill.parentNode !== els.events) els.events.prepend(eventPill);
+  eventPill.style.transition = animate && els.events.classList.contains('has-pill') ? '' : 'none';
+  eventPill.style.width = `${active.offsetWidth}px`;
+  eventPill.style.height = `${active.offsetHeight}px`;
+  eventPill.style.transform = `translate(${active.offsetLeft}px, ${active.offsetTop}px)`;
+  els.events.classList.add('has-pill');
+}
+
+function initEventPill() {
+  const place = () => placeEventPill(false);
+  new ResizeObserver(place).observe(els.events);
+  els.events.addEventListener('scroll', place, { passive: true });
+  document.fonts?.ready.then(place);
+  placeEventPill(false);
+}
+
 function selectEvent(eventId) {
   if (eventId === state.event) return;
   state.event = eventId;
@@ -186,6 +214,7 @@ function selectEvent(eventId) {
   for (const btn of els.events.children) {
     btn.setAttribute('aria-pressed', String(btn.dataset.event === eventId));
   }
+  placeEventPill();
   state.lastResult = '0.00';
   showTimerText(state.lastResult);
   renderSession();
@@ -748,6 +777,7 @@ export function initUI() {
   els.emptyArt.innerHTML = cubeSvg({ n: 3 });
   els.solvingIndicator.insertAdjacentHTML('afterbegin', cubeSvg({ n: 3, className: 'solving-cube' }));
   renderEvents();
+  initEventPill();
   els.events.addEventListener('click', (e) => {
     const btn = e.target.closest('.event-btn');
     if (btn) selectEvent(btn.dataset.event);
