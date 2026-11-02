@@ -162,13 +162,13 @@
 /* Presionar: se hunde ya en pointer-down (100 ms) y vuelve con resorte al soltar */
 .btn, .data-btn, .text-btn, .action-btn, .icon-btn, .event-btn, .chip,
 .case-controls button, .case-alg, .sheet-item, .bottom-nav-item {
-  transition: transform 450ms var(--spring);
+  transition: transform 450ms var(--spring-crit);
 }
 .btn:active, .data-btn:active, .text-btn:active, .action-btn:active, .icon-btn:active,
 .event-btn:active, .chip:active, .case-controls button:active, .case-alg:active,
 .sheet-item:active, .bottom-nav-item:active {
   transform: scale(0.96);
-  transition-duration: 100ms;
+  transition-duration: var(--duration-press);
   transition-timing-function: ease-out;
 }
 
@@ -197,3 +197,11 @@ h3 { letter-spacing: -0.014em; }
 .quick-scroll-thumb { width: 6px; background: var(--text-tertiary); box-shadow: none; }
 .quick-scrollbar.is-active .quick-scroll-thumb { width: 10px; background: var(--c-celeste); box-shadow: none; }
 .quick-scroll-grip { display: none; }
+
+/* Cambio de sección: entra con un fundido corto y 6 px de desplazamiento (solo transform/opacity) */
+@keyframes view-in { from { opacity: 0; transform: translateY(6px); } }
+@keyframes pill-in { from { transform: scale(0.88); } }
+@media (prefers-reduced-motion: no-preference) {
+  .layout:not([hidden]), .methods:not([hidden]) { animation: view-in var(--duration-enter) var(--ease-m3); }
+  .bottom-nav-item[aria-current='page'] svg { animation: pill-in 320ms var(--spring-crit); }
+}
