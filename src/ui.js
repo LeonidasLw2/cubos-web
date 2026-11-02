@@ -173,18 +173,48 @@ function renderEvents() {
   );
 }
 
+// Píldora deslizante de la categoría activa: misma idea que el indicador de las pestañas (main.js).
+// Solo se anima transform; el ancho/alto se fijan al instante. Está dentro del scroll, así que
+// offsetLeft no depende del desplazamiento horizontal.
+let eventPill = null;
+function placeEventPill(animate = true) {
+  const active = els.events.querySelector('.event-btn[aria-pressed="true"]');
+  if (!active || !active.offsetWidth) return; // vista oculta: el ResizeObserver reintenta al mostrarse
+  if (!eventPill) {
+    eventPill = document.createElement('span');
+    eventPill.className = 'event-pill';
+    eventPill.setAttribute('aria-hidden', 'true');
+  }
+  if (eventPill.parentNode !== els.events) els.events.prepend(eventPill);
+  eventPill.style.transition = animate && els.events.classList.contains('has-pill') ? '' : 'none';
+  eventPill.style.width = `${active.offsetWidth}px`;
+  eventPill.style.height = `${active.offsetHeight}px`;
+  eventPill.style.transform = `translate(${active.offsetLeft}px, ${active.offsetTop}px)`;
+  els.events.classList.add('has-pill');
+}
+
+function initEventPill() {
+  const place = () => placeEventPill(false);
+  new ResizeObserver(place).observe(els.events);
+  els.events.addEventListener('scroll', place, { passive: true });
+  document.fonts?.ready.then(place);
+  placeEventPill(false);
+}
+
 function selectEvent(eventId) {
   if (eventId === state.event) return;
   state.event = eventId;
   saveSelectedEvent(eventId);
   state.solves = loadSolves(eventId);
   state.newSolveId = null;
+  clearPbFlash();
   if (eventId === 'mirror' && isTouch) {
     currentViewMode = '2D';
   }
   for (const btn of els.events.children) {
     btn.setAttribute('aria-pressed', String(btn.dataset.event === eventId));
   }
+  placeEventPill();
   state.lastResult = '0.00';
   showTimerText(state.lastResult);
   renderSession();
@@ -296,6 +326,7 @@ function commit() {
 
 // Guarda el resultado que entrega el timer ({ time, penalty, autoPenalty }).
 function addSolve(result) {
+  clearPbFlash();
   const previousBest = bestTime(state.solves);
   const now = Date.now();
   const solve = {
@@ -315,7 +346,14 @@ function addSolve(result) {
   loadScramble();
 }
 
+// Resalta "Mejor" y la fila nueva. Con movimiento reducido la clase no anima y queda fija hasta el próximo tiempo.
+function clearPbFlash() {
+  document.querySelectorAll('.pb-flash').forEach((el) => el.classList.remove('pb-flash'));
+}
+
 function celebratePB() {
+  document.querySelector('.stat-best')?.classList.add('pb-flash');
+  els.solves.querySelector('.solve')?.classList.add('pb-flash');
   replay(els.timer, 'pb');
   replay(els.pbBadge, 'show');
   replay(els.pbBurst, 'show');
@@ -739,6 +777,7 @@ export function initUI() {
   els.emptyArt.innerHTML = cubeSvg({ n: 3 });
   els.solvingIndicator.insertAdjacentHTML('afterbegin', cubeSvg({ n: 3, className: 'solving-cube' }));
   renderEvents();
+  initEventPill();
   els.events.addEventListener('click', (e) => {
     const btn = e.target.closest('.event-btn');
     if (btn) selectEvent(btn.dataset.event);

@@ -110,6 +110,10 @@
   --shadow-hover: inset 0 1px 0 rgba(255, 255, 255, 0.06), var(--shadow-lg);
 
   /* ---------- Movimiento: curva con resorte (solo transform y opacity) ---------- */
+  /* Movimiento: crítico (sin rebote) por defecto; el rebote solo si hubo un gesto con inercia */
+  --spring-crit: linear(0, 0.09 5%, 0.264 10%, 0.442 15%, 0.594 20%, 0.801 30%, 0.908 40%, 0.96 50%, 0.993 70%, 1);
+  --spring-bounce: var(--spring);
+  --duration-press: 100ms;
   --spring: linear(0, 0.42 10%, 0.94 24%, 1.07 36%, 1.02 50%, 1 64%, 1);
   --ease-m3: cubic-bezier(0.2, 0, 0, 1);
   --ease-standard: cubic-bezier(0.2, 0.7, 0.2, 1);

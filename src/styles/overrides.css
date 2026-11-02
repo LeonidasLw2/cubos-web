@@ -162,13 +162,13 @@
 /* Presionar: se hunde ya en pointer-down (100 ms) y vuelve con resorte al soltar */
 .btn, .data-btn, .text-btn, .action-btn, .icon-btn, .event-btn, .chip,
 .case-controls button, .case-alg, .sheet-item, .bottom-nav-item {
-  transition: transform 450ms var(--spring);
+  transition: transform 450ms var(--spring-crit);
 }
 .btn:active, .data-btn:active, .text-btn:active, .action-btn:active, .icon-btn:active,
 .event-btn:active, .chip:active, .case-controls button:active, .case-alg:active,
 .sheet-item:active, .bottom-nav-item:active {
   transform: scale(0.96);
-  transition-duration: 100ms;
+  transition-duration: var(--duration-press);
   transition-timing-function: ease-out;
 }
 
@@ -189,4 +189,62 @@ h3 { letter-spacing: -0.014em; }
 @media (prefers-contrast: more) {
   :root { --border-subtle: rgba(255, 255, 255, 0.28); }
   .bottom-nav, .topbar { background: var(--bg-canvas); }
+}
+
+/* Scroll rápido: aparece al desplazarse, se esconde solo, más chico y sin brillos */
+.quick-scrollbar.is-idle:not(:focus-within) { opacity: 0; pointer-events: none; }
+.quick-scroll-btn { width: 20px; height: 20px; background: var(--surface-2); color: var(--text-secondary); box-shadow: none; }
+.quick-scroll-thumb { width: 6px; background: var(--text-tertiary); box-shadow: none; }
+.quick-scrollbar.is-active .quick-scroll-thumb { width: 10px; background: var(--c-celeste); box-shadow: none; }
+.quick-scroll-grip { display: none; }
+
+/* Sin fundido de entrada en las secciones: opacidad 0 en el elemento LCP lo retrasaba (Timer 0,9 s → 3,1 s en Lighthouse) */
+@keyframes pill-in { from { transform: scale(0.88); } }
+@media (prefers-reduced-motion: no-preference) {
+  .bottom-nav-item[aria-current='page'] svg { animation: pill-in 320ms var(--spring-crit); }
+}
+
+/* Hojas arrastrables (src/sheet-drag.js): el tirador y la cabecera no hacen scroll; el velo se aclara al arrastrar */
+.sheet-handle { position: relative; touch-action: none; cursor: grab; }
+.sheet-handle::after { content: ''; position: absolute; inset: -14px -64px; } /* zona de agarre amplia */
+.sheet-head, .settings-head { touch-action: none; }
+/* overscroll-behavior solo actúa en contenedores con scroll: el cuerpo de cada hoja es el propio <dialog> */
+.bottom-sheet, dialog.settings { overflow-y: auto; overscroll-behavior-y: contain; }
+.bottom-sheet { max-height: calc(100dvh - 16px - env(safe-area-inset-top)); }
+/* Horizontal: la hoja casi llena el alto; el último ítem no debe quedar pegado al borde */
+@media (orientation: landscape) and (max-height: 500px) {
+  .bottom-sheet { padding-bottom: calc(28px + env(safe-area-inset-bottom)); }
+}
+.bottom-sheet::backdrop, .settings::backdrop { background: rgb(0 0 0 / calc(0.65 * (1 - var(--sheet-progress, 0)))); }
+dialog.settings > .sheet-handle { display: none; }
+@media (max-width: 640px) {
+  dialog.settings > .sheet-handle { display: block; margin: 0 auto 12px; width: 32px; height: 4px; border-radius: 2px; background: var(--handle); }
+  dialog.settings:has(> .sheet-handle)::before { content: none; }
+}
+
+/* Píldora de categoría (src/ui.js, placeEventPill): se desliza con transform; el texto cambia al instante. */
+.events { position: relative; }
+.event-pill { position: absolute; top: 0; left: 0; border-radius: var(--radius-pill); background: var(--c-celeste); pointer-events: none; transition: transform 300ms var(--spring-crit); will-change: transform; }
+.events.has-pill .event-btn { position: relative; z-index: 1; }
+.events.has-pill .event-btn[aria-pressed='true'] { background: transparent; border-color: transparent; }
+
+/* Borde de scroll de la barra superior: aparece al desplazar la página (línea de luz celeste).
+   Animación ligada al scroll, solo opacity y fuera del hilo principal; sin soporte queda el borde de siempre. */
+@supports (animation-timeline: scroll()) {
+  .topbar::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 -1px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--c-celeste-border) 20%, var(--c-celeste-border) 80%, transparent);
+    opacity: 0;
+    pointer-events: none;
+    animation: topbar-edge linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 48px;
+  }
+  @keyframes topbar-edge { to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .topbar::after { animation: none; }
+  }
 }
