@@ -203,3 +203,15 @@ h3 { letter-spacing: -0.014em; }
 @media (prefers-reduced-motion: no-preference) {
   .bottom-nav-item[aria-current='page'] svg { animation: pill-in 320ms var(--spring-crit); }
 }
+
+/* Hojas arrastrables (src/sheet-drag.js): el tirador y la cabecera no hacen scroll; el velo se aclara al arrastrar */
+.sheet-handle { position: relative; touch-action: none; cursor: grab; }
+.sheet-handle::after { content: ''; position: absolute; inset: -14px -64px; } /* zona de agarre amplia */
+.sheet-head, .settings-head { touch-action: none; }
+.bottom-sheet, dialog.settings { overscroll-behavior: contain; }
+.bottom-sheet::backdrop, .settings::backdrop { background: rgb(0 0 0 / calc(0.65 * (1 - var(--sheet-progress, 0)))); }
+dialog.settings > .sheet-handle { display: none; }
+@media (max-width: 640px) {
+  dialog.settings > .sheet-handle { display: block; margin: 0 auto 12px; width: 32px; height: 4px; border-radius: 2px; background: var(--handle); }
+  dialog.settings:has(> .sheet-handle)::before { content: none; }
+}
