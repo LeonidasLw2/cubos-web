@@ -16,7 +16,6 @@ import { createNavHistory } from './nav-history.js';
 import { initPWA } from './pwa.js';
 import { destroyScopePlayer } from './twisty/playerManager.js';
 import { initQuickScroll } from './quick-scroll.js';
-import { initSheetDrag } from './sheet-drag.js';
 
 const views = {
   timer: document.getElementById('view-timer'),
@@ -35,7 +34,6 @@ const allNavLinks = () => document.querySelectorAll('.tabs a, .bottom-nav a');
 const openMoreSheetBtn = document.getElementById('open-more-sheet');
 const moreSheet = document.getElementById('more-sheet');
 const closeMoreSheetBtn = document.getElementById('close-more-sheet');
-['more-sheet', 'settings', 'account-dialog'].forEach((id) => initSheetDrag(document.getElementById(id)));
 const sheetLinkNotation = document.getElementById('sheet-link-notation');
 const sheetOpenSettings = document.getElementById('sheet-open-settings');
 const sheetOpenAccount = document.getElementById('sheet-open-account');

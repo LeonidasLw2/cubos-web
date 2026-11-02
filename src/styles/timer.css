@@ -273,16 +273,9 @@ body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) .s
 .session-head h2 { font-size: 1.25rem; }
 .session-head .text-btn { min-height: 48px; color: var(--text-secondary); }
 .solves { list-style: none; margin: -16px 0 0; padding: 0; }
-.solve { display: grid; grid-template-columns: 1.5rem minmax(0, 1fr) auto; align-items: center; gap: 0 8px; padding: 8px 0; background: linear-gradient(90deg, transparent, var(--border-subtle) 14%, var(--border-subtle) 86%, transparent) bottom / 100% 1px no-repeat; }
+.solve { display: grid; grid-template-columns: 1.5rem minmax(0, 1fr); align-items: center; gap: 4px 8px; padding: 12px 0; background: linear-gradient(90deg, transparent, var(--border-subtle) 14%, var(--border-subtle) 86%, transparent) bottom / 100% 1px no-repeat; }
 .solve.enter { animation: timer-row-in var(--duration-enter) var(--ease-m3); }
 @keyframes timer-row-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
-/* Nuevo récord: resaltado celeste que se desvanece una sola vez (opacity). El timer ya está detenido. */
-.stat-best, .solve { position: relative; }
-.stat-best.pb-flash::before, .solve.pb-flash::before { content: ''; position: absolute; inset: 0 -8px; border-radius: var(--radius-sm); background: color-mix(in srgb, var(--c-celeste) 20%, transparent); pointer-events: none; animation: pb-fade 1.4s linear forwards; }
-@keyframes pb-fade { to { opacity: 0; } }
-@media (prefers-reduced-motion: reduce) {
-  .stat-best.pb-flash::before, .solve.pb-flash::before { animation: none; }
-}
 .solve-index { color: var(--text-tertiary); font-size: var(--font-xs); }
 .solve-main { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
 .solve-time { min-height: 48px; max-width: 100%; font-size: 1.1875rem; font-weight: 400; text-align: left; overflow-wrap: anywhere; }
@@ -290,15 +283,15 @@ body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) .s
 .solve.is-best .solve-time::after { content: ' · PB'; font-size: var(--font-xs); }
 .solve.is-dnf .solve-time { color: var(--text-secondary); }
 .solve-tag { padding: 2px 6px; border-radius: var(--radius-xs); background: var(--surface-2); color: var(--text-secondary); font-size: 0.6875rem; }
-.solve-actions { grid-column: 3; grid-row: 1; display: flex; gap: 4px; }
+.solve-actions { grid-column: 2; display: flex; gap: 6px; }
 .solve-actions button { min-width: 48px; min-height: 48px; padding: 4px 8px; border: 1px solid var(--border-medium); border-radius: var(--radius-sm); background: var(--surface-1); color: var(--text-secondary); font-size: var(--font-xs); transition: transform var(--duration-quick); }
 .solve-actions button:active { transform: scale(0.95); }
 .solve-actions button:disabled { color: var(--text-disabled); cursor: not-allowed; }
 .solve-actions button[aria-pressed='true'] { background: var(--c-celeste); color: var(--on-accent); border-color: var(--c-celeste); font-weight: 600; }
-.solve-meta { grid-column: 2 / -1; display: flex; flex-wrap: wrap; gap: 4px 12px; min-width: 0; }
+.solve-meta { grid-column: 2; display: flex; flex-wrap: wrap; gap: 4px 12px; min-width: 0; }
 .solve-date { color: var(--text-tertiary); font-size: var(--font-xs); }
-.solve-scramble { flex: 1 1 0; min-width: 6rem; color: var(--text-secondary); font-size: var(--font-xs); line-height: 1.5; overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; line-clamp: 1; overflow: hidden; }
-.solve.expanded .solve-scramble { flex-basis: 100%; -webkit-line-clamp: unset; line-clamp: unset; white-space: pre-line; }
+.solve-scramble { flex: 1 1 100%; min-width: 0; color: var(--text-secondary); font-size: var(--font-xs); line-height: 1.5; overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; line-clamp: 1; overflow: hidden; }
+.solve.expanded .solve-scramble { -webkit-line-clamp: unset; line-clamp: unset; white-space: pre-line; }
 #view-timer .empty { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 24px 12px; color: var(--text-secondary); font-size: var(--font-sm); text-align: center; }
 #view-timer .empty strong { color: var(--text-primary); font-weight: 500; }
 .empty-art { width: 56px; height: 64px; }
@@ -520,8 +513,6 @@ body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) .s
 @media (min-width: 861px) {
   .scramble-card { grid-template-columns: minmax(0, 1fr) 200px; min-height: 218px; }
   .scramble-main { grid-column: 1; }
-  /* Acciones pegadas al scramble, alineadas a su borde (el glifo, no el botón de 48 px) */
-  .scramble-actions { justify-content: flex-start; margin-inline-start: -12px; }
   .scramble-view { grid-column: 2; grid-row: 1; }
   .timer-zone { min-height: 280px; }
 }

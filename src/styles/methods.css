@@ -1577,10 +1577,9 @@ a.link-card:hover .card-action {
     padding: 18px;
   }
 
-  /* Portada compacta: la primera tarjeta de método se ve sin desplazarse */
   .hero-cube-stage {
-    min-height: 160px;
-    max-height: 176px;
+    min-height: 220px;
+    max-height: min(60vh, 240px);
   }
 
   .slide-nav {

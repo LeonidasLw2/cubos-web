@@ -1120,7 +1120,7 @@ function indexPage(route) {
       intro: [
         'Aprendé a resolver cada puzzle desde tu primera vez hasta nivel de competición, con diagramas 2D claros, visor 3D compartido y seguimiento de casos aprendidos.',
       ],
-      chips: [],
+      chips: ['Algoritmos verificados con KPuzzle', 'Progreso guardado', 'Visor 3D + 2D-LL'],
       accent: 'celeste',
       puzzle: '3x3x3',
       stickering: 'pll',
