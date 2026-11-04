@@ -45,10 +45,10 @@ const closeAccountDialogBtn = document.getElementById('close-account-dialog');
 const exitToast = document.getElementById('exit-toast');
 
 const TITLES = {
-  timer: 'CubeSolver · Timer',
-  methods: 'CubeSolver · Métodos',
-  notation: 'CubeSolver · Notación',
-  trainer: 'CubeSolver · Entrenar',
+  timer: 'Cube Tempo · Timer',
+  methods: 'Cube Tempo · Métodos',
+  notation: 'Cube Tempo · Notación',
+  trainer: 'Cube Tempo · Entrenar',
 };
 
 // ---------- Indicador deslizante de la barra superior ----------
@@ -146,7 +146,7 @@ async function showRoute(route) {
   }
   requestAnimationFrame(updateTabIndicator);
 
-  document.title = TITLES[route.view] ?? 'CubeSolver';
+  document.title = TITLES[route.view] ?? 'Cube Tempo';
   setTimerActive(route.view === 'timer');
   trainer?.setTrainerActive(route.view === 'trainer');
 

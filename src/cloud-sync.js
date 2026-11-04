@@ -531,7 +531,7 @@ export function initCloudSyncUI({ onDataUpdated, onExportBackup, onImportBackup 
       accountDialogBody.innerHTML = `
         <div class="account-status-banner is-unconfigured">
           <strong>Sincronización no configurada</strong>
-          <p>CubeSolver está funcionando al 100 % en modo local. Tus tiempos, ajustes y algoritmos aprendidos se guardan automáticamente en este navegador.</p>
+          <p>Cube Tempo está funcionando al 100 % en modo local. Tus tiempos, ajustes y algoritmos aprendidos se guardan automáticamente en este navegador.</p>
         </div>
         <div class="account-info-box">
           <h3>☁️ ¿Querés sincronizar entre tu celular y tu PC?</h3>
