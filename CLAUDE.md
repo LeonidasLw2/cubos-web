@@ -105,3 +105,5 @@ La implementación y su verificación parcial están en [Rediseño local](docs/I
 El flujo de [identificación de casos](docs/IDENTIFICAR-CASOS.md) compara fotos revisadas o colores manuales con casos verificados y carga el escáner al abrirlo.
 
 En la versión de publicación, Timer oculta la mezcla y el visor durante inspección y resolución con `visibility` para conservar la geometría del reloj. Entrenar oculta mezcla, visor, solución y acciones mientras corre.
+
+El ajuste tipográfico usa Inter 650 en títulos base, 500 en el reloj y los valores de sesión y 550 en las mezclas. El encabezado muestra etiquetas breves de sincronización y Cuenta conserva el detalle.

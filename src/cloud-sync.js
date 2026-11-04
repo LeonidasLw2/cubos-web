@@ -645,7 +645,15 @@ export function initCloudSyncUI({ onDataUpdated, onExportBackup, onImportBackup 
       syncIndicator.title = status.label;
     }
     if (syncText) {
-      syncText.textContent = status.label;
+      const compactLabels = {
+        unconfigured: 'Solo local',
+        local: 'Local · Sin cuenta',
+        syncing: 'Sincronizando',
+        synced: 'Sincronizado',
+        offline: 'Sin conexión',
+        error: 'Error al sincronizar',
+      };
+      syncText.textContent = compactLabels[status.state] ?? status.label;
     }
     if (accountBtn && accountLabel) {
       accountLabel.textContent = status.user

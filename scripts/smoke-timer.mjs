@@ -146,7 +146,7 @@ try {
       assert.equal(await page.locator('#timer').evaluate((el) => getComputedStyle(el).transitionDuration), '1e-05s');
       assert.equal(await page.locator('#timer-zone').evaluate((el) => getComputedStyle(el).touchAction), 'none');
       assert.equal(await page.locator('#timer-zone').evaluate((el) => getComputedStyle(el).overscrollBehaviorY), 'contain');
-      assert.equal(await page.locator('#timer').evaluate((el) => getComputedStyle(el).fontWeight), '400');
+      assert.equal(await page.locator('#timer').evaluate((el) => getComputedStyle(el).fontWeight), '500');
       if ((width === 360 && height === 640) || width === 1280) {
         await page.evaluate(() => localStorage.setItem('cubos-web:settings', JSON.stringify({ alerts: 'none', inspection: false, timerDisplay: 'solving' })));
         await page.reload();

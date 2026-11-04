@@ -65,7 +65,7 @@ body[data-view='timer'] .top-row { min-height: 48px; }
   width: 100%;
   min-height: 96px;
   margin: 0;
-  font: 500 1rem/1.5 var(--font-sans);
+  font: 550 1rem/1.65 var(--font-sans);
   letter-spacing: 0.02em;
   color: var(--text-primary);
   overflow-wrap: anywhere;
@@ -256,7 +256,7 @@ body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) .s
 .stat { min-width: 0; padding: 16px 0; border-bottom: 1px solid var(--border-subtle); }
 .stat span { display: flex; gap: 6px; align-items: center; color: var(--text-secondary); font-size: var(--font-xs); font-weight: 500; }
 .stat span svg { display: none; }
-.stat strong { display: block; margin-top: 4px; font-size: clamp(1.125rem, 4.5vw, 1.5rem); font-weight: 300; letter-spacing: -0.02em; overflow-wrap: anywhere; }
+.stat strong { display: block; margin-top: 4px; font-size: clamp(1.125rem, 4.5vw, 1.5rem); font-weight: 500; letter-spacing: -0.02em; overflow-wrap: anywhere; }
 .stat-best strong { color: var(--c-celeste); font-weight: 500; }
 .stat small { display: block; margin-top: 4px; color: var(--text-tertiary); font-size: 0.6875rem; }
 .stat small b { font-weight: 500; }
@@ -285,7 +285,7 @@ body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) .s
 }
 .solve-index { color: var(--text-tertiary); font-size: var(--font-xs); }
 .solve-main { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
-.solve-time { min-height: 48px; max-width: 100%; font-size: 1.1875rem; font-weight: 400; text-align: left; overflow-wrap: anywhere; }
+.solve-time { min-height: 48px; max-width: 100%; font-size: 1.1875rem; font-weight: 500; text-align: left; overflow-wrap: anywhere; }
 .solve.is-best .solve-time { color: var(--c-celeste); font-weight: 600; }
 .solve.is-best .solve-time::after { content: ' · PB'; font-size: var(--font-xs); }
 .solve.is-dnf .solve-time { color: var(--text-secondary); }

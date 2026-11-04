@@ -45,7 +45,7 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: var(--tracking-tight);
   margin: 0;
   color: var(--text-primary);
-  font-weight: 600;
+  font-weight: 650;
 }
 
 h1 { font-size: var(--font-h1); line-height: 1.2; }
