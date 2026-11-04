@@ -10,7 +10,7 @@ import './styles/notation.css';
 import './styles/trainer.css';
 import './styles/dialogs.css';
 import './styles/overrides.css';
-import { initUI, setTimerActive, isTimerIdle, openSettingsDialog } from './ui.js';
+import { initUI, setTimerActive, isTimerIdle, isTimerAttemptActive, openSettingsDialog } from './ui.js';
 import { startRouter } from './router.js';
 import { createNavHistory } from './nav-history.js';
 import { initPWA } from './pwa.js';
@@ -73,7 +73,7 @@ window.addEventListener('resize', updateTabIndicator, { passive: true });
 // ---------- Bottom sheet "Más" (Móvil) y diálogo de Cuenta ----------
 
 function openMoreSheet() {
-  if (!moreSheet || moreSheet.open) return;
+  if (!moreSheet || moreSheet.open || isTimerAttemptActive()) return;
   moreSheet.showModal();
 }
 
@@ -82,6 +82,7 @@ function closeMoreSheet() {
 }
 
 function openAccountModal() {
+  if (isTimerAttemptActive()) return;
   closeMoreSheet();
   if (accountDialog && !accountDialog.open) accountDialog.showModal();
 }
@@ -129,6 +130,10 @@ window.addEventListener('pagehide', () => nav.persist());
 // ---------- Vistas ----------
 
 async function showRoute(route) {
+  if (document.body.dataset.view === 'timer' && isTimerAttemptActive()) {
+    if (route.view !== 'timer') history.replaceState(history.state, '', '#/timer');
+    return;
+  }
   closeMoreSheet();
   const scrollTarget = nav.sync(window.scrollY);
   document.body.dataset.view = route.view;

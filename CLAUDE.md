@@ -109,3 +109,5 @@ En la versión de publicación, Timer oculta la mezcla y el visor durante inspec
 El ajuste tipográfico usa Inter 650 en títulos base, 500 en el reloj y los valores de sesión y 550 en las mezclas. El encabezado muestra etiquetas breves de sincronización y Cuenta conserva el detalle.
 
 Las miniaturas de los casos cúbicos usan juntas finas y esquinas redondeadas. El visor de Métodos aplica ese acabado a Cube3D y PG3D conservando las máscaras didácticas y la reproducción.
+
+El intento del Timer ocupa el viewport durante inspección y resolución, con el reloj centrado y los controles externos inertes. Space Grotesk se empaqueta localmente con licencia OFL. El modo de tiempo oculto muestra «Resolviendo» y conserva el resultado y la mezcla al terminar.

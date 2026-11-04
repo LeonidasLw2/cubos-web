@@ -18,3 +18,12 @@
   descent-override: 22.5%;
   line-gap-override: 0%;
 }
+
+/* Space Grotesk variable. Distribución oficial con licencia en public/licenses. */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 300 700;
+  src: url('./assets/space-grotesk.woff2') format('woff2');
+}

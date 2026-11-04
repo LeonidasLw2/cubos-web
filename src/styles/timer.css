@@ -111,7 +111,16 @@ body[data-view='timer'] .top-row { min-height: 48px; }
 
 .toggle-view-btn { font-size: var(--font-xs); font-weight: 600; }
 .view-badge { line-height: 1; }
-.preview-toggle { display: inline-flex; }
+.scramble-actions .preview-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  padding-inline: 10px;
+  gap: 6px;
+}
+.preview-toggle svg { flex: none; }
+.preview-label { font-size: var(--font-xs); white-space: nowrap; }
 .preview-toggle[aria-expanded='true'] { color: var(--c-celeste); background: var(--c-celeste-subtle); }
 
 .scramble-view { display: none; }
@@ -186,7 +195,7 @@ body[data-view='timer'] .top-row { min-height: 48px; }
 .timer {
   position: relative;
   max-width: 100%;
-  font: var(--timer-weight) var(--font-timer)/1 var(--font-sans);
+  font: var(--timer-weight) var(--font-timer)/1 var(--font-display);
   font-variant-numeric: tabular-nums;
   letter-spacing: var(--tracking-timer);
   color: var(--text-primary);
@@ -199,7 +208,7 @@ body[data-view='timer'] .top-row { min-height: 48px; }
 .timer.is-long { font-size: min(var(--font-timer), calc(80vw / (var(--timer-chars, 8) * 0.58))); }
 #timer.is-long { font-size: min(var(--timer-size), calc(90cqw / (var(--timer-chars, 8) * 0.58))); }
 #timer[data-inspecting] { font-size: min(var(--timer-size), 32cqw); }
-body[data-phase='running'] #timer:not(.solving) { font-size: min(var(--timer-size), 24cqw); }
+body[data-phase='running'] #timer:not(.solving) { font-size: min(var(--timer-size), 24cqw, calc(90cqw / (var(--timer-chars, 4) * 0.58))); }
 
 .timer[data-state='holding'], .timer[data-state='primed'], .timer[data-state='ready'] { color: var(--c-celeste); }
 .timer[data-state='holding'] { transform: scale(0.97); }
@@ -235,20 +244,44 @@ body[data-phase='inspection'] .insp-ring.run { opacity: 1; }
 .hint { grid-column: 1; grid-row: 2; max-width: 32ch; min-height: 0; margin: 0; color: var(--text-secondary); font-size: var(--font-sm); text-align: center; }
 .cancel-inspection { grid-column: 1; grid-row: 2; min-height: 48px; margin: 0; visibility: hidden; opacity: 0; pointer-events: none; }
 body[data-phase='inspection'] .cancel-inspection { visibility: visible; opacity: 1; pointer-events: auto; }
-body:is([data-phase='inspection'], [data-phase='running']) .timer-zone .hint { visibility: hidden; }
+body:is([data-phase='inspection'], [data-phase='running']) .timer-zone .hint { display: none; }
 body[data-phase='running'] .timer-zone { cursor: none; }
+body[data-phase='running'] .timer-zone::before,
+body[data-phase='running'] .timer-zone::after { content: none; }
+body[data-phase='running'] .timer-zone .insp-ring { display: none; }
 .fadeable { transition: opacity var(--duration-medium); }
 body[data-phase='inspection'] .fadeable:not(.hint), body[data-phase='running'] .fadeable { opacity: 0; pointer-events: none; }
-body[data-view='timer'] .topbar.fadeable { opacity: 1; }
-/* Ocultá la mezcla al instante y reservá su espacio para que el reloj no se mueva. */
-body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) .scramble-card,
-body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) .session { visibility: hidden; }
+/* El intento ocupa el viewport, fuera de las columnas del Timer. */
+body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) { overflow: hidden; }
+body[data-view='timer']:is([data-phase='inspection'], [data-phase='running'])
+:is(.topbar, .bottom-nav, .practice .events, .scramble-card, .session, #quick-scrollbar, #update-banner, #offline-toast, #exit-toast) {
+  visibility: hidden;
+  pointer-events: none;
+}
+body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) .timer-zone {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  width: auto;
+  height: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  outline-offset: -4px;
+  background: var(--bg-canvas);
+  grid-template: 1fr / 1fr;
+}
+body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) .cancel-inspection {
+  position: absolute;
+  bottom: max(16px, env(safe-area-inset-bottom));
+}
 
 .solving-indicator { display: none; flex-direction: column; align-items: center; gap: 16px; color: var(--text-secondary); font-size: var(--font-xs); font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; }
-.timer-zone.is-solving .timer { display: none; }
-.timer-zone.is-solving .solving-indicator { display: flex; }
-.solving-cube { width: 80px; height: auto; animation: cube-pulse 1.8s ease-in-out infinite; }
-@keyframes cube-pulse { 50% { transform: scale(1.04); opacity: 0.7; } }
+:is(.timer-zone, .trainer-pad).is-solving .timer { display: none; }
+:is(.timer-zone, .trainer-pad).is-solving .solving-indicator { display: flex; }
+.solving-cube { width: 56px; height: auto; }
+.solving-top { transform-box: fill-box; transform-origin: center; animation: cube-enter 260ms var(--ease-standard) both; }
+@keyframes cube-enter { from { transform: rotate(-18deg); } to { transform: rotate(0); } }
 
 /* Estadísticas sin seis tarjetas compitiendo con el reloj. */
 .session { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
@@ -256,7 +289,7 @@ body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) .s
 .stat { min-width: 0; padding: 16px 0; border-bottom: 1px solid var(--border-subtle); }
 .stat span { display: flex; gap: 6px; align-items: center; color: var(--text-secondary); font-size: var(--font-xs); font-weight: 500; }
 .stat span svg { display: none; }
-.stat strong { display: block; margin-top: 4px; font-size: clamp(1.125rem, 4.5vw, 1.5rem); font-weight: 500; letter-spacing: -0.02em; overflow-wrap: anywhere; }
+.stat strong { display: block; font-family: var(--font-display); margin-top: 4px; font-size: clamp(1.125rem, 4.5vw, 1.5rem); font-weight: 500; letter-spacing: -0.02em; overflow-wrap: anywhere; }
 .stat-best strong { color: var(--c-celeste); font-weight: 500; }
 .stat small { display: block; margin-top: 4px; color: var(--text-tertiary); font-size: 0.6875rem; }
 .stat small b { font-weight: 500; }
@@ -356,7 +389,7 @@ body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) .s
   .timer-zone::after { bottom: 4px; }
   .scramble-card { grid-column: 2; grid-row: 2; }
   .scramble { min-height: 72px; font-size: var(--font-sm); }
-  .scramble-card.preview-open .scramble-view, .preview-toggle { display: none; }
+  .scramble-card.preview-open .scramble-view, .scramble-actions .preview-toggle { display: none; }
   .session { grid-column: 2; grid-row: 3; }
   .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .insp-ring { width: min(44cqw, 112px); }

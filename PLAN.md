@@ -250,3 +250,5 @@ La preparación para publicación incluye la paleta azul oscura y la ocultación
 La corrección tipográfica y las etiquetas breves de sincronización se incorporan a la publicación en GitHub Pages.
 
 Se aplicó un acabado stickerless a las miniaturas y a los visores de los casos cúbicos de Métodos.
+
+El intento del Timer ocupa el viewport durante inspección y resolución, con el reloj centrado y los controles externos inertes. Space Grotesk se empaqueta localmente con licencia OFL. El modo de tiempo oculto muestra «Resolviendo» y conserva el resultado y la mezcla al terminar.

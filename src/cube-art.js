@@ -29,6 +29,7 @@ function face(name, colors, n, shade, stickerless) {
 }
 
 // opts: { n, top, left, right } — cada color puede ser uno solo o una lista de n×n.
-export function cubeSvg({ n = 3, top = '#ffd500', left = '#2ec27e', right = '#ff4d5e', className = '', stickerless = false } = {}) {
-  return `<svg class="cube-art ${className}" viewBox="0 0 100 100" aria-hidden="true" focusable="false">${face('top', top, n, 0, stickerless)}${face('left', left, n, 0.18, stickerless)}${face('right', right, n, 0.32, stickerless)}</svg>`;
+export function cubeSvg({ n = 3, top = '#ffd500', left = '#2ec27e', right = '#ff4d5e', className = '', stickerless = false, animateTop = false } = {}) {
+  const topFace = face('top', top, n, 0, stickerless);
+  return `<svg class="cube-art ${className}" viewBox="0 0 100 100" aria-hidden="true" focusable="false">${animateTop ? `<g class="solving-top">${topFace}</g>` : topFace}${face('left', left, n, 0.18, stickerless)}${face('right', right, n, 0.32, stickerless)}</svg>`;
 }

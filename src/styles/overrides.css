@@ -286,8 +286,6 @@ dialog.settings > .sheet-handle { display: none; }
   .notation-stage-box { max-height: 180px; }
 }
 
-.preview-toggle { width: auto; padding-inline: 10px; gap: 6px; }
-.preview-label { font-size: var(--font-xs); }
 .settings-data-link { align-self: flex-start; color: var(--c-celeste); padding-block: 12px; }
 
 @media (max-width: 860px) and (min-height: 750px) and (orientation: portrait) {

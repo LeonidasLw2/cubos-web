@@ -38,18 +38,21 @@ try {
         const timer = document.querySelector('#timer');
         const time = (getComputedStyle(timer).display === 'none' ? document.querySelector('#solving-indicator') : timer).getBoundingClientRect();
         const nav = document.querySelector('.bottom-nav');
-        const limit = getComputedStyle(nav).display === 'none' ? innerHeight : nav.getBoundingClientRect().top;
+        const limit = getComputedStyle(nav).display === 'none' || getComputedStyle(nav).visibility === 'hidden' ? innerHeight : nav.getBoundingClientRect().top;
         const scramble = document.querySelector('#scramble');
         const styles = [];
         for (let element = scramble; element; element = element.parentElement) styles.push(getComputedStyle(element));
         const textOpacity = styles.reduce((opacity, style) => opacity * Number(style.opacity), 1);
-        const topbarOpacity = getComputedStyle(document.querySelector('.topbar')).opacity;
+        const topbar = document.querySelector('.topbar');
+        const topbarVisible = getComputedStyle(topbar).visibility === 'visible';
+        const centered = Math.abs((time.left + time.right) / 2 - innerWidth / 2) < 2 &&
+          Math.abs((time.top + time.bottom) / 2 - innerHeight / 2) < 2;
         return {
           viewport: innerWidth, over: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth),
           zone: { top: zone.top, bottom: zone.bottom, width: zone.width, height: zone.height }, limit,
           timeFits: time.left >= zone.left && time.right <= zone.right && time.top >= zone.top && time.bottom <= zone.bottom,
           scrambleVisible: scramble.getClientRects().length > 0 && styles.every((style) => style.display !== 'none' && style.visibility === 'visible'),
-          textOpacity, topbarOpacity,
+          textOpacity, topbarVisible, centered,
         };
       });
       assert.equal(m.viewport, width, `${label}: viewport`);
@@ -60,7 +63,14 @@ try {
       assert.equal(m.scrambleVisible, !concealed, `${label}: visibilidad de la mezcla`);
       if (!concealed && label !== 'loading') assert.equal(m.textOpacity, 1, `${label}: opacidad efectiva de la mezcla`);
       if (concealed) assert.ok(await page.locator('#scramble-view').isHidden(), `${label}: visor visible`);
-      assert.equal(m.topbarOpacity, '1', `${label}: opacidad del encabezado`);
+      assert.equal(m.topbarVisible, !concealed, `${label}: encabezado`);
+      if (concealed) {
+        assert.ok(m.centered, `${label}: reloj centrado`);
+        assert.deepEqual(m.zone, { top: 0, bottom: height, width, height }, `${label}: intento en todo el viewport`);
+        for (const selector of ['.topbar', '#events', '#scramble-card', '.session', '.bottom-nav']) {
+          assert.ok(await page.locator(selector).isHidden(), `${label}: ${selector} visible`);
+        }
+      }
       return m;
     };
     try {
@@ -89,6 +99,14 @@ try {
       const player = await page.locator('#scramble-view').evaluate((el) => { window.timerPlayer = el.firstElementChild; return el.children.length; });
       assert.equal(player, 1);
       if (height > 500) {
+        const previewFits = await page.locator('#toggle-preview').evaluate((button) => {
+          const frame = button.getBoundingClientRect();
+          const icon = button.querySelector('svg').getBoundingClientRect();
+          const label = button.querySelector('.preview-label').getBoundingClientRect();
+          return icon.width === 20 && icon.left - frame.left >= 9 &&
+            frame.right - label.right >= 9 && label.left - icon.right >= 5;
+        });
+        assert.ok(previewFits, 'el icono y la etiqueta Cubo entran con margen');
         assert.equal(await page.locator('#toggle-preview').getAttribute('aria-expanded'), String(width >= 861));
         assert.equal(await page.locator('#scramble-view').isVisible(), width >= 861);
         await page.locator('#toggle-preview').click();
@@ -109,12 +127,27 @@ try {
       await page.locator('#timer-zone').focus();
       await page.keyboard.down('Space'); await page.waitForTimeout(650); await page.keyboard.up('Space');
       await page.waitForFunction(() => document.body.dataset.phase === 'inspection');
-      assert.deepEqual((await geometry('inspección')).zone, idle.zone);
+      const focused = await geometry('inspección');
+      for (const selector of ['.topbar', '#events', '#scramble-card', '.session', '.bottom-nav']) {
+        assert.ok(await page.locator(selector).evaluate((control) => control.inert), `${selector} debe quedar inerte`);
+      }
+      await page.locator('[data-event="222"]').evaluate((control) => control.click());
+      await page.locator('#new-scramble').evaluate((control) => control.click());
+      await page.locator('#open-settings').evaluate((control) => control.click());
+      assert.ok(await page.locator('#settings').isHidden());
+      await page.keyboard.press('Escape');
+      await page.waitForFunction(() => document.body.dataset.phase === 'idle');
+      assert.equal(await page.locator('#scramble').textContent(), activeMix);
+      await page.keyboard.down('Space'); await page.waitForTimeout(650); await page.keyboard.up('Space');
+      await page.waitForFunction(() => document.body.dataset.phase === 'inspection');
       await page.waitForFunction(() => getComputedStyle(document.querySelector('#insp-ring')).opacity === '1');
       await page.keyboard.down('Space'); await page.waitForTimeout(650); await page.keyboard.up('Space');
       await page.waitForFunction(() => document.body.dataset.phase === 'running');
       await page.waitForTimeout(1100);
-      assert.deepEqual((await geometry('corriendo')).zone, idle.zone);
+      assert.deepEqual((await geometry('corriendo')).zone, focused.zone);
+      await page.keyboard.press('Tab');
+      assert.equal(await page.locator('body').getAttribute('data-phase'), 'running');
+      await page.locator('#timer-zone').focus();
       await page.keyboard.press('Space');
       await page.waitForFunction(() => document.body.dataset.phase === 'idle');
       await page.waitForTimeout(450);
@@ -127,10 +160,10 @@ try {
         await geometry(action);
       }
       // Fixtures de texto: prueban presentación, sin esperar diez minutos de resolución.
-      for (const text of ['10:23.45', 'DNF(10:23.45)', 'Resolviendo...']) {
+      for (const text of ['0.00', '9.99', '10.00', '1:20.38', '10:23.45', 'DNF(10:23.45)', 'Resolviendo...']) {
         await page.locator('#timer').evaluate((el, text) => {
           el.children[0].textContent = text; el.children[1].textContent = '';
-          el.classList.toggle('is-long', text.length > 7 || text.startsWith('DNF'));
+          el.classList.toggle('is-long', text.length >= 7);
           el.style.setProperty('--timer-chars', text.length);
         }, text);
         await geometry(text);

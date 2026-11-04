@@ -100,6 +100,7 @@ const state = {
 };
 
 let settings = loadSettings();
+let deferredSettings = false;
 
 const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
@@ -109,7 +110,7 @@ let currentViewMode = state.event === 'mirror' && isTouch ? '2D' : '3D';
 
 function updatePlayer() {
   if (els.viewModeBadge) els.viewModeBadge.textContent = currentViewMode;
-  if (!timerActive || !els.view) return;
+  if (!timerActive || !els.view || isTimerAttemptActive()) return;
   const ev = getEvent(state.event);
   const scramble = state.scramble ?? '';
   els.view.dataset.view = currentViewMode;
@@ -202,6 +203,7 @@ function initEventPill() {
 }
 
 function selectEvent(eventId) {
+  if (!isTimerIdle()) return;
   if (eventId === state.event) return;
   state.event = eventId;
   saveSelectedEvent(eventId);
@@ -312,11 +314,13 @@ function renderSolves() {
 }
 
 // Pone el texto grande del timer. is-long se decide aquí (al cambiar de estado), no en cada cuadro.
+let displayedTimerLength = 0;
 function showTimerText(text) {
   updateTimerText(text);
-  const long = text.length > 7 || text.startsWith('DNF');
-  els.timer.classList.toggle('is-long', long);
-  if (long) els.timer.style.setProperty('--timer-chars', text.length);
+  if (displayedTimerLength === text.length) return;
+  displayedTimerLength = text.length;
+  els.timer.classList.toggle('is-long', text.length >= 7);
+  els.timer.style.setProperty('--timer-chars', text.length);
 }
 
 function renderSession() {
@@ -376,6 +380,7 @@ function celebratePB() {
 }
 
 function onSolveAction(e) {
+  if (!isTimerIdle()) return;
   const btn = e.target.closest('button[data-action]');
   if (!btn) return;
   const li = btn.closest('.solve');
@@ -405,6 +410,7 @@ function onSolveAction(e) {
 }
 
 function clearSession() {
+  if (!isTimerIdle()) return;
   const name = getEvent(state.event).name;
   if (!confirm(`¿Borrar los ${state.solves.length} tiempos de ${name}? No se puede deshacer.`)) return;
   recordSolveDeletions(state.event, state.solves);
@@ -458,7 +464,23 @@ const timer = createTimer({
     if (!inspecting) delete els.timerZone.dataset.level;
 
     const phase = phaseOf(s, inspecting);
+    const previousPhase = document.body.dataset.phase;
     document.body.dataset.phase = phase;
+    if (phase !== previousPhase && (phase === 'idle' || previousPhase === 'idle')) {
+      const active = phase !== 'idle';
+      for (const control of document.querySelectorAll('.topbar, .bottom-nav, .practice .events, #scramble-card, #view-timer .session, #quick-scrollbar, #update-banner')) {
+        control.inert = active;
+      }
+      els.timerZone.focus({ preventScroll: true });
+      if (active) destroyScopePlayer('timer');
+      else if (deferredSettings) {
+        deferredSettings = false;
+        settings = loadSettings();
+        applySettings();
+      } else updatePlayer();
+    }
+    const announcement = hidden ? 'Resolviendo' : '';
+    if ($('attempt-status').textContent !== announcement) $('attempt-status').textContent = announcement;
     updateHint(phase);
 
     if (s === 'inspection' && prev === 'primed') {
@@ -497,7 +519,7 @@ const timer = createTimer({
   },
 
   onTick(ms) {
-    if (settings.timerDisplay === 'time') updateTimerText(formatTime(ms));
+    if (settings.timerDisplay === 'time') showTimerText(formatTime(ms));
   },
 
   onSolve: addSolve,
@@ -557,6 +579,7 @@ function isAnyDialogOpen() {
 
 function onKeyDown(e) {
   if (!timerActive || isAnyDialogOpen() || e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (isTimerAttemptActive() && (e.key === 'Tab' || (!els.timerZone.contains(e.target) && e.target !== document.body))) return;
   if (timer.state !== 'running' && e.target.closest?.('button, a, input, select, textarea, summary, [tabindex], [contenteditable]') && !els.timerZone.contains(e.target)) return; // con un panel abierto, el teclado es del panel
   if (e.repeat) {
     if (e.code === 'Space') e.preventDefault();
@@ -572,7 +595,7 @@ function onKeyDown(e) {
     return;
   }
   if (e.code === 'Escape') return timer.cancel();
-  if (e.code !== 'Space') return;
+  if (e.code !== 'Space' || (!state.scramble && timer.state === 'idle')) return;
   e.preventDefault(); // evita scroll y "clic" en el botón enfocado
   if (activeKey !== null) return;
   activeKey = 'Space';
@@ -594,7 +617,8 @@ function onTouchStart(e) {
   )
     return; // botones, links y el cubo 3D funcionan normal
   // Inactivo: solo la zona del timer. Inspeccionando o corriendo: toda la pantalla.
-  if (timer.state === 'idle' && !els.timerZone.contains(e.target)) return;
+  if (timer.state === 'idle' && (!els.timerZone.contains(e.target) || !state.scramble)) return;
+  if (isTimerAttemptActive() && !els.timerZone.contains(e.target)) return;
   e.preventDefault();
 
   // En celular, con inspección: requiere mantener pulsado el tiempo configurado (holdMs) para activar
@@ -671,6 +695,7 @@ function fillSettingsForm() {
 }
 
 function onSettingsChange() {
+  if (isTimerAttemptActive()) return;
   const f = els.settingsForm.elements;
   settings = {
     inspection: f.inspection.checked,
@@ -738,6 +763,7 @@ async function importSolves(file) {
   } catch (err) {
     return showDataStatus(err.message, 'error');
   }
+  if (isTimerAttemptActive()) return showDataStatus('Importá los tiempos cuando termine el intento.', 'error');
   let added = 0;
   let duplicates = 0;
   let failed = false;
@@ -774,14 +800,21 @@ export function openSettingsDialog() {
 }
 
 export function reloadSessionFromStorage() {
-  settings = loadSettings();
-  applySettings();
+  if (isTimerAttemptActive()) deferredSettings = true;
+  else {
+    settings = loadSettings();
+    applySettings();
+  }
   state.solves = pendingSolves.get(state.event) ?? loadSolves(state.event);
   state.newSolveId = null;
   renderSession();
 }
 
 // La PWA solo puede recargar (para actualizar) si el timer está quieto.
+export function isTimerAttemptActive() {
+  return timer.inspecting || timer.state === 'running';
+}
+
 export function isTimerIdle() {
   return timer.state === 'idle' && !isAnyDialogOpen();
 }
@@ -792,16 +825,17 @@ export function initUI() {
   initVoices(); // elegir la voz en español ya al abrir (en algunos navegadores llega después)
   // Ilustraciones: el cubo del estado vacío y el que late con "ocultar el tiempo".
   els.emptyArt.innerHTML = cubeSvg({ n: 3 });
-  els.solvingIndicator.insertAdjacentHTML('afterbegin', cubeSvg({ n: 3, className: 'solving-cube' }));
+  els.solvingIndicator.insertAdjacentHTML('afterbegin', cubeSvg({ n: 3, className: 'solving-cube', animateTop: true }));
   renderEvents();
   initEventPill();
   els.events.addEventListener('click', (e) => {
     const btn = e.target.closest('.event-btn');
     if (btn) selectEvent(btn.dataset.event);
   });
-  els.newScramble.addEventListener('click', loadScramble);
+  els.newScramble.addEventListener('click', () => { if (isTimerIdle()) loadScramble(); });
   if (els.toggleView) {
     els.toggleView.addEventListener('click', () => {
+      if (!isTimerIdle()) return;
       currentViewMode = currentViewMode === '3D' ? '2D' : '3D';
       updatePlayer();
     });
@@ -811,6 +845,7 @@ export function initUI() {
     els.card.classList.toggle('preview-open', open);
     els.togglePreview.setAttribute('aria-expanded', String(open));
     els.togglePreview.addEventListener('click', () => {
+      if (!isTimerIdle()) return;
       const open = els.card.classList.toggle('preview-open');
       els.togglePreview.setAttribute('aria-expanded', String(open));
     });

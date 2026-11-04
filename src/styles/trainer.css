@@ -184,7 +184,7 @@
 .trainer-scramble { min-height: 72px; font-size: 1rem; }
 .trainer-pad { min-height: 192px; padding: 24px 12px; border-color: var(--text-disabled); border-radius: var(--radius-xl); background: none; overscroll-behavior: contain; }
 .trainer-pad:focus-visible { outline: 2px solid var(--c-celeste); outline-offset: 3px; }
-.trainer-pad .timer { font-weight: 300; }
+.trainer-pad .timer { font-weight: 500; }
 .trainer-pad:is([data-state='holding'], [data-state='ready']) { border-color: var(--c-celeste); }
 .trainer-pad:is([data-state='holding'], [data-state='ready']) .timer-decimals { color: inherit; }
 .trainer-pad .hint { max-width: 40ch; margin: 12px auto 0; font-size: var(--font-xs); }

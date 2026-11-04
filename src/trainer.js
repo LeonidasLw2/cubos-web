@@ -5,6 +5,8 @@ import { caseScramble, realCaseScramble, AUFS } from './case-scramble.js';
 import { DISPLAY_SETUP, STICKERING } from './data/stickering.js';
 import { createTimer } from './timer.js';
 import { createTimerText } from './timer-text.js';
+import { loadSettings } from './settings.js';
+import { cubeSvg } from './cube-art.js';
 import { formatTime } from './stats.js';
 import { loadTrainerData, saveTrainerData } from './storage.js';
 import { normalizeTrainer, addTime, caseStats, pickCase } from './trainer-store.js';
@@ -67,12 +69,15 @@ const timer = createTimer({
   getHoldMs: () => 300,
   onState(state) {
     els.pad.dataset.state = state;
+    const concealTime = state === 'running' && loadSettings().timerDisplay === 'solving';
+    els.pad.classList.toggle('is-solving', concealTime);
+    els.status.textContent = concealTime ? 'Resolviendo' : '';
     if (state === 'running') document.body.dataset.phase = 'running';
     else if (document.body.dataset.phase === 'running') delete document.body.dataset.phase;
     if (state === 'holding' || state === 'ready') updateTimerText(formatTime(0));
   },
   onTick(ms) {
-    updateTimerText(formatTime(ms));
+    if (!els.pad.classList.contains('is-solving')) updateTimerText(formatTime(ms));
   },
   onSolve({ time }) {
     if (discard) return; // se cambió de sección con el tiempo corriendo: no se guarda
@@ -230,6 +235,8 @@ export function renderTrainer(container) {
         <p class="scramble trainer-scramble"></p>
         <div class="trainer-pad" role="button" tabindex="0" aria-label="Tocá y mantené para empezar; tocá para parar">
           <div class="timer trainer-time" role="timer">0.00</div>
+          <div class="solving-indicator" aria-hidden="true">${cubeSvg({ className: 'solving-cube', animateTop: true })}<span>Resolviendo</span></div>
+          <span class="visually-hidden trainer-attempt-status" role="status"></span>
           <p class="hint">Mantené la barra espaciadora (o el dedo acá) y soltá para empezar. Cualquier tecla o toque lo para.</p>
         </div>
         <div class="trainer-actions">
@@ -261,6 +268,7 @@ export function renderTrainer(container) {
     scramble: q('.trainer-scramble'),
     pad: q('.trainer-pad'),
     time: q('.trainer-time'),
+    status: q('.trainer-attempt-status'),
     reveal: q('[data-action="reveal"]'),
     solution: q('.trainer-solution'),
     last: q('.trainer-last'),
