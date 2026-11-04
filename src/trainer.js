@@ -15,8 +15,8 @@ const fmt = (ms) => (ms === null ? '-' : formatTime(ms));
 // Solución sin el giro previo "(U2)": la mezcla ya termina con su propio giro de U.
 const solutionOf = (c) => c.alg.replace(/^\([^)]*\)\s*/, '');
 
-let data = normalizeTrainer(loadTrainerData());
-let set = findSet(data.set);
+let data;
+let set;
 let current = null; // { case, scramble }
 let active = false; // la vista del entrenador está a la vista
 let els = null;
@@ -46,7 +46,16 @@ async function makeScramble(s, c) {
 }
 const prepare = (s, caseId) => ({ setId: s.id, caseId, promise: makeScramble(s, s.cases.find((x) => x.id === caseId)) });
 
-const save = () => saveTrainerData(data);
+let hasPendingSave = false;
+const save = () => {
+  const saved = saveTrainerData(data);
+  hasPendingSave = !saved;
+  document.getElementById('trainer-save-status').textContent = saved
+    ? ''
+    : 'Cambios sin guardar. Exportá tus tiempos desde Ajustes antes de cerrar.';
+  return saved;
+};
+export const getPendingTrainerData = () => hasPendingSave ? data : null;
 const selectedIds = () => {
   const all = set.cases.map((c) => c.id);
   const chosen = data.selected[set.id];
@@ -103,11 +112,12 @@ function showCase() {
   });
 }
 
-async function nextCase() {
+async function nextCase(caseId) {
+  const turn = ++shown;
   const ids = selectedIds();
   // Si ya había una mezcla preparada para un caso que sigue elegido, se usa esa.
   const ready = upcoming && upcoming.setId === set.id && ids.includes(upcoming.caseId) && upcoming.caseId !== current?.case.id;
-  const next = ready ? upcoming : (() => { const id = pickCase(ids, current?.case.id); return id && prepare(set, id); })();
+  const next = caseId ? prepare(set, caseId) : ready ? upcoming : (() => { const id = pickCase(ids, current?.case.id); return id && prepare(set, id); })();
   upcoming = null;
   if (!next) {
     current = null;
@@ -117,7 +127,6 @@ async function nextCase() {
   }
   els.empty.hidden = true;
   els.practice.hidden = false;
-  const turn = ++shown;
   current = { case: set.cases.find((x) => x.id === next.caseId), scramble: null };
   els.scramble.textContent = 'Generando mezcla…';
   const scramble = await next.promise;
@@ -135,6 +144,7 @@ function showLast({ case: c }, time) {
 }
 
 function renderCases() {
+  const focusedCase = els.list.contains(document.activeElement) ? document.activeElement.dataset.case : null;
   const chosen = new Set(selectedIds());
   els.count.textContent = `${chosen.size} de ${set.cases.length} elegidos`;
   els.list.innerHTML = set.cases
@@ -149,9 +159,10 @@ function renderCases() {
       </label>`;
     })
     .join('');
+  if (focusedCase) [...els.list.querySelectorAll('input')].find((input) => input.dataset.case === focusedCase)?.focus({ preventScroll: true });
 }
 
-function selectSet(id) {
+function selectSet(id, caseId) {
   if (!isTrainerIdle()) return;
   set = findSet(id);
   data = { ...data, set: set.id };
@@ -160,7 +171,13 @@ function selectSet(id) {
   els.last.hidden = true;
   renderSets();
   renderCases();
-  nextCase();
+  nextCase(caseId);
+}
+
+export function openTrainerCase(group, caseId) {
+  if (TRAINER_SETS.some((entry) => entry.id === group && entry.cases.some((c) => c.id === caseId))) {
+    selectSet(group, caseId);
+  }
 }
 
 function setSelection(ids) {
@@ -173,33 +190,37 @@ function setSelection(ids) {
 
 // ---------- Teclado y toque ----------
 
-const isTyping = (el) => el?.matches?.('input[type="text"], input[type="search"], textarea, select');
+let trainerKey = null;
 
 function onKeyDown(e) {
-  if (!active || e.repeat || isTyping(e.target)) return;
-  if (e.code === 'Space') {
-    e.preventDefault();
-    document.activeElement?.blur?.(); // que la barra no active una casilla o un botón
-    if (current) timer.press();
-  } else if (e.key === 'Escape') {
+  if (!active || e.repeat || e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey || document.querySelector('dialog[open]')) return;
+  if (e.target.closest?.('button, a, input, select, textarea, summary, [tabindex], [contenteditable]') && !els.pad.contains(e.target)) return;
+  if (e.key === 'Escape' && timer.state !== 'running') {
+    trainerKey = null;
+    timer.blur();
     timer.cancel();
-  } else if (timer.state === 'running') {
-    timer.press(); // cualquier tecla para el tiempo
+  } else if (!trainerKey && (timer.state === 'running' || (e.code === 'Space' && current?.scramble))) {
+    e.preventDefault();
+    trainerKey = e.code;
+    timer.press();
   }
 }
 
 function onKeyUp(e) {
-  if (!active) return;
-  if (e.code === 'Space' || timer.state === 'stopped') timer.release();
+  if (!active || e.code !== trainerKey) return;
+  trainerKey = null;
+  timer.release();
 }
 
 // ---------- Inicio ----------
 
 export function renderTrainer(container) {
+  if (!hasPendingSave) data = normalizeTrainer(loadTrainerData());
+  set = findSet(data.set);
   container.innerHTML = `<div class="methods-page trainer-page">
     <header class="page-head">
       <h2>Entrenador de casos</h2>
-      <p>Elegí un grupo y los casos. Con el amarillo arriba y el verde al frente, hacé la mezcla y resolvé el caso con el tiempo corriendo. Los tiempos se exportan junto con los del timer (Ajustes › Tus tiempos).</p>
+      <p>Elegí un grupo. Hacé la mezcla con amarillo arriba y verde al frente.</p>
     </header>
     <nav class="events trainer-sets" aria-label="Grupo de casos"></nav>
     <section class="trainer-practice">
@@ -219,6 +240,7 @@ export function renderTrainer(container) {
         <p class="trainer-last" hidden></p>
       </div>
     </section>
+    <p id="trainer-save-status" class="save-status" role="status"></p>
     <p class="trainer-empty" hidden>No hay casos elegidos. Marcá al menos uno en la lista de abajo.</p>
     <section class="method-step trainer-cases">
       <h3>Casos <small class="trainer-count"></small></h3>
@@ -265,6 +287,10 @@ export function renderTrainer(container) {
   els.list.addEventListener('change', (e) => {
     const box = e.target.closest('[data-case]');
     if (!box) return;
+    if (!isTrainerIdle()) {
+      box.checked = selectedIds().includes(box.dataset.case);
+      return;
+    }
     const ids = new Set(selectedIds());
     if (box.checked) ids.add(box.dataset.case);
     else ids.delete(box.dataset.case);
@@ -273,12 +299,13 @@ export function renderTrainer(container) {
 
   // Toque: apoyar el dedo en la zona del tiempo.
   els.pad.addEventListener('pointerdown', (e) => {
-    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    if (!e.isPrimary || e.button !== 0 || !current?.scramble) return;
     e.preventDefault();
-    if (current) timer.press();
+    els.pad.setPointerCapture(e.pointerId);
+    timer.press();
   });
-  els.pad.addEventListener('pointerup', () => timer.release());
-  els.pad.addEventListener('pointercancel', () => timer.blur());
+  els.pad.addEventListener('pointerup', (event) => { if (event.isPrimary) timer.release(); });
+  els.pad.addEventListener('lostpointercapture', () => timer.blur());
 
   renderSets();
   renderCases();
@@ -296,6 +323,7 @@ export function setTrainerActive(on) {
     timer.blur();
     timer.cancel();
     discard = false;
+    trainerKey = null;
     if (els) updateTimerText(formatTime(0));
     player = null;
     destroyScopePlayer('trainer');
@@ -306,10 +334,12 @@ export function setTrainerActive(on) {
   listening = true;
   window.addEventListener('keydown', onKeyDown);
   window.addEventListener('keyup', onKeyUp);
-  window.addEventListener('blur', () => timer.blur());
+  const forgetInput = () => { trainerKey = null; timer.blur(); };
+  window.addEventListener('blur', forgetInput);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) forgetInput(); });
   // Importar tiempos desde Ajustes puede traer tiempos del entrenador.
   window.addEventListener('trainer-data-changed', () => {
-    data = normalizeTrainer(loadTrainerData());
+    if (!hasPendingSave) data = normalizeTrainer(loadTrainerData());
     if (els) renderCases();
   });
 }

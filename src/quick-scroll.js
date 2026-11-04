@@ -175,6 +175,14 @@ export function initQuickScroll({
     e.preventDefault();
   }
 
+  track.addEventListener('keydown', (event) => {
+    const steps = { ArrowUp: -40, ArrowDown: 40, ArrowLeft: -40, ArrowRight: 40,
+      PageUp: -innerHeight, PageDown: innerHeight, Home: -scrollY, End: document.documentElement.scrollHeight };
+    if (!Object.hasOwn(steps, event.key)) return;
+    event.preventDefault();
+    window.scrollBy(0, steps[event.key]);
+  });
+
   track.addEventListener('pointerdown', onPointerDown);
   track.addEventListener('pointermove', onPointerMove);
   track.addEventListener('pointerup', onPointerUp);
@@ -235,8 +243,8 @@ export function initQuickScroll({
 
   // Observador de mutación para cuando cargan métodos o solvers dinámicamente
   if (typeof MutationObserver !== 'undefined') {
-    const observer = new MutationObserver(() => {
-      updateThumbPosition();
+    const observer = new MutationObserver((records) => {
+      if (records.some(({ target }) => !root.contains(target))) updateThumbPosition();
     });
     observer.observe(document.body, { childList: true, subtree: true, attributes: true });
   }

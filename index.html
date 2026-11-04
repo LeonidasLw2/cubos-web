@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
-    <meta name="theme-color" content="#050506" />
+    <meta name="theme-color" content="#080e18" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -125,6 +125,7 @@
                 <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
                   <path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Zm0 9 8-4.5M12 12 4 7.5M12 12v9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
                 </svg>
+                <span class="preview-label">Cubo</span>
               </button>
               <button class="icon-btn" id="new-scramble" type="button" title="Nuevo scramble" aria-label="Nuevo scramble">
                 <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
@@ -156,6 +157,7 @@
       </section>
 
       <aside class="session fadeable" aria-label="Sesión">
+        <p id="timer-save-status" class="save-status" role="status"></p>
         <!-- Evolución de los últimos tiempos (la dibuja ui.js) -->
         <div class="trend" id="trend" hidden>
           <div class="trend-head"><span>Últimos tiempos</span><small id="trend-range"></small></div>
@@ -202,6 +204,7 @@
           <button class="icon-btn" type="submit" aria-label="Cerrar">✕</button>
         </div>
 
+        <a class="settings-data-link" href="#data-title">Ir a tus tiempos ↓</a>
         <label class="setting">
           <span>
             Inspección de 15 s

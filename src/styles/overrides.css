@@ -248,3 +248,49 @@ dialog.settings > .sheet-handle { display: none; }
     .topbar::after { animation: none; }
   }
 }
+
+/* La acción principal precede a las explicaciones y al visor de apoyo. */
+.learning-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin-block: 16px 24px;
+}
+.learning-head h2 { margin: 0; font-size: clamp(1.65rem, 4vw, 2.5rem); }
+.learning-head a, .case-jump { color: var(--c-celeste); text-decoration: underline; }
+.case-jump { display: inline-flex; align-items: center; min-height: 48px; }
+.case-explorer-bar { scroll-margin-top: 96px; }
+.learning-intro { max-width: 66ch; margin-block: 24px; color: var(--text-secondary); }
+.case-thumb-row { display: flex; flex-direction: column; align-items: stretch; }
+.case-thumb { align-self: center; }
+.case-main-actions { min-width: 0; }
+.case-alg { overflow-wrap: anywhere; }
+.notation-quick-moves { display: flex; flex-wrap: wrap; gap: 6px; }
+.notation-quick-moves button { min-width: 44px; min-height: 44px; }
+.save-status:empty { display: none; }
+.save-status { color: var(--text-primary); border-inline-start: 3px solid var(--c-celeste); padding: 8px 12px; }
+
+@media (min-width: 861px) {
+  .notation-layout { grid-template-columns: 360px minmax(0, 1fr); }
+  .settings { width: min(100% - 32px, 580px); }
+}
+
+@media (max-width: 860px) {
+  .trainer-page .page-head { margin-bottom: 12px; }
+  .trainer-practice { gap: 12px; padding-block: 8px; }
+  .trainer-cube { width: min(100%, 240px); height: 112px; min-height: 112px; aspect-ratio: auto; }
+  .trainer-scramble { min-height: 0; }
+  .trainer-pad { min-height: 144px; padding-block: 12px; }
+  .notation-stage-box { max-height: 180px; }
+}
+
+.preview-toggle { width: auto; padding-inline: 10px; gap: 6px; }
+.preview-label { font-size: var(--font-xs); }
+.settings-data-link { align-self: flex-start; color: var(--c-celeste); padding-block: 12px; }
+
+@media (max-width: 860px) and (min-height: 750px) and (orientation: portrait) {
+  .practice { min-height: calc(100dvh - 176px - var(--bottom-nav-height)); }
+  #view-timer { row-gap: 16px; }
+}

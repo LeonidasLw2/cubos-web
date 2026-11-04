@@ -97,3 +97,11 @@ Todas las etapas pedidas están hechas. Trabajar una etapa a la vez; no adelanta
 - Pulido: hover solo con hover:hover, transiciones transform/opacity y desplazamiento instantáneo con reduced-motion. Subtítulo de portada siempre debajo del título.
 - Capturas actualizadas fuera del repo: ~/Desktop/capturas-rediseno-v2/ (8 móviles, incluida inspección, + 2 escritorio). Lighthouse 13.6.0: A11y/BP/SEO sin bajar frente a main y CLS 0 en cuatro rutas; tabla y condiciones en DESIGN.md.
 - Sigue pendiente Android físico y teclado virtual real. Notación conserva el aviso previo de orden de encabezados (A11y 98). Sin push ni merge.
+
+## Rediseño integral local
+
+La implementación y su verificación parcial están en [Rediseño local](docs/IMPLEMENTACION-REDISENO.md).
+
+El flujo de [identificación de casos](docs/IDENTIFICAR-CASOS.md) compara fotos revisadas o colores manuales con casos verificados y carga el escáner al abrirlo.
+
+En la versión de publicación, Timer oculta la mezcla y el visor durante inspección y resolución con `visibility` para conservar la geometría del reloj. Entrenar oculta mezcla, visor, solución y acciones mientras corre.

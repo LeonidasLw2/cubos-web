@@ -85,3 +85,8 @@ test('rutas desconocidas vuelven al timer', () => {
   assert.equal(parseRoute('#/nada').notFound, true);
   assert.equal(parseRoute('#/metodos/zz').notFound, true);
 });
+
+test('los nombres heredados del prototipo no identifican un método', () => {
+  assert.equal(parseRoute('#/metodos/constructor').notFound, true);
+  assert.equal(parseRoute('#/metodos/__proto__').notFound, true);
+});

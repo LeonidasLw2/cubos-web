@@ -100,3 +100,15 @@ test('categoría mirror: exportar, importar y compatibilidad hacia atrás', () =
   assert.equal(modernImported.events.mirror, undefined);
   assert.deepEqual(modernImported.unknownEvents, []);
 });
+
+test('importar conserva el tiempo con fecha ausente o fuera de rango', () => {
+  const events = { 333: [
+    { time: 1200, date: 8640000000000001 },
+    { time: 1300 },
+    { time: 1400, date: 1700000000000 },
+  ] };
+  const result = parseImport(JSON.stringify({ format: EXPORT_FORMAT, version: 1, events }), ['333']);
+  assert.deepEqual(result.events['333'].map(({ time, date }) => [time, date]), [
+    [1200, null], [1300, null], [1400, 1700000000000],
+  ]);
+});

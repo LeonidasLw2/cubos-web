@@ -68,18 +68,22 @@ export function parseImport(text, validEventIds) {
   return { events, invalid, unknownEvents, trainer: trainer && countTimes(trainer) ? trainer : null };
 }
 
-// Un tiempo importado es repetido si ya existe uno con el mismo id, o con el
-// mismo tiempo y la misma fecha (por si el id cambió en algún momento).
-const sameSolve = (a, b) => a.id === b.id || (a.date !== null && a.date === b.date && a.time === b.time);
-
-// Junta los tiempos sin duplicar. Devuelve { merged, added, duplicates }.
-// merged queda en orden cronológico (los sin fecha, que son los más viejos, primero).
+// Junta los tiempos sin duplicar por ID o por fecha y tiempo.
 export function mergeSolves(existing, incoming) {
+  const ids = new Set(existing.map((solve) => solve.id));
+  const stamp = (solve) => `${solve.date}:${solve.time}`;
+  const stamps = new Set(existing.filter((solve) => solve.date !== null).map(stamp));
   const fresh = [];
   let duplicates = 0;
   for (const solve of incoming) {
-    if (existing.some((s) => sameSolve(s, solve)) || fresh.some((s) => sameSolve(s, solve))) duplicates++;
-    else fresh.push(solve);
+    const key = solve.date === null ? null : stamp(solve);
+    if (ids.has(solve.id) || (key !== null && stamps.has(key))) {
+      duplicates++;
+      continue;
+    }
+    fresh.push(solve);
+    ids.add(solve.id);
+    if (key !== null) stamps.add(key);
   }
   const merged = [...existing, ...fresh].sort((a, b) => (a.date ?? -Infinity) - (b.date ?? -Infinity));
   return { merged, added: fresh.length, duplicates };

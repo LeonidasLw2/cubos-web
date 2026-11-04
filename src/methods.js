@@ -591,7 +591,17 @@ function renderPrevNextNav(meta = {}) {
 }
 
 // Barra de herramientas de casos: Progreso + Buscador + Filtro de grupo + Filtro aprendidos.
-function attachCaseExplorer(page, groups = []) {
+function scannerButton(family) {
+  const suffix = { oll2: ' · OLL', pbl: ' · PBL', parity4: ' · Paridades' }[family] ?? '';
+  const button = el(`<button type="button" class="chip-btn">Identificar caso${suffix}</button>`);
+  button.addEventListener('click', async () => {
+    const { openCaseScanner } = await import('./case-scanner.js');
+    if (button.isConnected && !button.closest('[hidden]')) openCaseScanner(family, button);
+  });
+  return button;
+}
+
+function attachCaseExplorer(page, groups = [], family) {
   const allCards = () => [...page.querySelectorAll('.case-card')];
   if (allCards().length === 0) return;
 
@@ -633,6 +643,17 @@ function attachCaseExplorer(page, groups = []) {
       <p class="explorer-empty" id="explorer-empty" hidden>No hay casos que coincidan con la búsqueda o el filtro.</p>
     </section>
   `);
+
+  const heroText = page.querySelector('.method-hero-text');
+  if (heroText) {
+    heroText.append(el('<a class="case-jump" href="#explorer-search-input">Buscar casos ↓</a>'));
+    heroText.lastElementChild.addEventListener('click', (event) => {
+      event.preventDefault();
+      toolbar.querySelector('input').focus({ preventScroll: true });
+      toolbar.scrollIntoView({ block: 'start' });
+    });
+    for (const key of [family].flat().filter(Boolean)) heroText.append(scannerButton(key));
+  }
 
   // Insertamos la barra justo antes de la primera sección de casos
   const firstStep = page.querySelector('.method-step, .two-look');
@@ -1113,20 +1134,8 @@ function indexPage(route) {
   const page = el(`<div class="methods-page">
     ${breadcrumb(route.crumbs)}
   </div>`);
-  page.append(
-    renderPageHero({
-      title: 'Métodos de Resolución',
-      subtitle: 'Guías interactivas paso a paso',
-      intro: [
-        'Aprendé a resolver cada puzzle desde tu primera vez hasta nivel de competición, con diagramas 2D claros, visor 3D compartido y seguimiento de casos aprendidos.',
-      ],
-      chips: [],
-      accent: 'celeste',
-      puzzle: '3x3x3',
-      stickering: 'pll',
-      setupAlg: "R U R' U' R' F R2 U' R' U' R U R' F'",
-    }),
-  );
+  page.append(el(`<header class="learning-head"><h2>Métodos de resolución</h2> <a href="#/notacion">Guía de notación</a></header>`));
+  page.querySelector('.learning-head').append(scannerButton());
   page.append(el(linkCards(PUZZLES, 'covers')));
   page.append(el(methodsPresentation()));
   return page;
@@ -1138,27 +1147,11 @@ function puzzlePage(route) {
     ${breadcrumb(route.crumbs)}
   </div>`);
 
-  const heroSpec = data.hero ?? {
-    puzzle: '3x3x3',
-    stickering: 'full',
-    setupAlg: "R U R' U'",
-    chips: [route.title],
-  };
-
-  page.append(
-    renderPageHero({
-      title: route.title,
-      intro: [data.intro],
-      chips: heroSpec.chips,
-      accent: 'blue',
-      puzzle: heroSpec.puzzle,
-      stickering: heroSpec.stickering,
-      setupAlg: heroSpec.setupAlg,
-    }),
-  );
+  page.append(el(`<header class="learning-head"><h2>${escape(route.title)}</h2></header>`));
 
   page.append(el(`<div>${linkCards(data.methods)}</div>`));
 
+  page.append(el(`<p class="learning-intro">${escape(data.intro)}</p>`));
   if (data.notation) page.append(notationSection(data.notation));
   if (route.puzzle === '3x3') page.append(el(puzzle3x3Presentation()));
   if (route.puzzle === '2x2') page.append(el(puzzle2x2Presentation()));
@@ -1358,7 +1351,7 @@ function stepsPage(data, route, puzzle, metaKey) {
     page.append(section);
   });
 
-  attachCaseExplorer(page, groupsForFilter);
+  attachCaseExplorer(page, groupsForFilter, metaKey === 'reduction4' ? 'parity4' : undefined);
   page.append(el(renderInfoBlocks(meta)));
   page.append(el(renderPrevNextNav(meta)));
   return page;
@@ -1512,6 +1505,7 @@ function groupedStagePage(data, route, metaKey, mapCase = (c) => c, extraBeforeC
   attachCaseExplorer(
     page,
     data.groups.map((g) => ({ id: g.id, title: g.title })),
+    metaKey === 'pll' ? 'pll' : undefined,
   );
   page.append(el(renderInfoBlocks(meta)));
   page.append(el(renderPrevNextNav(meta)));
@@ -1655,7 +1649,7 @@ function ollPage(route) {
     { id: '2-pasos-aristas', title: '2-Look · Aristas (3)' },
     { id: '2-pasos-esquinas', title: '2-Look · Esquinas (7)' },
     ...OLL.groups.map((g) => ({ id: g.id, title: g.title })),
-  ]);
+  ], 'oll');
   page.append(el(renderInfoBlocks(meta)));
   page.append(el(renderPrevNextNav(meta)));
   return page;
@@ -1846,7 +1840,7 @@ function ortegaPage(route) {
     { id: 'cara', title: '1. Primera cara' },
     { id: 'oll2', title: '2. OLL (7)' },
     { id: 'pbl', title: '3. PBL (5)' },
-  ]);
+  ], ['oll2', 'pbl']);
   page.append(el(renderInfoBlocks(meta)));
   page.append(el(renderPrevNextNav(meta)));
   return page;

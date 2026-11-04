@@ -56,8 +56,10 @@ try {
       assert.equal(m.over, width, `${label}: desborde`);
       assert.ok(m.zone.top >= 0 && m.zone.bottom <= m.limit + 1, `${label}: zona ${m.zone.top}–${m.zone.bottom}, límite ${m.limit}`);
       assert.ok(m.timeFits, `${label}: dígitos fuera de la zona`);
-      assert.ok(m.scrambleVisible, `${label}: mezcla oculta`);
-      if (label !== 'loading') assert.equal(m.textOpacity, 1, `${label}: opacidad efectiva de la mezcla`);
+      const concealed = ['inspección', 'corriendo', 'tiempo oculto'].includes(label);
+      assert.equal(m.scrambleVisible, !concealed, `${label}: visibilidad de la mezcla`);
+      if (!concealed && label !== 'loading') assert.equal(m.textOpacity, 1, `${label}: opacidad efectiva de la mezcla`);
+      if (concealed) assert.ok(await page.locator('#scramble-view').isHidden(), `${label}: visor visible`);
       assert.equal(m.topbarOpacity, '1', `${label}: opacidad del encabezado`);
       return m;
     };
@@ -103,18 +105,21 @@ try {
           await geometry(`categoría ${event}`);
         }
       }
+      const activeMix = await page.locator('#scramble').textContent();
+      await page.locator('#timer-zone').focus();
       await page.keyboard.down('Space'); await page.waitForTimeout(650); await page.keyboard.up('Space');
       await page.waitForFunction(() => document.body.dataset.phase === 'inspection');
-      await geometry('inspección');
+      assert.deepEqual((await geometry('inspección')).zone, idle.zone);
       await page.waitForFunction(() => getComputedStyle(document.querySelector('#insp-ring')).opacity === '1');
       await page.keyboard.down('Space'); await page.waitForTimeout(650); await page.keyboard.up('Space');
       await page.waitForFunction(() => document.body.dataset.phase === 'running');
       await page.waitForTimeout(1100);
-      await geometry('corriendo');
+      assert.deepEqual((await geometry('corriendo')).zone, idle.zone);
       await page.keyboard.press('Space');
       await page.waitForFunction(() => document.body.dataset.phase === 'idle');
       await page.waitForTimeout(450);
       await geometry('resultado');
+      assert.equal(await page.locator('#solves .solve-scramble').first().textContent(), activeMix);
       for (const action of ['plus2', 'dnf']) {
         await page.locator(`[data-action='${action}']`).first().click();
         assert.equal(await page.locator(`[data-action='${action}']`).first().getAttribute('aria-pressed'), 'true');
@@ -141,7 +146,7 @@ try {
       assert.equal(await page.locator('#timer').evaluate((el) => getComputedStyle(el).transitionDuration), '1e-05s');
       assert.equal(await page.locator('#timer-zone').evaluate((el) => getComputedStyle(el).touchAction), 'none');
       assert.equal(await page.locator('#timer-zone').evaluate((el) => getComputedStyle(el).overscrollBehaviorY), 'contain');
-      assert.equal(await page.locator('#timer').evaluate((el) => getComputedStyle(el).fontWeight), '300');
+      assert.equal(await page.locator('#timer').evaluate((el) => getComputedStyle(el).fontWeight), '400');
       if ((width === 360 && height === 640) || width === 1280) {
         await page.evaluate(() => localStorage.setItem('cubos-web:settings', JSON.stringify({ alerts: 'none', inspection: false, timerDisplay: 'solving' })));
         await page.reload();
@@ -168,7 +173,7 @@ try {
         console.log('  ✔ recarga sin conexión: interfaz, fuente local y generación de mezcla');
       }
       assert.deepEqual(errors, []);
-      console.log(`✔ ${width}×${height}: mezcla opacity=1 en reposo/inspección/corriendo/resultado/+2/DNF; CLS=${cls}; zona=${Math.round(idle.zone.top)}–${Math.round(idle.zone.bottom)}; estados, spans, visor único, foco y reduced-motion`);
+      console.log(`✔ ${width}×${height}: mezcla visible en reposo y resultado, oculta en inspección y resolución; CLS=${cls}; zona=${Math.round(idle.zone.top)}–${Math.round(idle.zone.bottom)}; estados, spans, visor único, foco y reduced-motion`);
     } catch (error) {
       failures++;
       console.error(`✖ ${width}×${height}: ${error.message}`);

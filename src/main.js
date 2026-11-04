@@ -158,6 +158,7 @@ async function showRoute(route) {
     }
     trainer.setTrainerActive(document.body.dataset.view === 'trainer');
   }
+  if (route.view === 'trainer' && route.params?.caso) trainer?.openTrainerCase(route.params.grupo, route.params.caso);
 
   if (route.view === 'methods' && route.path !== shownMethodsPath) {
     shownMethodsPath = route.path;
@@ -184,6 +185,15 @@ async function showRoute(route) {
   }
 
   window.scrollTo({ top: scrollTarget });
+  if (route.view === 'methods' && route.params?.caso) {
+    const card = [...views.methods.querySelectorAll('[data-catalog-id]')].find((item) =>
+      item.dataset.catalogId === route.params.caso &&
+      (!['oll', 'pll'].includes(route.page) || item.dataset.caseKey.startsWith(`3x3x3:${route.page}:`)));
+    if (card) {
+      card.scrollIntoView({ block: 'center' });
+      card.querySelector('[data-action="watch"]')?.focus({ preventScroll: true });
+    }
+  }
 }
 
 initUI();

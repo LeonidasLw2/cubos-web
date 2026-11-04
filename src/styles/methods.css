@@ -1905,3 +1905,49 @@ a.link-card:hover .card-action {
   .case-title-row { flex-wrap: wrap; }
   .case-explorer-bar { padding: 16px; }
 }
+
+.case-jump + button { margin-inline-start: 12px; }
+.case-scanner {
+  width: min(calc(100% - 24px), 680px);
+  max-height: calc(100dvh - 24px);
+  padding: clamp(16px, 4vw, 28px);
+  color: var(--text-primary);
+  background: var(--surface-solid);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-xl);
+  overscroll-behavior: contain;
+}
+.case-scanner::backdrop { background: var(--scrim); }
+.case-scanner header, .scanner-position {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.case-scanner p { margin-block: 12px; }
+.scanner-position { justify-content: flex-start; margin-block: 16px; }
+.scanner-position [data-diagram] { flex: 0 0 clamp(56px, 18vw, 100px); }
+.scanner-position svg, .scanner-case svg { display: block; width: 100%; height: auto; }
+.scanner-actions { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-block: 12px; }
+.case-scanner button, .case-scanner select { min-height: 44px; }
+.case-scanner select { max-width: 100%; color: inherit; background: var(--surface-2); border-radius: 8px; }
+.case-scanner a { color: var(--c-celeste); text-decoration: underline; padding-block: 12px; }
+.scanner-live { position: relative; }
+.scanner-live video, .case-scanner canvas { display: block; max-width: 100%; max-height: 44dvh; margin-inline: auto; }
+.scanner-live span {
+  position: absolute;
+  width: min(55%, 30dvh);
+  aspect-ratio: 1;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  border: 2px solid white;
+  border-radius: 8px;
+  pointer-events: none;
+}
+.case-scanner canvas { cursor: crosshair; }
+.scanner-grid { display: grid; grid-template-columns: repeat(var(--scanner-columns, 3), minmax(0, 1fr)); gap: 8px; margin-block: 12px; }
+.scanner-grid label { display: grid; gap: 4px; border-top: 4px solid var(--sticker); font-size: var(--font-xs); }
+.scanner-grid select { width: 100%; }
+.scanner-case { width: 104px; }
+.case-scanner code { font-size: 1.05rem; overflow-wrap: break-word; }
+.case-scanner [data-result] { border-top: 1px solid var(--border-medium); padding-top: 16px; }

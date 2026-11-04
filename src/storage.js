@@ -35,7 +35,7 @@ export function normalizeSolve(raw, index) {
     // Penalización puesta automáticamente por la inspección (etapa 2); antes no existía.
     autoPenalty: isPenalty(raw.autoPenalty) ? raw.autoPenalty : null,
     scramble: typeof raw.scramble === 'string' ? raw.scramble : null,
-    date: typeof raw.date === 'number' ? raw.date : null, // sin fecha: se muestra "—"
+    date: typeof raw.date === 'number' && Number.isFinite(new Date(raw.date).getTime()) ? raw.date : null, // sin fecha: se muestra "—"
   };
   if (typeof raw.updatedAt === 'number' && Number.isFinite(raw.updatedAt)) {
     out.updatedAt = raw.updatedAt;

@@ -319,6 +319,7 @@ export function createCaseCard(
   const card = document.createElement('article');
   card.className = `case-card${learned ? ' is-learned' : ''}`;
   card.dataset.caseKey = caseKey;
+  if (data.id) card.dataset.catalogId = data.id;
   card.dataset.learned = learned ? 'true' : 'false';
   if (groupId) card.dataset.group = groupId;
   card.dataset.search = `${data.name ?? ''} ${data.nickname ?? ''} ${data.description ?? ''} ${data.alg ?? ''}`.toLowerCase();

@@ -238,3 +238,11 @@ Este documento registra el plan de trabajo en fases (A–G) y su estado actual.
 - [x] Fase 5: corrección de visibilidad, pulido, diez comparativas y chequeos completos; Lighthouse móvil comparado con main, A11y/BP/SEO sin bajar y CLS 0.
 - Pendiente antes de merge: Android físico y teclado virtual real.
 - Guía vigente: `docs/REDISENO-V2.md`; mediciones: `docs/REPORTES-REDISENO.md`.
+
+## Rediseño integral local
+
+El avance y los pendientes del rediseño se registran en [Rediseño local](docs/IMPLEMENTACION-REDISENO.md).
+
+La cobertura de [identificación de casos con fotos](docs/IDENTIFICAR-CASOS.md) incluye Ortega 2×2, CFOP 3×3 y patrones de paridad de Reducción 4×4.
+
+La preparación para publicación incluye la paleta azul oscura y la ocultación de pistas durante la práctica.

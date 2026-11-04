@@ -114,11 +114,11 @@ export function renderNotation(container, route = {}) {
         </p>
       </div>
     </div>
-    <div class="notation-puzzle-chips" role="tablist" aria-label="Elegir puzzle">
+    <div class="notation-puzzle-chips" role="navigation" aria-label="Elegir puzzle">
       ${PUZZLE_ORDER.map((key) => {
         const p = PUZZLE_NOTATION_SPECS[key];
         const active = key === activePuzzleKey;
-        return `<a href="#/notacion/${key}" class="notation-puzzle-chip ${active ? 'is-active' : ''}" role="tab" aria-selected="${active}" data-puzzle-chip="${key}">
+        return `<a href="#/notacion/${key}" class="notation-puzzle-chip ${active ? 'is-active' : ''}" ${active ? 'aria-current="page"' : ''} data-puzzle-chip="${key}">
           <span>${p.name}</span>
         </a>`;
       }).join('')}
@@ -145,6 +145,11 @@ export function renderNotation(container, route = {}) {
       </div>
       <p class="notation-viewer-desc" id="notation-active-desc">${moveDesc.description}</p>
       <div class="notation-stage-box" id="notation-stage-box" role="region" aria-label="Visor 3D de notación"></div>
+      <div class="notation-quick-moves" role="group" aria-label="Probar un giro">
+        ${spec.groups[0].moves.slice(0, 6).map(({ base }) =>
+          `<button type="button" class="chip-btn" data-quick-move="${escapeAttr(base)}">${escapeHtml(base)}</button>`
+        ).join('')}
+      </div>
       <div class="notation-stage-hint">Arrastrá con el mouse o el dedo para rotar la vista</div>
       <div class="notation-controls">
         <button type="button" class="btn-secondary btn-sm" id="notation-btn-play" title="Reproducir giro">
@@ -299,8 +304,8 @@ export function renderNotation(container, route = {}) {
     mainCol.appendChild(groupSec);
   }
 
-  layout.appendChild(mainCol);
   layout.appendChild(viewerAside);
+  layout.appendChild(mainCol);
   page.appendChild(layout);
 
   // Botón flotante móvil para volver al visor 3D cuando el usuario bajó a la lista
@@ -358,6 +363,10 @@ export function renderNotation(container, route = {}) {
   const badgeEl = page.querySelector('#notation-active-badge');
   const titleEl = page.querySelector('#notation-active-title');
   const descEl = page.querySelector('#notation-active-desc');
+
+  viewerAside.querySelectorAll('[data-quick-move]').forEach((button) => {
+    button.addEventListener('click', () => selectAndPlayMove(button.dataset.quickMove));
+  });
 
   function selectAndPlayMove(token, customTitle = null, customDesc = null) {
     activeAlg = token;

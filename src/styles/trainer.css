@@ -197,3 +197,7 @@
   .trainer-row { grid-template-columns: 28px minmax(0, 1fr) 32px 56px 56px; font-size: var(--font-xs); }
   .trainer-cube { width: min(100%, 320px); height: 220px; min-height: 220px; }
 }
+
+body[data-phase='running'] :is(.trainer-cube, .trainer-scramble-label, .trainer-scramble, .trainer-actions, .trainer-solution) {
+  visibility: hidden;
+}

@@ -12,7 +12,7 @@ export function parseRoute(hash) {
   const path = rawPath.replace(/\/+$/, '').toLowerCase();
   const params = Object.fromEntries(new URLSearchParams(rawQuery));
   if (path === '' || path === 'timer') return { view: 'timer', path: 'timer' };
-  if (path === 'entrenar') return { view: 'trainer', path };
+  if (path === 'entrenar') return { view: 'trainer', path, params };
   // La sección Solver ya no existe: sus rutas viejas van al Timer.
   if (path === 'solver' || path.startsWith('solver/')) return { view: 'timer', path: 'timer', redirect: '#/timer' };
   if (path === 'notacion' || path.startsWith('notacion/')) {
@@ -21,9 +21,9 @@ export function parseRoute(hash) {
   }
   if (path === 'metodos' || path.startsWith('metodos/')) {
     const sub = path.slice('metodos'.length).replace(/^\//, '');
-    const found = METHOD_PAGES[sub];
-    if (found) return { view: 'methods', path, sub, crumbs: crumbsFor(sub), ...found };
-    const moved = LEGACY_METHOD_PATHS[sub];
+    const found = Object.hasOwn(METHOD_PAGES, sub) ? METHOD_PAGES[sub] : null;
+    if (found) return { view: 'methods', path, sub, crumbs: crumbsFor(sub), ...found, ...(params.caso && { params }) };
+    const moved = Object.hasOwn(LEGACY_METHOD_PATHS, sub) ? LEGACY_METHOD_PATHS[sub] : null;
     if (moved) return { ...parseRoute(methodHref(moved)), redirect: methodHref(moved) };
   }
   return { view: 'timer', path: 'timer', notFound: true };

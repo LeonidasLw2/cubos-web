@@ -205,7 +205,7 @@ function selectEvent(eventId) {
   if (eventId === state.event) return;
   state.event = eventId;
   saveSelectedEvent(eventId);
-  state.solves = loadSolves(eventId);
+  state.solves = pendingSolves.get(eventId) ?? loadSolves(eventId);
   state.newSolveId = null;
   clearPbFlash();
   if (eventId === 'mirror' && isTouch) {
@@ -274,7 +274,7 @@ function renderSolves() {
     li.innerHTML = `
       <span class="solve-index">${i + 1}</span>
       <div class="solve-main">
-        <button class="solve-time" type="button" data-action="toggle" title="Ver scramble"></button>
+        <button class="solve-time" type="button" data-action="toggle" aria-expanded="false" title="Ver mezcla"></button>
         ${auto ? `<span class="solve-tag" title="Penalización automática por inspección">${solve.autoPenalty} insp.</span>` : ''}
       </div>
       <div class="solve-actions">
@@ -300,7 +300,13 @@ function renderSolves() {
     }
     items.push(li);
   }
+  const focused = document.activeElement;
+  const focusedRow = focused?.closest('.solve');
   els.solves.replaceChildren(...items);
+  if (focusedRow) {
+    const replacement = items.find((row) => row.dataset.id === focusedRow.dataset.id);
+    replacement?.querySelector(`[data-action="${focused.dataset.action}"]`)?.focus({ preventScroll: true });
+  }
   els.empty.hidden = state.solves.length > 0;
   els.clearSession.disabled = state.solves.length === 0;
 }
@@ -314,13 +320,23 @@ function showTimerText(text) {
 }
 
 function renderSession() {
+  document.getElementById('timer-save-status').textContent = pendingSolves.has(state.event)
+    ? 'Cambios sin guardar. Exportá tus tiempos desde Ajustes antes de cerrar.'
+    : '';
   renderStats();
   renderSolves();
 }
 
+const pendingSolves = new Map();
+
 function commit() {
-  saveSolves(state.event, state.solves);
-  notifyLocalSolvesChanged();
+  const saved = saveSolves(state.event, state.solves);
+  if (saved) {
+    pendingSolves.delete(state.event);
+    notifyLocalSolvesChanged();
+  } else {
+    pendingSolves.set(state.event, state.solves);
+  }
   renderSession();
 }
 
@@ -369,7 +385,7 @@ function onSolveAction(e) {
 
   switch (btn.dataset.action) {
     case 'toggle':
-      li.classList.toggle('expanded');
+      btn.setAttribute('aria-expanded', String(li.classList.toggle('expanded')));
       return;
     case 'plus2':
       solve.penalty = solve.penalty === '+2' ? null : '+2';
@@ -540,7 +556,8 @@ function isAnyDialogOpen() {
 }
 
 function onKeyDown(e) {
-  if (!timerActive || isAnyDialogOpen()) return; // con un panel abierto, el teclado es del panel
+  if (!timerActive || isAnyDialogOpen() || e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (timer.state !== 'running' && e.target.closest?.('button, a, input, select, textarea, summary, [tabindex], [contenteditable]') && !els.timerZone.contains(e.target)) return; // con un panel abierto, el teclado es del panel
   if (e.repeat) {
     if (e.code === 'Space') e.preventDefault();
     return;
@@ -558,7 +575,6 @@ function onKeyDown(e) {
   if (e.code !== 'Space') return;
   e.preventDefault(); // evita scroll y "clic" en el botón enfocado
   if (activeKey !== null) return;
-  document.activeElement?.blur();
   activeKey = 'Space';
   timer.press();
 }
@@ -697,9 +713,10 @@ async function showStorageStatus() {
         : '';
 }
 
-function exportSolves() {
-  const trainer = normalizeTrainer(loadTrainerData());
-  const data = buildExport(Object.fromEntries(EVENTS.map((ev) => [ev.id, loadSolves(ev.id)])), new Date(), trainer);
+async function exportSolves() {
+  const { getPendingTrainerData } = await import('./trainer.js');
+  const trainer = normalizeTrainer(getPendingTrainerData() ?? loadTrainerData());
+  const data = buildExport(Object.fromEntries(EVENTS.map((ev) => [ev.id, pendingSolves.get(ev.id) ?? loadSolves(ev.id)])), new Date(), trainer);
   const total = Object.values(data.events).reduce((n, list) => n + list.length, 0) + countTimes(trainer);
   if (!total) return showDataStatus('Todavía no hay tiempos para exportar.', 'error');
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -739,7 +756,7 @@ async function importSolves(file) {
     if (result.added) window.dispatchEvent(new Event('trainer-data-changed'));
   }
   // La categoría que se está viendo puede haber cambiado.
-  state.solves = loadSolves(state.event);
+  state.solves = pendingSolves.get(state.event) ?? loadSolves(state.event);
   state.newSolveId = null;
   notifyLocalSolvesChanged();
   renderSession();
@@ -759,7 +776,7 @@ export function openSettingsDialog() {
 export function reloadSessionFromStorage() {
   settings = loadSettings();
   applySettings();
-  state.solves = loadSolves(state.event);
+  state.solves = pendingSolves.get(state.event) ?? loadSolves(state.event);
   state.newSolveId = null;
   renderSession();
 }
@@ -819,6 +836,11 @@ export function initUI() {
   els.openSettings.addEventListener('click', openSettings);
   window.addEventListener('cloud-data-changed', reloadSessionFromStorage);
   els.settingsForm.addEventListener('change', onSettingsChange);
+  els.settings.querySelector('.settings-data-link').addEventListener('click', (event) => {
+    event.preventDefault();
+    els.exportSolves.focus({ preventScroll: true });
+    document.getElementById('data-title').scrollIntoView({ block: 'start' });
+  });
   els.exportSolves.addEventListener('click', exportSolves);
   els.importSolves.addEventListener('click', () => els.importFile.click());
   els.importFile.addEventListener('change', () => {
@@ -836,10 +858,11 @@ export function initUI() {
   document.addEventListener('touchend', onTouchEnd, { passive: false });
   document.addEventListener('touchcancel', forgetInput);
   window.addEventListener('blur', forgetInput);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) forgetInput(); });
 
   document.body.dataset.phase = 'idle';
   applySettings();
-  state.solves = loadSolves(state.event);
+  state.solves = pendingSolves.get(state.event) ?? loadSolves(state.event);
   renderSession();
   updatePlayer();
   loadScramble();

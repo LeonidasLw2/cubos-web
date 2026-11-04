@@ -143,9 +143,9 @@ body[data-view='timer'] .top-row { min-height: 48px; }
   min-width: 0;
   min-height: 224px;
   padding: 8px 12px;
-  border: 1px solid var(--text-disabled);
+  border: 1px solid var(--border-medium);
   border-radius: var(--radius-xl);
-  background: none;
+  background: radial-gradient(ellipse at 50% 0%, var(--surface-2), var(--surface-1) 72%);
   user-select: none;
   -webkit-user-select: none;
   touch-action: none;
@@ -174,7 +174,7 @@ body[data-view='timer'] .top-row { min-height: 48px; }
   height: 3px;
   border-radius: 2px;
   background: var(--c-celeste);
-  opacity: 0.5;
+  opacity: 0;
   transform: scaleX(0.18);
   transition: transform var(--duration-spring) var(--spring), opacity var(--duration-quick);
 }
@@ -239,10 +239,10 @@ body:is([data-phase='inspection'], [data-phase='running']) .timer-zone .hint { v
 body[data-phase='running'] .timer-zone { cursor: none; }
 .fadeable { transition: opacity var(--duration-medium); }
 body[data-phase='inspection'] .fadeable:not(.hint), body[data-phase='running'] .fadeable { opacity: 0; pointer-events: none; }
-/* La mezcla sigue legible durante la inspección y la resolución. */
-body[data-view='timer'] .topbar.fadeable,
-body[data-view='timer'] .scramble-card.fadeable { opacity: 1; }
-body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) .scramble-view { visibility: hidden; }
+body[data-view='timer'] .topbar.fadeable { opacity: 1; }
+/* Ocultá la mezcla al instante y reservá su espacio para que el reloj no se mueva. */
+body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) .scramble-card,
+body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) .session { visibility: hidden; }
 
 .solving-indicator { display: none; flex-direction: column; align-items: center; gap: 16px; color: var(--text-secondary); font-size: var(--font-xs); font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; }
 .timer-zone.is-solving .timer { display: none; }
