@@ -248,3 +248,5 @@ La cobertura de [identificación de casos con fotos](docs/IDENTIFICAR-CASOS.md) 
 La preparación para publicación incluye la paleta azul oscura y la ocultación de pistas durante la práctica.
 
 La corrección tipográfica y las etiquetas breves de sincronización se incorporan a la publicación en GitHub Pages.
+
+Se aplicó un acabado stickerless a las miniaturas y a los visores de los casos cúbicos de Métodos.

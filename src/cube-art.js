@@ -12,22 +12,23 @@ const FACES = {
   right: [[C * L, -L / 2], [0, L], [TOP[0], TOP[1] + L]],
 };
 
-function face(name, colors, n, shade) {
+function face(name, colors, n, shade, stickerless) {
   const [[ax, ay], [bx, by], [ox, oy]] = FACES[name];
   const cell = 1 / n;
-  const gap = cell * 0.09;
+  const gap = cell * (stickerless ? 0.025 : 0.09);
+  const radius = cell * (stickerless ? 0.16 : 0.18);
   let stickers = '';
   for (let r = 0; r < n; r++) {
     for (let c = 0; c < n; c++) {
       const color = Array.isArray(colors) ? colors[r * n + c] : colors;
-      stickers += `<rect x="${(c * cell + gap).toFixed(3)}" y="${(r * cell + gap).toFixed(3)}" width="${(cell - 2 * gap).toFixed(3)}" height="${(cell - 2 * gap).toFixed(3)}" rx="${(cell * 0.18).toFixed(3)}" fill="${color}"/>`;
+      stickers += `<rect x="${(c * cell + gap).toFixed(4)}" y="${(r * cell + gap).toFixed(4)}" width="${(cell - 2 * gap).toFixed(4)}" height="${(cell - 2 * gap).toFixed(4)}" rx="${radius.toFixed(4)}" fill="${color}"/>`;
     }
   }
-  const shadeRect = shade ? `<rect width="1" height="1" fill="#000" opacity="${shade}"/>` : '';
-  return `<g transform="matrix(${ax} ${ay} ${bx} ${by} ${ox} ${oy})"><rect width="1" height="1" rx="0.04" fill="#07090c"/>${stickers}${shadeRect}</g>`;
+  const shadeRect = shade ? `<rect width="1" height="1" rx="0.04" fill="#000" opacity="${shade}"/>` : '';
+  return `<g transform="matrix(${ax} ${ay} ${bx} ${by} ${ox} ${oy})"><rect width="1" height="1" rx="0.04" fill="${stickerless ? '#242b35' : '#07090c'}"/>${stickers}${shadeRect}</g>`;
 }
 
 // opts: { n, top, left, right } — cada color puede ser uno solo o una lista de n×n.
-export function cubeSvg({ n = 3, top = '#ffd500', left = '#2ec27e', right = '#ff4d5e', className = '' } = {}) {
-  return `<svg class="cube-art ${className}" viewBox="0 0 100 100" aria-hidden="true" focusable="false">${face('top', top, n, 0)}${face('left', left, n, 0.18)}${face('right', right, n, 0.32)}</svg>`;
+export function cubeSvg({ n = 3, top = '#ffd500', left = '#2ec27e', right = '#ff4d5e', className = '', stickerless = false } = {}) {
+  return `<svg class="cube-art ${className}" viewBox="0 0 100 100" aria-hidden="true" focusable="false">${face('top', top, n, 0, stickerless)}${face('left', left, n, 0.18, stickerless)}${face('right', right, n, 0.32, stickerless)}</svg>`;
 }

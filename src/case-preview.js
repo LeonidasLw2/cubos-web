@@ -387,18 +387,19 @@ function render2DLL(stickers, stickering, n) {
   const pad = 18;
   const size = 64;
   const cell = size / n;
-  const gap = Math.max(1.2, cell * 0.08);
+  const gap = cell * 0.025;
+  const radius = (cell * 0.16).toFixed(2);
   const strip = 8;
   const stripGap = 3;
 
-  let rects = `<rect x="${pad - 2}" y="${pad - 2}" width="${size + 4}" height="${size + 4}" rx="5" fill="#07090c" />`;
+  let rects = `<rect x="${pad}" y="${pad}" width="${size}" height="${size}" rx="${radius}" fill="#242b35" />`;
 
   for (let r = 0; r < n; r++) {
     for (let c = 0; c < n; c++) {
       const x = pad + c * cell + gap;
       const y = pad + r * cell + gap;
       const w = cell - 2 * gap;
-      rects += `<rect x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${w.toFixed(2)}" height="${w.toFixed(2)}" rx="2.6" fill="${uGrid[r * n + c]}" />`;
+      rects += `<rect x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${w.toFixed(2)}" height="${w.toFixed(2)}" rx="${radius}" fill="${uGrid[r * n + c]}" />`;
     }
   }
 
@@ -407,13 +408,13 @@ function render2DLL(stickers, stickering, n) {
     const pos = pad + i * cell + gap;
     const len = cell - 2 * gap;
     // B (arriba)
-    rects += `<rect x="${pos.toFixed(2)}" y="${(pad - stripGap - strip).toFixed(2)}" width="${len.toFixed(2)}" height="${strip}" rx="2" fill="${bRow[i]}" stroke="#07090c" stroke-width="1" />`;
+    rects += `<rect x="${pos.toFixed(2)}" y="${pad - stripGap - strip}" width="${len.toFixed(2)}" height="${strip}" rx="2" fill="${bRow[i]}" />`;
     // F (abajo)
-    rects += `<rect x="${pos.toFixed(2)}" y="${(pad + size + stripGap).toFixed(2)}" width="${len.toFixed(2)}" height="${strip}" rx="2" fill="${fRow[i]}" stroke="#07090c" stroke-width="1" />`;
+    rects += `<rect x="${pos.toFixed(2)}" y="${pad + size + stripGap}" width="${len.toFixed(2)}" height="${strip}" rx="2" fill="${fRow[i]}" />`;
     // L (izquierda)
-    rects += `<rect x="${(pad - stripGap - strip).toFixed(2)}" y="${pos.toFixed(2)}" width="${strip}" height="${len.toFixed(2)}" rx="2" fill="${lRow[i]}" stroke="#07090c" stroke-width="1" />`;
+    rects += `<rect x="${pad - stripGap - strip}" y="${pos.toFixed(2)}" width="${strip}" height="${len.toFixed(2)}" rx="2" fill="${lRow[i]}" />`;
     // R (derecha)
-    rects += `<rect x="${(pad + size + stripGap).toFixed(2)}" y="${pos.toFixed(2)}" width="${strip}" height="${len.toFixed(2)}" rx="2" fill="${rRow[i]}" stroke="#07090c" stroke-width="1" />`;
+    rects += `<rect x="${pad + size + stripGap}" y="${pos.toFixed(2)}" width="${strip}" height="${len.toFixed(2)}" rx="2" fill="${rRow[i]}" />`;
   }
 
   return `<svg class="case-svg case-svg-2dll" viewBox="0 0 100 100" aria-hidden="true" focusable="false">${rects}</svg>`;
@@ -449,7 +450,7 @@ function renderIsometric(stickers, stickering, n) {
     }
   }
 
-  return cubeSvg({ n, top: topColors, left: leftColors, right: rightColors, className: 'case-svg-iso' });
+  return cubeSvg({ n, top: topColors, left: leftColors, right: rightColors, className: 'case-svg-iso', stickerless: true });
 }
 
 // Ilustración SVG de un Pyraminx (para portadas y tarjetas de casos de Pyraminx).

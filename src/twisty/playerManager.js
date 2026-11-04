@@ -23,6 +23,39 @@ if (typeof window !== 'undefined' && typeof customElements !== 'undefined') {
 // Mapa WeakMap<HTMLElement, ManagedEntry> y Map<string, ManagedEntry> por scope
 let containerEntries = new WeakMap();
 const scopeEntries = new Map();
+const STICKERLESS_CUBES = /^(2|3|4|5|7)x\1x\1$/;
+
+function watchStickerlessScene(player, entry) {
+  const shadow = player.shadow || player.shadowRoot;
+  if (!shadow || typeof MutationObserver !== 'function') return;
+  let scene;
+  let disposeFinish;
+  const refresh = async () => {
+    const current = shadow.querySelector('twisty-3d-scene-wrapper');
+    if (scene === current) return;
+    scene = current;
+    disposeFinish?.();
+    disposeFinish = undefined;
+    if (!current?.experimentalTwisty3DPuzzleWrapper) return;
+    const [wrapper, { applyStickerlessFinish }] = await Promise.all([
+      current.experimentalTwisty3DPuzzleWrapper(),
+      import('./stickerless.js'),
+    ]);
+    const puzzle = await wrapper.twisty3DPuzzle();
+    if (scene !== current || !current.isConnected) return;
+    disposeFinish = applyStickerlessFinish(puzzle);
+    wrapper.scheduleRender();
+  };
+  const update = () => { void refresh().catch(() => {}); };
+  const observer = new MutationObserver(update);
+  observer.observe(shadow, { childList: true, subtree: true });
+  entry.cleanups.push(() => {
+    observer.disconnect();
+    scene = null;
+    disposeFinish?.();
+  });
+  update();
+}
 
 /**
  * Recorre el Shadow DOM (abierto o cerrado `node.shadow` de cubing.js) y cuenta los <canvas>
@@ -196,6 +229,10 @@ export function updatePlayerOptions(player, options = {}) {
   if (visualization !== undefined) {
     const vis = visualization === '2D' ? '2D' : '3D';
     player.visualization = vis;
+    const targetPuzzle = puzzle ?? player.getAttribute?.('puzzle');
+    if (targetPuzzle) {
+      player.experimentalFaceletScale = STICKERLESS_CUBES.test(targetPuzzle) ? 0.96 : 'auto';
+    }
     player.setAttribute?.('visualization', vis);
   }
 
@@ -384,6 +421,9 @@ export function getPlayer(container, options = {}) {
 
   container.replaceChildren(player);
   inspectAndPrunePlayerShadow(player);
+  if (scope === 'methods' && STICKERLESS_CUBES.test(options.puzzle ?? '')) {
+    watchStickerlessScene(player, entry);
+  }
 
   if (typeof options.onPlayingChange === 'function') {
     const handler = (info) => {
