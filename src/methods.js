@@ -32,7 +32,7 @@ const HEX = {
   yellow: '#ffd500',
   red: '#ff4d5e',
   orange: '#ff8a00',
-  blue: '#3d8bff',
+  blue: '#3a7ff0',
   green: '#2ec27e',
   celeste: '#74acdf',
 };
@@ -305,7 +305,7 @@ const PUZZLE_METHODS = {
         text: 'Métodos intermedios y avanzados: cerradura (Keyhole), últimas 4 aristas (L4E) y métodos de punta.',
         href: linkTo('pyraminx/avanzados'),
         accent: 'red',
-        customSvg: pyraminxSvg({ colors: ['#ff4d5e', '#3d8bff', '#2ec27e', '#ffd500'] }),
+        customSvg: pyraminxSvg({ colors: ['#ff4d5e', '#3a7ff0', '#2ec27e', '#ffd500'] }),
         tag: 'Intermedio / Avanzado',
       },
     ],
@@ -650,21 +650,20 @@ function attachCaseExplorer(page, groups = [], family) {
 
   const heroText = page.querySelector('.method-hero-text');
   if (heroText) {
-    heroText.append(el('<a class="case-jump" href="#explorer-search-input">Buscar casos ↓</a>'));
-    heroText.lastElementChild.addEventListener('click', (event) => {
-      event.preventDefault();
-      toolbar.querySelector('input').focus({ preventScroll: true });
+    // Una fila: una acción principal (bajar a buscador + casos) y el escáner como secundaria.
+    const actions = el('<div class="hero-actions"></div>');
+    const cases = el('<button type="button" class="hero-action is-primary">Ver casos ↓</button>');
+    cases.addEventListener('click', () => {
+      page.querySelector('.case-card:not([hidden]) button')?.focus({ preventScroll: true });
       toolbar.scrollIntoView({ block: 'start' });
     });
-    const cases = el('<button type="button" class="chip-btn">Ver casos</button>');
-    cases.addEventListener('click', () => {
-      const first = page.querySelector('.case-card:not([hidden])');
-      if (!first) return;
-      first.querySelector('button')?.focus({ preventScroll: true });
-      first.scrollIntoView({ block: 'center' });
-    });
-    heroText.append(cases);
-    for (const key of [family].flat().filter(Boolean)) heroText.append(scannerButton(key));
+    actions.append(cases);
+    for (const key of [family].flat().filter(Boolean)) {
+      const scan = scannerButton(key);
+      scan.className = 'hero-action';
+      actions.append(scan);
+    }
+    heroText.append(actions);
   }
 
   // Insertamos la barra justo antes de la primera sección de casos

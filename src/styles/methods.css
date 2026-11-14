@@ -1907,7 +1907,6 @@ a.link-card:hover .card-action {
   .case-explorer-bar { padding: 16px; }
 }
 
-.case-jump + button { margin-inline-start: 12px; }
 .case-scanner {
   width: min(calc(100% - 24px), 680px);
   max-height: calc(100dvh - 24px);
@@ -1956,3 +1955,35 @@ a.link-card:hover .card-action {
 .method-guide-detail { margin-block: 10px; color: var(--text-secondary); }
 .method-guide-detail summary { cursor: pointer; }
 .method-hero-text > .chip-btn { margin-inline-end: 8px; margin-block: 4px; }
+
+/* Acciones del encabezado de una etapa: una principal (celeste) y secundarias en gris, misma fila */
+.hero-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.hero-action {
+  min-height: 48px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+  color: var(--text-primary);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  transition: transform var(--duration-quick) var(--ease-standard), opacity var(--duration-quick);
+}
+.hero-action.is-primary { background: var(--c-celeste); color: var(--on-accent); }
+.hero-action:active { transform: scale(0.97); }
+@media (hover: hover) { .hero-action:hover { opacity: 0.88; } }
+
+/* Etiquetas del encabezado: una línea gris con puntos, no chips (menos ruido arriba del título) */
+.hero-chips { gap: 0; margin-bottom: 8px; }
+.hero-chip {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-tertiary);
+  font-size: var(--font-sm);
+  font-weight: 500;
+  letter-spacing: 0;
+  white-space: normal;
+}
+.hero-chip + .hero-chip::before { content: '·'; margin-inline: 8px; color: var(--text-disabled); }
+.card-tag { padding: 0; border: 0; background: none; color: var(--text-tertiary); font-size: var(--font-xs); font-weight: 500; letter-spacing: 0.01em; }

@@ -259,8 +259,7 @@ dialog.settings > .sheet-handle { display: none; }
   margin-block: 16px 24px;
 }
 .learning-head h2 { margin: 0; font-size: clamp(1.65rem, 4vw, 2.5rem); }
-.learning-head a, .case-jump { color: var(--c-celeste); text-decoration: underline; }
-.case-jump { display: inline-flex; align-items: center; min-height: 48px; }
+.learning-head a { color: var(--c-celeste); text-decoration: underline; }
 .case-explorer-bar { scroll-margin-top: 96px; }
 .learning-intro { max-width: 66ch; margin-block: 24px; color: var(--text-secondary); }
 .case-thumb-row { display: flex; flex-direction: column; align-items: stretch; }

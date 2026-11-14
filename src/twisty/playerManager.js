@@ -421,7 +421,7 @@ export function getPlayer(container, options = {}) {
 
   container.replaceChildren(player);
   inspectAndPrunePlayerShadow(player);
-  if (scope === 'methods' && STICKERLESS_CUBES.test(options.puzzle ?? '')) {
+  if (STICKERLESS_CUBES.test(options.puzzle ?? '')) {
     watchStickerlessScene(player, entry);
   }
 

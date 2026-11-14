@@ -429,6 +429,11 @@ function phaseOf(timerState, inspecting) {
   return inspecting ? 'inspection' : 'idle';
 }
 
+// "Listo" se siente en la mano: el pulgar tapa el número y el color solo es sutil.
+function readyBuzz() {
+  if (isTouch) navigator.vibrate?.(12);
+}
+
 // Pantalla prendida durante inspección y resolución: en cubos grandes no se toca por minutos.
 let wakeLock = null;
 async function setWakeLock(on) {
@@ -476,6 +481,7 @@ const timer = createTimer({
   onState(s, { inspecting }) {
     const prev = els.timer.dataset.state;
     els.timer.dataset.state = s;
+    if (s === 'ready' && prev !== 'ready') readyBuzz();
     els.timer.toggleAttribute('data-inspecting', inspecting);
     if (!inspecting) delete els.timer.dataset.level;
     const hidden = s === 'running' && settings.timerDisplay === 'solving';
@@ -650,6 +656,7 @@ function onTouchStart(e) {
     touchHoldTimer = setTimeout(() => {
       touchHoldReady = true;
       els.timer.dataset.state = 'ready';
+      readyBuzz();
     }, settings.holdMs);
     return;
   }

@@ -135,10 +135,12 @@ test('tokens de diseño: el estado seleccionado y el botón primario se distingu
   }
 });
 
-test('tokens de diseño: fondo casi negro, timer con peso >= 300 y una sola familia tipográfica', () => {
+test('tokens de diseño: fondo grafito oscuro, timer con peso >= 300 y una sola familia tipográfica', () => {
   const tokens = extractRootTokens(fs.readFileSync(path.resolve('src/styles/tokens.css'), 'utf8'));
   const [r, g, b] = parseHex(tokens['--bg-canvas']);
-  assert.ok(relativeLuminance(r, g, b) < 0.005, 'el fondo tiene que estar cerca del negro');
+  const lum = relativeLuminance(r, g, b);
+  // Grafito: ni negro puro (cansa por contraste) ni gris claro.
+  assert.ok(lum > 0.004 && lum < 0.012, 'el fondo tiene que ser grafito oscuro');
   assert.ok(Number(tokens['--timer-weight']) >= 300, 'dígitos del timer: peso mínimo 300');
   assert.match(tokens['--font-sans'], /^'Inter'/);
   assert.equal(tokens['--font-mono'], 'var(--font-sans)', 'sin segunda familia para números: tabular-nums');

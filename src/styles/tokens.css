@@ -1,50 +1,51 @@
 /* ==========================================================================
-   Tokens del Sistema de Diseño — CubeSolver
+   Tokens del Sistema de Diseño — Cube Tempo (dirección "tablero": calma, grafito cálido, un acento)
    ========================================================================== */
 
 :root {
-  /* ---------- Superficies: capas por luminosidad sobre un negro casi puro (OLED) ---------- */
-  --bg-canvas: #080e18;
-  --surface-1: #101b2b;
-  --surface-2: #17263a;
-  --surface-3: #20324a;
-  --surface-sheet: #142033;
-  --surface-solid: #192a3f;       /* avisos y toasts: opacos, nunca se transparentan */
+  /* ---------- Superficies: grafito cálido; las capas se separan por tono, no por bordes ---------- */
+  --bg-canvas: #161513;
+  --surface-1: #1f1d1b;
+  --surface-2: #282624;
+  --surface-3: #33312e;
+  --surface-sheet: #211f1d;
+  --surface-solid: #2b2927;       /* avisos y toasts: opacos, nunca se transparentan */
 
   /* Aliases para compatibilidad con código existente */
   --bg: var(--bg-canvas);
-  --surface: rgba(16, 27, 43, 0.88);
+  --surface: rgba(31, 29, 27, 0.92);
 
   /* ---------- Bordes de 1 px ---------- */
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-medium: rgba(255, 255, 255, 0.14);
-  --border-strong: rgba(255, 255, 255, 0.24);
-  --border-focus: #8bd2ff;
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --border-medium: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.2);
+  --border-focus: #8cc8ee;
   --border: var(--border-subtle);
 
   /* ---------- Texto (contrastes calculados en tests/design-tokens.test.js) ---------- */
-  --text-primary: #f5f5f7;
-  --text-secondary: #b6c5da;
-  --text-tertiary: #a1b1c8;
-  --text-disabled: #73849d;       /* deshabilitado: exento de contraste (WCAG 1.4.3) */
+  --text-primary: #eeece8;
+  --text-secondary: #bdb8b0;
+  --text-tertiary: #a8a299;
+  --text-disabled: #77726b;       /* deshabilitado: exento de contraste (WCAG 1.4.3) */
   --text: var(--text-primary);
   --muted: var(--text-secondary);
 
   /* ---------- Acento único: el celeste de la bandera ---------- */
-  --c-celeste: #8bd2ff;
-  --c-celeste-subtle: rgba(139, 210, 255, 0.16);
-  --c-celeste-border: rgba(139, 210, 255, 0.4);
-  --on-accent: #080e18;
+  --c-celeste: #8cc8ee;
+  --c-celeste-subtle: rgba(140, 200, 238, 0.13);
+  --c-celeste-border: rgba(140, 200, 238, 0.36);
+  --on-accent: #12161a;
   --c-sol: #f6b40e;               /* solo en el logo y donde representa al cubo */
   --c-sol-subtle: rgba(246, 180, 14, 0.15);
 
   /* 6 colores del cubo: SOLO donde representan al cubo (ilustraciones, casos, stickers) */
-  --c-cube-white: #f8fafc;
-  --c-cube-yellow: #fbbf24;
-  --c-cube-green: #34d399;
-  --c-cube-blue: #2563eb;
-  --c-cube-red: #ef4444;
-  --c-cube-orange: #f97316;
+  /* Paleta del cubo: la misma en 3D (stickerless.js), miniaturas (case-preview.js) y portadas */
+  --c-cube-white: #f2f2f2;
+  --c-cube-yellow: #ffd500;
+  --c-cube-green: #2ec27e;
+  --c-cube-blue: #3a7ff0;
+  --c-cube-red: #ff4d5e;
+  --c-cube-orange: #ff8a00;
 
   --c-white: var(--c-cube-white);
   --c-yellow: var(--c-cube-yellow);
@@ -77,9 +78,9 @@
   /* ---------- Radios: escala corta 6 / 10 / 16 / 24 ---------- */
   --radius-xs: 6px;
   --radius-sm: 10px;
-  --radius-md: 16px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  --radius-md: 12px;
+  --radius-lg: 14px;
+  --radius-xl: 22px;
   --radius-sheet: 24px 24px 0 0;
   --radius-pill: 9999px;
   --radius: var(--radius-lg);
@@ -98,16 +99,16 @@
   /* ---------- Elevación: sombras suaves, la profundidad la dan las capas ---------- */
   /* Materiales y velos: una sola definición para barras, sheets y fondos de diálogo */
   --scrim: rgba(0, 0, 0, 0.65);
-  --glass-bar: rgba(8, 14, 24, 0.78);
-  --glass-nav: rgba(16, 27, 43, 0.9);
-  --glass-sheet: rgba(20, 32, 51, 0.88);
-  --handle: rgba(255, 255, 255, 0.28);
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 6px 20px -6px rgba(0, 0, 0, 0.7);
-  --shadow-lg: 0 18px 40px -12px rgba(0, 0, 0, 0.8);
-  --shadow-sheet: 0 -12px 40px rgba(0, 0, 0, 0.7);
-  --shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), var(--shadow-md);
-  --shadow-hover: inset 0 1px 0 rgba(255, 255, 255, 0.06), var(--shadow-lg);
+  --glass-bar: rgba(22, 21, 19, 0.82);
+  --glass-nav: rgba(31, 29, 27, 0.92);
+  --glass-sheet: rgba(33, 31, 29, 0.94);
+  --handle: rgba(255, 255, 255, 0.22);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 14px -6px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 14px 32px -12px rgba(0, 0, 0, 0.6);
+  --shadow-sheet: 0 -10px 32px rgba(0, 0, 0, 0.45);
+  --shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), var(--shadow-sm);
+  --shadow-hover: inset 0 1px 0 rgba(255, 255, 255, 0.05), var(--shadow-md);
 
   /* ---------- Movimiento: curva con resorte (solo transform y opacity) ---------- */
   /* Movimiento: crítico (sin rebote) por defecto; el rebote solo si hubo un gesto con inercia */

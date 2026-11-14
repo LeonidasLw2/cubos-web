@@ -96,8 +96,8 @@ export function initQuickScroll({
     if (rafId) cancelAnimationFrame(rafId);
     rafId = requestAnimationFrame(() => {
       const { scrollH, clientH, currentY, maxScroll } = getScrollMetrics();
-      // Ocultar si la página no necesita scroll (menos de 60px de excedente)
-      if (maxScroll <= 60) {
+      // Solo en páginas muy largas (OLL, F2L...): en las cortas el scroll nativo alcanza.
+      if (maxScroll <= clientH * 3) {
         root.hidden = true;
         return;
       }

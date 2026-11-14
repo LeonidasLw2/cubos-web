@@ -48,7 +48,6 @@ body[data-view='timer'] .top-row { min-height: 48px; }
   min-width: 0;
   padding: 8px 0;
   border: 0;
-  border-block: 1px solid var(--border-subtle);
   border-radius: 0;
   background: none;
   box-shadow: none;
@@ -63,7 +62,7 @@ body[data-view='timer'] .top-row { min-height: 48px; }
 
 .scramble {
   width: 100%;
-  min-height: 96px;
+  min-height: 64px;
   margin: 0;
   font: 550 1rem/1.65 var(--font-sans);
   letter-spacing: 0.02em;
@@ -152,9 +151,10 @@ body[data-view='timer'] .top-row { min-height: 48px; }
   min-width: 0;
   min-height: 224px;
   padding: 8px 12px;
-  border: 1px solid var(--border-medium);
+  /* Sin caja: el número solo sobre el fondo, como un reloj de ajedrez en reposo */
+  border: 1px solid transparent;
   border-radius: var(--radius-xl);
-  background: radial-gradient(ellipse at 50% 0%, var(--surface-2), var(--surface-1) 72%);
+  background: none;
   user-select: none;
   -webkit-user-select: none;
   touch-action: none;
@@ -216,11 +216,11 @@ body[data-phase='running'] #timer:not(.solving) { font-size: min(var(--timer-siz
 .timer:is([data-state='holding'], [data-state='ready']) .timer-decimals { color: inherit; }
 .timer[data-level='warn'] { color: var(--c-celeste); }
 .timer[data-level='danger'] { color: var(--text-primary); font-weight: 600; }
-.timer.landed { animation: land 0.4s var(--spring); }
+.timer.landed { animation: land 0.32s var(--spring-crit); } /* se asienta, sin rebote */
 .timer.alert { animation: alert 0.45s var(--ease-standard); }
-.timer.pb { animation: timer-pb 1.6s var(--spring); }
-@keyframes land { from { transform: scale(1.06); } to { transform: scale(1); } }
-@keyframes timer-pb { 25% { transform: scale(1.04); } to { transform: scale(1); } }
+.timer.pb { animation: timer-pb 1.2s var(--ease-standard); }
+@keyframes land { from { transform: scale(1.025); opacity: 0.85; } to { transform: scale(1); opacity: 1; } }
+@keyframes timer-pb { 30% { transform: scale(1.025); } to { transform: scale(1); } }
 
 /* El anillo es información de tiempo: sigue activo con movimiento reducido. */
 .insp-ring {
@@ -285,8 +285,8 @@ body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) .c
 
 /* Estadísticas sin seis tarjetas compitiendo con el reloj. */
 .session { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
-.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 16px; border-top: 1px solid var(--border-subtle); }
-.stat { min-width: 0; padding: 16px 0; border-bottom: 1px solid var(--border-subtle); }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 16px; row-gap: 4px; }
+.stat { min-width: 0; padding: 12px 0; }
 .stat span { display: flex; gap: 6px; align-items: center; color: var(--text-secondary); font-size: var(--font-xs); font-weight: 500; }
 .stat span svg { display: none; }
 .stat strong { display: block; font-family: var(--font-display); margin-top: 4px; font-size: clamp(1.125rem, 4.5vw, 1.5rem); font-weight: 500; letter-spacing: -0.02em; overflow-wrap: anywhere; }
@@ -418,8 +418,10 @@ body[data-view='timer']:is([data-phase='inspection'], [data-phase='running']) .c
   display: none !important;
 }
 
+/* Quieto se esconde: aparece solo mientras scrolleás, como el de Android */
 .quick-scrollbar.is-idle {
-  opacity: 0.28;
+  opacity: 0;
+  pointer-events: none; /* invisible no tiene que robar toques del borde */
 }
 
 .quick-scrollbar:focus-within,

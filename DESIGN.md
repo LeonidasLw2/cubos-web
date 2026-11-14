@@ -1,4 +1,16 @@
-# Documento de Diseño — CubeSolver (`DESIGN.md`)
+# Documento de Diseño — Cube Tempo (`DESIGN.md`)
+
+## Dirección vigente — "Tablero" (noviembre 2026)
+
+Referencia: la calma de las páginas de ajedrez (Lichess por lo plano y el aire, Chess.com por la calidez), sin copiar el aspecto de ninguna. **Esta sección manda; lo que sigue debajo ("v2 — Instrumento" y anteriores) es historial.**
+
+- **Fondo y superficies:** grafito cálido. Lienzo `#161513`, capas `#1f1d1b` / `#282624` / `#33312e`. Las zonas se separan por tono; los bordes (`rgba(255,255,255,.05)`) solo donde hacen falta. Sombras muy suaves. `tests/design-tokens.test.js` exige un fondo grafito (ni negro puro ni gris claro) y los contrastes de texto.
+- **Color:** un acento celeste apagado `#8cc8ee`, solo para lo activo, la acción principal de cada pantalla y los logros (PB, anillo, "listo"). El resto en blanco cálido `#eeece8` y grises cálidos.
+- **Cubo:** una sola paleta en 3D (`src/twisty/stickerless.js`), miniaturas (`src/case-preview.js`) y portadas: blanco `#f2f2f2`, amarillo `#ffd500`, verde `#2ec27e`, azul `#3a7ff0`, naranja `#ff8a00`, rojo `#ff4d5e`. Atenuado = 45 % del color sobre el gris `#5a5650`; "no importa" = `#5a5650`. El azul del cubo se mantiene ≥2× más oscuro que el celeste (test).
+- **Visor 3D:** plástico `#121110`, cubitos y stickers redondeados en todas las vistas (Timer, Métodos, Entrenar, Notación). Material plano (colores exactos): una prueba con luz Lambert no respondió de forma predecible al pipeline de color de cubing.js y se descartó.
+- **Timer:** el número solo sobre el fondo, sin caja; al mantener presionado aparece el resaltado celeste y una vibración corta (12 ms) al llegar a "listo". Sin separadores entre mezcla, reloj y estadísticas.
+- **Botones:** principal (celeste relleno, uno por pantalla), secundario (gris `--surface-2`), link (texto). En una etapa de Métodos: "Ver casos ↓" + "Identificar caso" en una fila; las etiquetas son una línea gris con puntos, no chips.
+- **Movimiento:** corto y sin rebotes (`--spring-crit`); el número se asienta (escala 1,025 → 1). El scroll rápido aparece solo en páginas de más de 3 pantallas y solo mientras se scrollea.
 
 
 ## Dirección vigente v2 — Instrumento (completo hasta Fase 5)

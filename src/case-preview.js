@@ -10,21 +10,22 @@ const COLORS = {
   U: '#ffd500', // Amarillo arriba (con DISPLAY_SETUP = z2)
   D: '#f2f2f2', // Blanco abajo
   F: '#2ec27e', // Verde al frente
-  B: '#3d8bff', // Azul atrás
+  B: '#3a7ff0', // Azul atrás
   R: '#ff8a00', // Naranja a la derecha (tras z2)
   L: '#ff4d5e', // Rojo a la izquierda (tras z2)
 };
 
+// 45 % del color sobre GREY (igual que el 3D en twisty/stickerless.js)
 const DIM_COLORS = {
-  U: '#7a6810',
-  D: '#7c828f',
-  F: '#1b5e41',
-  B: '#214985',
-  R: '#7d490a',
-  L: '#7d2933',
+  U: '#a48f2c',
+  D: '#9e9c99',
+  F: '#468765',
+  B: '#4c6998',
+  R: '#a46d2c',
+  L: '#a45256',
 };
 
-const GREY = '#323948';
+const GREY = '#5a5650'; // gris cálido neutro: lo que no importa no compite
 
 // Etapas que se ven mejor con el diagrama superior 2D-LL (cara U + bordes F/R/B/L).
 const LL_STICKERINGS = new Set([
@@ -454,7 +455,7 @@ function renderIsometric(stickers, stickering, n) {
 }
 
 // Ilustración SVG de un Pyraminx (para portadas y tarjetas de casos de Pyraminx).
-export function pyraminxSvg({ colors = ['#2ec27e', '#ff4d5e', '#ffd500', '#3d8bff'], className = '' } = {}) {
+export function pyraminxSvg({ colors = ['#2ec27e', '#ff4d5e', '#ffd500', '#3a7ff0'], className = '' } = {}) {
   const [cF, cR, cL, cU] = colors;
   return `<svg class="cube-art pyraminx-art ${className}" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
     <polygon points="50,8 92,80 50,92 8,80" fill="#07090c" stroke="#1f293a" stroke-width="2" stroke-linejoin="round"/>
@@ -480,7 +481,7 @@ export function pyraminxSvg({ colors = ['#2ec27e', '#ff4d5e', '#ffd500', '#3d8bf
 }
 
 // Ilustración SVG de un Megaminx (dodecaedro estilizado para portadas y tarjetas).
-export function megaminxSvg({ accent = '#3d8bff', className = '' } = {}) {
+export function megaminxSvg({ accent = '#3a7ff0', className = '' } = {}) {
   return `<svg class="cube-art megaminx-art ${className}" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
     <polygon points="50,6 88,26 94,66 68,93 32,93 6,66 12,26" fill="#07090c" stroke="#243044" stroke-width="2" stroke-linejoin="round"/>
     <!-- Cara superior pentagonal -->
@@ -498,7 +499,7 @@ export function megaminxSvg({ accent = '#3d8bff', className = '' } = {}) {
 export function casePreviewSvg(alg, { stickering = '', puzzle = '3x3x3' } = {}) {
   if (puzzle === 'pyraminx') {
     const hash = [...(alg || 'U')].reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-    const palette = ['#ffd500', '#2ec27e', '#ff4d5e', '#3d8bff'];
+    const palette = ['#ffd500', '#2ec27e', '#ff4d5e', '#3a7ff0'];
     return pyraminxSvg({
       colors: [
         palette[hash % 4],
