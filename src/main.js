@@ -10,12 +10,13 @@ import './styles/notation.css';
 import './styles/trainer.css';
 import './styles/dialogs.css';
 import './styles/overrides.css';
-import { initUI, setTimerActive, isTimerIdle, openSettingsDialog } from './ui.js';
+import { initUI, setTimerActive, isTimerIdle, isTimerAttemptActive, openSettingsDialog } from './ui.js';
 import { startRouter } from './router.js';
 import { createNavHistory } from './nav-history.js';
 import { initPWA } from './pwa.js';
 import { destroyScopePlayer } from './twisty/playerManager.js';
 import { initQuickScroll } from './quick-scroll.js';
+import { initProfilePreview, renderCommunity } from './community.js';
 import { initSheetDrag } from './sheet-drag.js';
 
 const views = {
@@ -23,6 +24,7 @@ const views = {
   methods: document.getElementById('view-methods'),
   notation: document.getElementById('view-notation'),
   trainer: document.getElementById('view-trainer'),
+  community: document.getElementById('view-community'),
 };
 
 let trainer = null;
@@ -45,10 +47,11 @@ const closeAccountDialogBtn = document.getElementById('close-account-dialog');
 const exitToast = document.getElementById('exit-toast');
 
 const TITLES = {
-  timer: 'CubeSolver · Timer',
-  methods: 'CubeSolver · Métodos',
-  notation: 'CubeSolver · Notación',
-  trainer: 'CubeSolver · Entrenar',
+  timer: 'Cube Tempo · Timer',
+  methods: 'Cube Tempo · Métodos',
+  notation: 'Cube Tempo · Notación',
+  trainer: 'Cube Tempo · Entrenar',
+  community: 'Clasificación de la comunidad',
 };
 
 // ---------- Indicador deslizante de la barra superior ----------
@@ -73,7 +76,7 @@ window.addEventListener('resize', updateTabIndicator, { passive: true });
 // ---------- Bottom sheet "Más" (Móvil) y diálogo de Cuenta ----------
 
 function openMoreSheet() {
-  if (!moreSheet || moreSheet.open) return;
+  if (!moreSheet || moreSheet.open || isTimerAttemptActive()) return;
   moreSheet.showModal();
 }
 
@@ -82,6 +85,7 @@ function closeMoreSheet() {
 }
 
 function openAccountModal() {
+  if (isTimerAttemptActive()) return;
   closeMoreSheet();
   if (accountDialog && !accountDialog.open) accountDialog.showModal();
 }
@@ -129,6 +133,10 @@ window.addEventListener('pagehide', () => nav.persist());
 // ---------- Vistas ----------
 
 async function showRoute(route) {
+  if (document.body.dataset.view === 'timer' && isTimerAttemptActive()) {
+    if (route.view !== 'timer') history.replaceState(history.state, '', '#/timer');
+    return;
+  }
   closeMoreSheet();
   const scrollTarget = nav.sync(window.scrollY);
   document.body.dataset.view = route.view;
@@ -141,12 +149,13 @@ async function showRoute(route) {
   }
   // En móvil, "Notación" vive dentro de "Más": resaltamos "Más" cuando está activa.
   if (openMoreSheetBtn) {
-    if (route.view === 'notation') openMoreSheetBtn.setAttribute('aria-current', 'page');
+    if (['notation', 'community'].includes(route.view)) openMoreSheetBtn.setAttribute('aria-current', 'page');
     else openMoreSheetBtn.removeAttribute('aria-current');
   }
   requestAnimationFrame(updateTabIndicator);
 
-  document.title = TITLES[route.view] ?? 'CubeSolver';
+  document.title = TITLES[route.view] ?? 'Cube Tempo';
+  if (route.view === 'community') renderCommunity(views.community);
   setTimerActive(route.view === 'timer');
   trainer?.setTrainerActive(route.view === 'trainer');
 
@@ -197,6 +206,7 @@ async function showRoute(route) {
 }
 
 initUI();
+initProfilePreview(document.getElementById('account-community'));
 initQuickScroll();
 startRouter(showRoute);
 nav.armGuard();

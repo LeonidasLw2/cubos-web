@@ -664,3 +664,46 @@
   .settings form, .account-dialog-inner { padding: 0 20px 20px; }
   .settings-data { padding-inline: 20px; }
 }
+
+.settings-section-title {
+  margin-block: 16px 4px;
+  font-size: var(--font-h3);
+}
+.settings details.setting-help summary { cursor: pointer; }
+.settings details.setting-help p { margin-block: 6px; }
+
+.account-community {
+  padding: 12px 16px;
+  margin-block: 12px;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+}
+.account-community summary { cursor: pointer; font-weight: 600; }
+.community-fields { display: grid; gap: 8px 12px; grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr)); }
+.community-fields label { display: grid; gap: 4px; min-width: 0; }
+.community-fields input, .community-fields select, .community-page select {
+  min-width: 0;
+  min-height: 44px;
+  color: inherit;
+  background: var(--surface-2);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  padding-inline: 8px;
+}
+.community-row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  overflow-wrap: anywhere;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.community-row strong { font-family: var(--font-display); }
+.community-avatar { width: 42px; height: 42px; }
+.community-avatar :is(svg, img) { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+.community-preview { margin-block: 16px; }
+.community-link { color: var(--c-celeste); text-underline-offset: 4px; }
+.account-backup-actions { display: grid; justify-items: start; }
+.account-signout-box .data-btn { justify-self: start; align-self: flex-start; }
+.account-community > [data-save-profile] { margin-top: 10px; }

@@ -179,7 +179,8 @@ a.link-card:hover .card-art {
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.03em;
-  white-space: nowrap;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   background: color-mix(in srgb, var(--accent) 15%, transparent);
   color: var(--accent);
   border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
@@ -1951,3 +1952,7 @@ a.link-card:hover .card-action {
 .scanner-case { width: 104px; }
 .case-scanner code { font-size: 1.05rem; overflow-wrap: break-word; }
 .case-scanner [data-result] { border-top: 1px solid var(--border-medium); padding-top: 16px; }
+
+.method-guide-detail { margin-block: 10px; color: var(--text-secondary); }
+.method-guide-detail summary { cursor: pointer; }
+.method-hero-text > .chip-btn { margin-inline-end: 8px; margin-block: 4px; }

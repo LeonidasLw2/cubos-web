@@ -7,64 +7,20 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="description" content="CubeSolver · Timer de speedcubing con scrambles oficiales, métodos animados para los 7 puzzles, notación interactiva y entrenador de casos." />
-    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <meta name="description" content="Cube Tempo · Timer de speedcubing con scrambles oficiales, métodos animados para los 7 puzzles, notación interactiva y entrenador de casos." />
+    <link rel="icon" href="/cube-tempo-64.png" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png" />
     <!-- El enlace al manifest lo agrega vite-plugin-pwa al armar la página. -->
     <link rel="preload" href="./node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <title>CubeSolver · Timer</title>
+    <link rel="preload" href="./src/assets/space-grotesk.woff2" as="font" type="font/woff2" crossorigin />
+    <title>Cube Tempo · Timer</title>
   </head>
   <body data-view="timer">
     <header class="topbar fadeable">
       <div class="top-row">
-        <a href="#/timer" class="brand" aria-label="CubeSolver · Ir al Timer">
-          <svg class="logo" viewBox="82 62 348 388" width="36" height="36" aria-hidden="true">
-            <defs>
-              <g id="hdr-cara-bandera">
-                <rect x="-0.06" y="-0.06" width="3.12" height="3.12" rx="0.24" fill="#07090c" />
-                <rect x="0.1" y="0.1" width="0.8" height="0.8" rx="0.15" fill="#74ACDF" />
-                <rect x="1.1" y="0.1" width="0.8" height="0.8" rx="0.15" fill="#74ACDF" />
-                <rect x="2.1" y="0.1" width="0.8" height="0.8" rx="0.15" fill="#74ACDF" />
-                <rect x="0.1" y="1.1" width="0.8" height="0.8" rx="0.15" fill="#FFFFFF" />
-                <rect x="1.1" y="1.1" width="0.8" height="0.8" rx="0.15" fill="#FFFFFF" />
-                <rect x="2.1" y="1.1" width="0.8" height="0.8" rx="0.15" fill="#FFFFFF" />
-                <rect x="0.1" y="2.1" width="0.8" height="0.8" rx="0.15" fill="#74ACDF" />
-                <rect x="1.1" y="2.1" width="0.8" height="0.8" rx="0.15" fill="#74ACDF" />
-                <rect x="2.1" y="2.1" width="0.8" height="0.8" rx="0.15" fill="#74ACDF" />
-              </g>
-              <g id="hdr-sol-de-mayo">
-                <polygon
-                  points="1.5,1.14 1.548,1.33 1.65,1.17 1.595,1.35 1.76,1.24 1.64,1.39 1.83,1.355 1.67,1.455 1.86,1.5 1.67,1.545 1.83,1.645 1.64,1.61 1.76,1.76 1.595,1.65 1.65,1.83 1.548,1.67 1.5,1.86 1.452,1.67 1.35,1.83 1.405,1.65 1.24,1.76 1.36,1.61 1.17,1.645 1.33,1.545 1.14,1.5 1.33,1.455 1.17,1.355 1.36,1.39 1.24,1.24 1.405,1.35 1.35,1.17 1.452,1.33"
-                  fill="#F6B40E"
-                  stroke="#B46900"
-                  stroke-width="0.025"
-                  stroke-linejoin="round"
-                />
-                <circle cx="1.5" cy="1.5" r="0.17" fill="#F6B40E" stroke="#9A5800" stroke-width="0.03" />
-                <circle cx="1.5" cy="1.5" r="0.09" fill="#FFD147" />
-              </g>
-            </defs>
-            <polygon
-              points="256,74 414,165 414,347 256,438 98,347 98,165"
-              fill="#05070a"
-              stroke="#2a3d59"
-              stroke-width="6"
-              stroke-linejoin="round"
-            />
-            <g stroke="none">
-              <use href="#hdr-cara-bandera" transform="matrix(49.667 -28.667 49.667 28.667 107 170)" />
-              <rect x="0" y="0" width="3" height="3" fill="#ffffff" opacity="0.08" transform="matrix(49.667 -28.667 49.667 28.667 107 170)" />
-              <g transform="matrix(49.667 28.667 0 57.333 107 170)">
-                <use href="#hdr-cara-bandera" />
-                <use href="#hdr-sol-de-mayo" />
-              </g>
-              <g transform="matrix(49.667 -28.667 0 57.333 256 256)">
-                <use href="#hdr-cara-bandera" />
-                <rect x="-0.06" y="-0.06" width="3.12" height="3.12" rx="0.24" fill="#060b14" opacity="0.22" />
-              </g>
-            </g>
-          </svg>
-          <h1>CubeSolver</h1>
+        <a href="#/timer" class="brand" aria-label="Cube Tempo · Ir al Timer">
+          <img class="logo" src="/cube-tempo-64.png" width="36" height="36" alt="" />
+          <h1>Cube Tempo</h1>
         </a>
 
         <nav class="tabs" id="desktop-tabs" aria-label="Secciones principales">
@@ -151,12 +107,14 @@
             <!-- Con "ocultar el tiempo": un cubo que late en vez de los números -->
             <div class="solving-indicator" id="solving-indicator" aria-hidden="true"><span>Resolviendo</span></div>
           </div>
+          <span class="visually-hidden" id="attempt-status" role="status"></span>
           <p class="hint fadeable" id="hint"></p>
           <button class="text-btn cancel-inspection" id="cancel-inspection" type="button">Cancelar inspección</button>
         </div>
       </section>
 
       <aside class="session fadeable" aria-label="Sesión">
+        <a class="community-link" href="#/clasificacion">Clasificación de la comunidad</a>
         <p id="timer-save-status" class="save-status" role="status"></p>
         <!-- Evolución de los últimos tiempos (la dibuja ui.js) -->
         <div class="trend" id="trend" hidden>
@@ -196,6 +154,7 @@
     <main class="methods" id="view-methods" hidden></main>
     <main class="methods notation-main" id="view-notation" hidden></main>
     <main class="methods" id="view-trainer" hidden></main>
+    <main class="methods" id="view-community" hidden></main>
 
     <dialog class="settings" id="settings" aria-labelledby="settings-title">
       <form id="settings-form" method="dialog">
@@ -205,6 +164,7 @@
         </div>
 
         <a class="settings-data-link" href="#data-title">Ir a tus tiempos ↓</a>
+        <h3 class="settings-section-title">Cronómetro</h3>
         <label class="setting">
           <span>
             Inspección de 15 s
@@ -221,7 +181,7 @@
               <label><input type="radio" name="countdown" value="down" /><span>Regresivo 15 → 0</span></label>
               <label><input type="radio" name="countdown" value="up" /><span>Progresivo 0 → 15</span></label>
             </div>
-            <small class="setting-help">Los avisos son a los 8 y 12 segundos pasados: en regresivo, cuando el contador muestra 7 y 3; en progresivo, cuando muestra 8 y 12.</small>
+            <details class="setting-help"><summary>Cómo se cuentan los avisos</summary><p>Se emiten a los 8 y 12 segundos transcurridos. El contador regresivo muestra 7 y 3. El progresivo muestra 8 y 12.</p></details>
           </fieldset>
 
           <fieldset class="setting-group">
@@ -231,7 +191,7 @@
               <label><input type="radio" name="alerts" value="beep" /><span>Pitidos</span></label>
               <label><input type="radio" name="alerts" value="none" /><span>Ninguno</span></label>
             </div>
-            <small class="setting-help">Voz: "ocho" y "doce" (si no hay voz en español, pita). Pitidos: uno a los 8 s y dos a los 12 s, sin demora.</small>
+            <details class="setting-help"><summary>Cómo suenan los avisos</summary><p>Voz dice «ocho» y «doce». Si falta una voz en español, suenan los pitidos. Pitidos emite uno a los 8 s y dos a los 12 s.</p></details>
           </fieldset>
         </fieldset>
 
@@ -244,6 +204,7 @@
           </div>
         </fieldset>
 
+        <h3 class="settings-section-title">Visualización</h3>
         <label class="setting">
           <span>
             Visualizador del cubo
@@ -282,7 +243,7 @@
         <p class="data-status" id="data-status" role="status" aria-live="polite"></p>
         <p class="data-help" id="storage-status"></p>
         <p class="data-help privacy-note" id="privacy-note">
-          <strong>Privacidad:</strong> Tus tiempos, ajustes y casos aprendidos se guardan siempre en el almacenamiento local de tu navegador (<code>localStorage</code>). Si iniciás sesión con Google, se sincroniza una copia privada en tu cuenta de Cloud Firestore y podés eliminarla cuando quieras desde el menú de Cuenta.
+          Tus tiempos, ajustes y casos aprendidos se guardan en este dispositivo. Al iniciar sesión se sincroniza una copia privada.
         </p>
       </section>
     </dialog>
@@ -297,6 +258,25 @@
         <div id="account-dialog-body" class="account-dialog-body">
           <p class="data-help">Tus tiempos funcionan 100% sin conexión en este dispositivo. Iniciá sesión con Google para sincronizarlos en la nube entre tu celular y tu computadora.</p>
         </div>
+        <details class="account-community" id="account-community">
+          <summary>Perfil de CubeSolver</summary>
+          <p>Elegí cómo se vería tu marca. Esta vista previa queda en este dispositivo.</p>
+          <div class="community-fields">
+            <label>Nombre visible <input name="publicName" maxlength="64" autocomplete="off"></label>
+            <label>Icono <select name="publicIcon"></select></label>
+            <label>Imagen propia <input type="file" accept="image/png,image/jpeg,image/webp"></label>
+            <button type="button" class="data-btn" data-reset-icon>Restaurar icono</button>
+            <label>Cubo <select name="previewPuzzle"></select></label>
+          </div>
+          <div class="community-preview" aria-label="Vista previa de la marca"></div>
+          <label><input type="checkbox" name="previewConsent"> Mostrar mi marca en la vista previa local</label>
+          <button type="button" class="data-btn" data-save-profile>Guardar perfil</button>
+          <p role="status"></p>
+        </details>
+        <section aria-labelledby="account-backup-title">
+          <h3 id="account-backup-title">Respaldos</h3>
+          <button type="button" class="data-btn" id="account-open-backups">Ir a tus tiempos</button>
+        </section>
       </div>
     </dialog>
 
@@ -308,6 +288,10 @@
         <button class="icon-btn" id="close-more-sheet" type="button" aria-label="Cerrar">✕</button>
       </div>
       <div class="sheet-list">
+        <a href="#/clasificacion" class="sheet-item">
+          <span class="sheet-icon accent-celeste" aria-hidden="true">↗</span>
+          <span class="sheet-item-text"><strong>Clasificación</strong><small>Marcas por cubo</small></span>
+        </a>
         <a href="#/notacion" class="sheet-item" id="sheet-link-notation">
           <span class="sheet-icon accent-celeste" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>

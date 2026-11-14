@@ -104,6 +104,7 @@ export function normalizeSolveRecord(raw, defaultPuzzle = '333') {
     penalty: isPenalty(raw.penalty) ? raw.penalty : null,
     autoPenalty: isPenalty(raw.autoPenalty) ? raw.autoPenalty : null,
     scramble: typeof raw.scramble === 'string' ? raw.scramble : null,
+    ...(raw.source === 'timer' && { source: 'timer' }),
     session: typeof raw.session === 'string' && raw.session.trim() ? raw.session.trim() : 'main',
     date,
     updatedAt,
@@ -489,6 +490,7 @@ export async function signInWithGoogle({ onSolvesMerged = null } = {}) {
   const provider = new authMod.GoogleAuthProvider();
   const cred = await authMod.signInWithPopup(auth, provider);
   currentUser = cred.user;
+  saveSyncMeta({ hadSession: true });
   await syncNow({ full: true, onSolvesMerged });
   return currentUser;
 }
@@ -501,6 +503,7 @@ export async function signOutAccount({ clearLocal = false, onSolvesMerged = null
     }
   }
   currentUser = null;
+  saveSyncMeta({ hadSession: false });
   if (clearLocal) {
     for (const ev of EVENTS) {
       saveSolves(ev.id, []);
@@ -517,7 +520,7 @@ export async function signOutAccount({ clearLocal = false, onSolvesMerged = null
 /**
  * Conecta el botón de Cuenta, el indicador de sincronización de la barra superior y el modal de Cuenta.
  */
-export function initCloudSyncUI({ onDataUpdated, onExportBackup, onImportBackup } = {}) {
+export function initCloudSyncUI({ onDataUpdated } = {}) {
   const syncIndicator = document.getElementById('sync-indicator');
   const syncText = syncIndicator?.querySelector('.sync-text');
   const accountBtn = document.getElementById('account-btn');
@@ -531,18 +534,10 @@ export function initCloudSyncUI({ onDataUpdated, onExportBackup, onImportBackup 
       accountDialogBody.innerHTML = `
         <div class="account-status-banner is-unconfigured">
           <strong>Sincronización no configurada</strong>
-          <p>CubeSolver está funcionando al 100 % en modo local. Tus tiempos, ajustes y algoritmos aprendidos se guardan automáticamente en este navegador.</p>
-        </div>
-        <div class="account-info-box">
-          <h3>☁️ ¿Querés sincronizar entre tu celular y tu PC?</h3>
-          <p>Podés conectar tu propio proyecto gratuito de Firebase siguiendo los 7 pasos de <code>SETUP-NUBE.md</code> y pegando las credenciales en <code>src/firebase-config.js</code>.</p>
-        </div>
-        <div class="account-backup-actions">
-          <button type="button" class="data-btn" id="account-export-btn">⬇ Exportar respaldo JSON</button>
-          <button type="button" class="data-btn" id="account-import-btn">⬆ Importar respaldo JSON</button>
+          <p>Cube Tempo está funcionando al 100 % en modo local. Tus tiempos, ajustes y algoritmos aprendidos se guardan automáticamente en este navegador.</p>
         </div>
         <p class="setting-help privacy-note">
-          <strong>Privacidad:</strong> Tus datos son tuyos. En modo local no sale nada de tu dispositivo; con cuenta activa solo se guardan tus tiempos, ajustes y casos aprendidos en tu espacio privado <code>users/{uid}</code>.
+          <strong>Privacidad:</strong> Tus tiempos y ajustes quedan en este dispositivo cuando usás el modo local.
         </p>
       `;
     } else if (!status.user) {
@@ -566,10 +561,6 @@ export function initCloudSyncUI({ onDataUpdated, onExportBackup, onImportBackup 
           <span>Continuar con Google</span>
         </button>
         <p id="account-auth-error" class="notation-seq-error" hidden></p>
-        <div class="account-backup-actions">
-          <button type="button" class="data-btn" id="account-export-btn">⬇ Exportar respaldo JSON</button>
-          <button type="button" class="data-btn" id="account-import-btn">⬆ Importar respaldo JSON</button>
-        </div>
         <p class="setting-help privacy-note">
           <strong>Privacidad:</strong> Solo se almacenan tu correo básico de perfil, tus tiempos por categoría, tus ajustes y los algoritmos marcados como aprendidos.
         </p>
@@ -593,31 +584,24 @@ export function initCloudSyncUI({ onDataUpdated, onExportBackup, onImportBackup 
           </div>
         </div>
         <div class="account-backup-actions">
-          <button type="button" class="btn-primary" id="account-sync-now-btn" ${status.state === 'syncing' ? 'disabled' : ''}>
+          <h3>Sincronización</h3>
+          <button type="button" class="data-btn" id="account-sync-now-btn" ${status.state === 'syncing' ? 'disabled' : ''}>
             ↻ Sincronizar ahora
           </button>
-          <button type="button" class="data-btn" id="account-export-btn">⬇ Exportar respaldo JSON</button>
-          <button type="button" class="data-btn" id="account-import-btn">⬆ Importar respaldo JSON</button>
         </div>
         <div class="account-signout-box">
           <label class="account-keep-local">
             <input type="checkbox" id="account-clear-local-chk" />
-            <span>Limpiar también los datos locales de este dispositivo al cerrar sesión</span>
+            <span>Borrar también los tiempos y el progreso guardados en este dispositivo</span>
           </label>
           <button type="button" class="data-btn danger" id="account-signout-btn">Cerrar sesión</button>
         </div>
         <p class="setting-help privacy-note">
-          <strong>Privacidad:</strong> Tus tiempos y progreso están protegidos en <code>users/${escapeHtml(u.uid)}</code> y solo tu cuenta autenticada tiene permiso de lectura y escritura.
+          <strong>Privacidad:</strong> Tu historial, correo y progreso son privados. La vista previa de la clasificación solo usa el perfil que elijas y tu marca.
         </p>
       `;
     }
 
-    accountDialogBody.querySelector('#account-export-btn')?.addEventListener('click', () => {
-      onExportBackup?.();
-    });
-    accountDialogBody.querySelector('#account-import-btn')?.addEventListener('click', () => {
-      onImportBackup?.();
-    });
     accountDialogBody.querySelector('#account-google-login-btn')?.addEventListener('click', async () => {
       const errEl = accountDialogBody.querySelector('#account-auth-error');
       if (errEl) errEl.hidden = true;
@@ -635,6 +619,7 @@ export function initCloudSyncUI({ onDataUpdated, onExportBackup, onImportBackup 
     });
     accountDialogBody.querySelector('#account-signout-btn')?.addEventListener('click', async () => {
       const clearLocal = Boolean(accountDialogBody.querySelector('#account-clear-local-chk')?.checked);
+      if (clearLocal && !window.confirm('¿Cerrar sesión y borrar los tiempos y el progreso guardados en este dispositivo?')) return;
       await signOutAccount({ clearLocal, onSolvesMerged: onDataUpdated });
     });
   }
@@ -686,8 +671,11 @@ export function initCloudSyncUI({ onDataUpdated, onExportBackup, onImportBackup 
     });
   }
 
-  // Si Firebase está configurado, suscribirse al estado de sesión de forma diferida
-  if (isFirebaseConfigured()) {
+  // Firebase (~700 KB) se carga al arrancar solo si hubo sesión en este dispositivo;
+  // si no, recién al tocar "Iniciar sesión". Sin `hadSession` (datos viejos) vale haber sincronizado.
+  const meta = loadSyncMeta();
+  const hadSession = meta.hadSession ?? meta.lastSyncAt > 0;
+  if (isFirebaseConfigured() && hadSession) {
     getFirebaseContext()
       .then((ctx) => {
         if (!ctx) return;

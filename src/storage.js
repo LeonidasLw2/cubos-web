@@ -40,6 +40,7 @@ export function normalizeSolve(raw, index) {
   if (typeof raw.updatedAt === 'number' && Number.isFinite(raw.updatedAt)) {
     out.updatedAt = raw.updatedAt;
   }
+  if (raw.source === 'timer') out.source = 'timer';
   return out;
 }
 

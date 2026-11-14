@@ -59,8 +59,10 @@ export function parseImport(text, validEventIds) {
     const solves = [];
     list.forEach((raw, i) => {
       const solve = normalizeSolve(raw, i);
-      if (solve) solves.push(solve);
-      else invalid++;
+      if (solve) {
+        delete solve.source;
+        solves.push(solve);
+      } else invalid++;
     });
     events[eventId] = solves;
   }

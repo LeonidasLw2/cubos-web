@@ -42,11 +42,11 @@ export default defineConfig({
       // nunca se recarga sola. El aviso y el registro los maneja src/pwa.js.
       registerType: 'prompt',
       injectRegister: false,
-      includeAssets: ['icon.svg', 'apple-touch-icon-180x180.png'],
+      includeAssets: ['cube-tempo-64.png', 'apple-touch-icon-180x180.png'],
       manifest: {
         id: BASE,
-        name: 'CubeSolver',
-        short_name: 'CubeSolver',
+        name: 'Cube Tempo',
+        short_name: 'Cube Tempo',
         description: 'Timer de speedcubing, entrenador de casos, notación 3D y guías de métodos con casos animados.',
         lang: 'es',
         dir: 'ltr',
@@ -62,7 +62,6 @@ export default defineConfig({
           { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
           { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' },
           { src: 'maskable-icon-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
-          { src: 'icon.svg', sizes: 'any', type: 'image/svg+xml' },
         ],
       },
       workbox: {

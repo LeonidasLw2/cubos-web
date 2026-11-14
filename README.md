@@ -1,4 +1,4 @@
-# CubeSolver (`cubos-web`)
+# Cube Tempo (`cubos-web`)
 
 Aplicación web progresiva (PWA) y móvil de speedcubing con cronómetro WCA, guías completas de métodos verificadas matemáticamente, guía animada de notación, entrenador de casos y sincronización opcional en la nube.
 

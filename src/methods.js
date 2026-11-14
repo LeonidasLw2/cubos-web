@@ -400,6 +400,7 @@ function linkCards(items, className = '') {
 // ---------- Componentes Reutilizables de Presentación ----------
 
 function renderPageHero({ title, subtitle = '', intro = [], chips = [], accent = 'blue', puzzle = '3x3x3', stickering = '', setupAlg = "R U R' U'" }) {
+  const introParagraphs = Array.isArray(intro) ? intro : [intro];
   const hero = el(`
     <header class="method-hero accent-${accent}">
       <div class="method-hero-content">
@@ -407,7 +408,10 @@ function renderPageHero({ title, subtitle = '', intro = [], chips = [], accent =
           ${chips.map((c) => `<span class="hero-chip">${escape(c)}</span>`).join('')}
         </div>
         <h2>${escape(title)}${subtitle ? ` <small>${escape(subtitle)}</small>` : ''}</h2>
-        <div class="method-hero-text">${paragraphs(intro)}</div>
+        <div class="method-hero-text">
+          ${paragraphs(introParagraphs.slice(0, 1))}
+          ${introParagraphs.length > 1 ? `<details class="method-guide-detail"><summary>Cómo reconocer esta etapa</summary>${paragraphs(introParagraphs.slice(1))}</details>` : ''}
+        </div>
       </div>
       <div class="method-hero-visual">
         <div class="hero-cube-stage" role="region" aria-label="Vista 3D interactiva"></div>
@@ -652,6 +656,14 @@ function attachCaseExplorer(page, groups = [], family) {
       toolbar.querySelector('input').focus({ preventScroll: true });
       toolbar.scrollIntoView({ block: 'start' });
     });
+    const cases = el('<button type="button" class="chip-btn">Ver casos</button>');
+    cases.addEventListener('click', () => {
+      const first = page.querySelector('.case-card:not([hidden])');
+      if (!first) return;
+      first.querySelector('button')?.focus({ preventScroll: true });
+      first.scrollIntoView({ block: 'center' });
+    });
+    heroText.append(cases);
     for (const key of [family].flat().filter(Boolean)) heroText.append(scannerButton(key));
   }
 

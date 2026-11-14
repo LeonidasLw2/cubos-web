@@ -16,7 +16,8 @@ try {
       assert.equal(await page.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth)), width, `${width} ${route}: desborde`);
       const blur = await page.locator('main:visible').evaluate((el) => [...el.querySelectorAll('*')].filter((n) => getComputedStyle(n).backdropFilter !== 'none').length);
       assert.equal(blur, 0, `${route}: vidrio en contenido`);
-      if (route === '#/metodos') {
+      if (route === '#/metodos') assert.ok(await page.getByRole('button', { name: 'Identificar caso', exact: true }).isVisible());
+      if (route === '#/metodos/3x3/cfop/pll') {
         const gap = await page.locator('.method-hero h2 small').evaluate((subtitle) => {
           const title = document.createRange();
           title.setStart(subtitle.parentNode, 0);
@@ -39,7 +40,28 @@ try {
     await page.locator('#explorer-search-input').fill('');
     await page.locator('[data-action="watch"]').first().click();
     await page.waitForSelector('#case-modal-stage twisty-player');
-    assert.equal(await page.locator('#case-modal-stage twisty-player').count(), 1);
+    const modalPlayer = page.locator('#case-modal-stage twisty-player');
+    assert.equal(await modalPlayer.count(), 1);
+    assert.equal(await page.locator('.case-svg-2dll rect[fill="#242b35"]').first().count(), 1);
+    if (width === 1280) {
+      const hasRoundedFacelets = () => modalPlayer.evaluate(async (player) => {
+        for (let i = 0; i < 30; i++) {
+          const scene = player.shadow.querySelector('twisty-3d-scene-wrapper');
+          if (scene) {
+            const wrapper = await scene.experimentalTwisty3DPuzzleWrapper();
+            const puzzle = await wrapper.twisty3DPuzzle();
+            if (puzzle.kpuzzleFaceletInfo.CENTERS[0][0].facelet.geometry.type === 'ExtrudeGeometry') return true;
+          }
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+        return false;
+      });
+      assert.ok(await hasRoundedFacelets(), 'El visor 3D debe redondear las piezas');
+      await page.locator('#case-modal-vis').click();
+      await page.waitForFunction(() => document.querySelector('#case-modal-stage twisty-player').shadow.querySelector('twisty-2d-scene-wrapper'));
+      await page.locator('#case-modal-vis').click();
+      assert.ok(await hasRoundedFacelets(), 'El redondeo debe reaplicarse al volver a 3D');
+    }
     await page.locator('#case-modal-close').click();
     await page.goto(BASE + '#/notacion/3x3');
     await page.waitForSelector('#notation-seq-input');

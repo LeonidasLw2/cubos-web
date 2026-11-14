@@ -12,6 +12,7 @@ export function parseRoute(hash) {
   const path = rawPath.replace(/\/+$/, '').toLowerCase();
   const params = Object.fromEntries(new URLSearchParams(rawQuery));
   if (path === '' || path === 'timer') return { view: 'timer', path: 'timer' };
+  if (path === 'clasificacion') return { view: 'community', path };
   if (path === 'entrenar') return { view: 'trainer', path, params };
   // La sección Solver ya no existe: sus rutas viejas van al Timer.
   if (path === 'solver' || path.startsWith('solver/')) return { view: 'timer', path: 'timer', redirect: '#/timer' };

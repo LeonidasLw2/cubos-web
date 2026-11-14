@@ -248,3 +248,9 @@ La cobertura de [identificación de casos con fotos](docs/IDENTIFICAR-CASOS.md) 
 La preparación para publicación incluye la paleta azul oscura y la ocultación de pistas durante la práctica.
 
 La corrección tipográfica y las etiquetas breves de sincronización se incorporan a la publicación en GitHub Pages.
+
+Se corrigió el espacio de la etiqueta Cubo y el ajuste de etiquetas largas en las tarjetas de Métodos.
+
+Se aplicó un acabado stickerless a las miniaturas y a los visores de los casos cúbicos de Métodos.
+
+La siguiente versión incorpora la vista de intento centrada, la tipografía de display, la agrupación de Ajustes y Cuenta y una [vista previa local de Clasificación](docs/CLASIFICACION.md). La participación pública requiere el servicio y sus pruebas de permisos.
