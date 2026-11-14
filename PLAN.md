@@ -251,6 +251,8 @@ La corrección tipográfica y las etiquetas breves de sincronización se incorpo
 
 Se corrigió el espacio de la etiqueta Cubo y el ajuste de etiquetas largas en las tarjetas de Métodos.
 
-Se aplicó un acabado stickerless a las miniaturas y a los visores de los casos cúbicos de Métodos.
+Se aplicó un acabado stickerless a las miniaturas y a los visores de los casos cúbicos de Métodos (después extendido a todos los visores de cubos).
 
-La siguiente versión incorpora la vista de intento centrada, la tipografía de display, la agrupación de Ajustes y Cuenta y una [vista previa local de Clasificación](docs/CLASIFICACION.md). La participación pública requiere el servicio y sus pruebas de permisos.
+El intento del Timer ocupa el viewport durante inspección y resolución, con el reloj centrado y los controles externos inertes. El modo de tiempo oculto muestra «Resolviendo» y conserva el resultado y la mezcla al terminar.
+
+La siguiente versión incorpora la tipografía de display, la agrupación de Ajustes y Cuenta y una [vista previa local de Clasificación](docs/CLASIFICACION.md). La participación pública requiere el servicio y sus pruebas de permisos.

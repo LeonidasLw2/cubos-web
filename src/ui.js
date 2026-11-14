@@ -506,7 +506,7 @@ const timer = createTimer({
         applySettings();
       } else updatePlayer();
     }
-      const announcement = hidden ? 'Resolviendo' : '';
+    const announcement = hidden ? 'Resolviendo' : '';
     if ($('attempt-status').textContent !== announcement) $('attempt-status').textContent = announcement;
     updateHint(phase);
 

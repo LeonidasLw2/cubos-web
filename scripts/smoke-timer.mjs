@@ -64,7 +64,13 @@ try {
       if (!concealed && label !== 'loading') assert.equal(m.textOpacity, 1, `${label}: opacidad efectiva de la mezcla`);
       if (concealed) assert.ok(await page.locator('#scramble-view').isHidden(), `${label}: visor visible`);
       assert.equal(m.topbarVisible, !concealed, `${label}: encabezado`);
-      if (concealed) assert.ok(m.centered, `${label}: reloj centrado`);
+      if (concealed) {
+        assert.ok(m.centered, `${label}: reloj centrado`);
+        assert.deepEqual(m.zone, { top: 0, bottom: height, width, height }, `${label}: intento en todo el viewport`);
+        for (const selector of ['.topbar', '#events', '#scramble-card', '.session', '.bottom-nav']) {
+          assert.ok(await page.locator(selector).isHidden(), `${label}: ${selector} visible`);
+        }
+      }
       return m;
     };
     try {

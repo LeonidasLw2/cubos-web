@@ -110,6 +110,6 @@ El ajuste tipográfico usa Inter 650 en títulos base, 500 en el reloj y los val
 
 El botón Cubo reserva espacio para el icono y su etiqueta. Las etiquetas de las tarjetas de Métodos pueden ocupar más de una línea.
 
-Las miniaturas de los casos cúbicos usan juntas finas y esquinas redondeadas. El visor de Métodos aplica ese acabado a Cube3D y PG3D conservando las máscaras didácticas y la reproducción.
+Las miniaturas de los casos cúbicos usan juntas finas y esquinas redondeadas. Los visores 3D de cubos (Timer, Métodos, Entrenar y Notación) aplican ese acabado a Cube3D y PG3D, y en Cube3D la paleta de las miniaturas, conservando las máscaras didácticas y la reproducción.
 
-La vista de intento ocupa el viewport y retira los controles externos del foco. Space Grotesk se empaqueta con licencia OFL para el reloj y los títulos. Ajustes y Cuenta enlazan a la vista previa local de perfil y clasificación. El backend público sigue pendiente de validación. Ver [Clasificación](docs/CLASIFICACION.md).
+El intento del Timer ocupa el viewport durante inspección y resolución, con el reloj centrado y los controles externos inertes. Space Grotesk se empaqueta localmente con licencia OFL para el reloj y los títulos. El modo de tiempo oculto muestra «Resolviendo» y conserva el resultado y la mezcla al terminar. Ajustes y Cuenta enlazan a la vista previa local de perfil y clasificación. El backend público sigue pendiente de validación. Ver [Clasificación](docs/CLASIFICACION.md).
